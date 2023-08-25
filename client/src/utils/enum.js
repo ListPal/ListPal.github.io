@@ -1,20 +1,20 @@
-module.exports.mobileWidth = "500px";
+export const mobileWidth = "500px";
 
-module.exports.PUBLIC_CODE = "leknlkenwknlknklwncfc1edi7e2y97ry48032ujdede";
+export const PUBLIC_CODE = "leknlkenwknlknklwncfc1edi7e2y97ry48032ujdede";
 
-module.exports.groceryContainerTypes = {
+export const groceryContainerTypes = {
   todo: "TODO",
   whishlist: "WISHLIST",
   grocery: "GROCERY",
 };
 
-module.exports.groceryListScopes = {
+export const groceryListScopes = {
   public: "PUBLIC",
   private: "PRIVATE",
   restricted: "RESTRICTED",
 };
 
-module.exports.borderColors = [
+export const borderColors = [
   "#7b9370",
   "#F0B323",
   "#30C8C9",
@@ -27,7 +27,7 @@ module.exports.borderColors = [
   "#FF6969",
 ];
 
-module.exports.dialogues = {
+export const dialogues = {
   closed: null,
   addItem: "addItem",
   deleteList: "deleteList",
@@ -40,7 +40,7 @@ module.exports.dialogues = {
   addQuickItem: "addQuickItem",
 };
 
-module.exports.colors = {
+export const colors = {
   landingPageColors: {
     low: "#eaf6e4",
     midLow: "#d7ebce",
@@ -58,7 +58,7 @@ module.exports.colors = {
   },
 };
 
-module.exports.dialogueObject = {
+export const dialogueObject = {
   addItem: {
     header: "Add Item",
     textFields: [
@@ -203,7 +203,7 @@ module.exports.dialogueObject = {
 
 // Engines
 const engine = "http://Joses-MacBook-Pro-3.local:8080";
-module.exports.URLS = {
+export const URLS = {
   // Authentication endpoins
   registerUri: `${engine}/api/v1/auth/register`,
   loginUri: `${engine}/api/v1/auth/authenticate`,

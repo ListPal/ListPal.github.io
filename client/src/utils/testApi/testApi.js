@@ -1,30 +1,30 @@
 const { URLS } = require("../enum")
 
-module.exports.logout = async () => {
+export const logout = async () => {
   return this.postRequest(URLS.logout, null)
 }
 
-module.exports.checkSession = async () => {
+export const checkSession = async () => {
   return this.postRequest(URLS.checkSession, null)
 }
 
-module.exports.deleteItem = async (data) => {
+export const deleteItem = async (data) => {
   return this.deleteRequest(URLS.deleteItem, data)
 }
 
-module.exports.deleteList = async (data) => {
+export const deleteList = async (data) => {
   return this.deleteRequest(URLS.deleteList, data)
 }
 
-module.exports.getAllLists = async (data) => {
+export const getAllLists = async (data) => {
   return this.getRequest(`${URLS.getListsUri}?userId=${data.userId}&containerId=${data.containerId}`, null)
 }
 
-module.exports.getPublicList = async (data) => {
+export const getPublicList = async (data) => {
   return this.getRequest(`${URLS.getPublicListUri}?containerId=${data?.containerId}&listId=${data?.listId}&cx=${data?.cx}`, null)
 }
 
-module.exports.deletePublicItem = async (data) => {
+export const deletePublicItem = async (data) => {
   return this.deleteRequest(`${URLS.deletePublicItem}?containerId=${data?.containerId}&listId=${data?.listId}&cx=${data?.cx}`, data)
 }
 
@@ -69,7 +69,7 @@ export const postRequest = async (url, data) => {
   return responseJson
 }
 
-module.exports.getRequest = async(url) => {
+export const getRequest = async(url) => {
   const response = await fetch(
     url,
     { credentials: "include" }
@@ -98,7 +98,7 @@ module.exports.getRequest = async(url) => {
   return responseJson
 }
 
-module.exports.deleteRequest = async (url, data) => {
+export const deleteRequest = async (url, data) => {
   const options = {
     method: "DELETE", // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
