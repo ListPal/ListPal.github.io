@@ -1,20 +1,20 @@
-export const mobileWidth = "500px";
+module.exports.mobileWidth = "500px";
 
-export const PUBLIC_CODE = "leknlkenwknlknklwncfc1edi7e2y97ry48032ujdede";
+module.exports.PUBLIC_CODE = "leknlkenwknlknklwncfc1edi7e2y97ry48032ujdede";
 
-export const groceryContainerTypes = {
+module.exports.groceryContainerTypes = {
   todo: "TODO",
   whishlist: "WISHLIST",
   grocery: "GROCERY",
 };
 
-export const groceryListScopes = {
+module.exports.groceryListScopes = {
   public: "PUBLIC",
   private: "PRIVATE",
   restricted: "RESTRICTED",
 };
 
-export const borderColors = [
+module.exports.borderColors = [
   "#7b9370",
   "#F0B323",
   "#30C8C9",
@@ -27,7 +27,7 @@ export const borderColors = [
   "#FF6969",
 ];
 
-export const dialogues = {
+module.exports.dialogues = {
   closed: null,
   addItem: "addItem",
   deleteList: "deleteList",
@@ -40,7 +40,7 @@ export const dialogues = {
   addQuickItem: "addQuickItem",
 };
 
-export const colors = {
+module.exports.colors = {
   landingPageColors: {
     low: "#eaf6e4",
     midLow: "#d7ebce",
@@ -58,7 +58,7 @@ export const colors = {
   },
 };
 
-export const dialogueObject = {
+module.exports.dialogueObject = {
   addItem: {
     header: "Add Item",
     textFields: [
@@ -202,31 +202,31 @@ export const dialogueObject = {
 };
 
 // Engines
-const engine = "http://Joses-MacBook-Pro-3.local:8080";
-export const URLS = {
+const devEngineUrl1 = "http://Joses-MacBook-Pro-3.local:8080";
+module.exports.URLS = {
   // Authentication endpoins
-  registerUri: `${engine}/api/v1/auth/register`,
-  loginUri: `${engine}/api/v1/auth/authenticate`,
-  logout: `${engine}/api/v1/auth/logout`,
-  getUserInfo: `${engine}/api/v1/auth/get-user-info`,
+  registerUri: `${devEngineUrl1}/api/v1/auth/register`,
+  loginUri: `${devEngineUrl1}/api/v1/auth/authenticate`,
+  logout: `${devEngineUrl1}/api/v1/auth/logout`,
+  getUserInfo: `${devEngineUrl1}/api/v1/auth/get-user-info`,
 
   // Authorized endpoints
-  getListsUri: `${engine}/server/get-lists`,
-  createListUri: `${engine}/server/create-list`,
-  createContainerUri: `${engine}/server/create-container`,
-  checkSession: `${engine}/api/v1/auth/check-login-status`,
-  deleteList: `${engine}/server/delete-list`,
-  updateListNameUri: `${engine}/server/update-list-name`,
-  getListUri: `${engine}/server/get-list`,
-  createListItemUri: `${engine}/server/create-list-item`,
-  updateListItemUri: `${engine}/server/update-list-item`,
-  checkListItemUri: `${engine}/server/check-list-items`,
-  deleteItem: `${engine}/server/delete-list-item`,
+  getListsUri: `${devEngineUrl1}/server/get-lists`,
+  createListUri: `${devEngineUrl1}/server/create-list`,
+  createContainerUri: `${devEngineUrl1}/server/create-container`,
+  checkSession: `${devEngineUrl1}/api/v1/auth/check-login-status`,
+  deleteList: `${devEngineUrl1}/server/delete-list`,
+  updateListNameUri: `${devEngineUrl1}/server/update-list-name`,
+  getListUri: `${devEngineUrl1}/server/get-list`,
+  createListItemUri: `${devEngineUrl1}/server/create-list-item`,
+  updateListItemUri: `${devEngineUrl1}/server/update-list-item`,
+  checkListItemUri: `${devEngineUrl1}/server/check-list-items`,
+  deleteItem: `${devEngineUrl1}/server/delete-list-item`,
 
   // Public endpoints
-  createPublicListItemUri: `${engine}/public/shared/create-list-item`,
-  getPublicListUri: `${engine}/public/shared/get-list`,
-  updatePublicListItemUri: `${engine}/public/shared/update-list-item`,
-  checkPublicListItemUri: `${engine}/public/shared/check-list-items`,
-  deletePublicItem: `${engine}/public/shared/delete-list-item`,
+  createPublicListItemUri: `${devEngineUrl1}/public/shared/create-list-item`,
+  getPublicListUri: `${devEngineUrl1}/public/shared/get-list`,
+  updatePublicListItemUri: `${devEngineUrl1}/public/shared/update-list-item`,
+  checkPublicListItemUri: `${devEngineUrl1}/public/shared/check-list-items`,
+  deletePublicItem: `${devEngineUrl1}/public/shared/delete-list-item`,
 };
