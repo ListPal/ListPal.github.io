@@ -1,34 +1,34 @@
 const { URLS } = require("../enum")
 
-export const logout = async () => {
+module.exports.logout = async () => {
   return this.postRequest(URLS.logout, null)
 }
 
-export const checkSession = async () => {
+module.exports.checkSession = async () => {
   return this.postRequest(URLS.checkSession, null)
 }
 
-export const deleteItem = async (data) => {
+module.exports.deleteItem = async (data) => {
   return this.deleteRequest(URLS.deleteItem, data)
 }
 
-export const deleteList = async (data) => {
+module.exports.deleteList = async (data) => {
   return this.deleteRequest(URLS.deleteList, data)
 }
 
-export const getAllLists = async (data) => {
+module.exports.getAllLists = async (data) => {
   return this.getRequest(`${URLS.getListsUri}?userId=${data.userId}&containerId=${data.containerId}`, null)
 }
 
-export const getPublicList = async (data) => {
+module.exports.getPublicList = async (data) => {
   return this.getRequest(`${URLS.getPublicListUri}?containerId=${data?.containerId}&listId=${data?.listId}&cx=${data?.cx}`, null)
 }
 
-export const deletePublicItem = async (data) => {
+module.exports.deletePublicItem = async (data) => {
   return this.deleteRequest(`${URLS.deletePublicItem}?containerId=${data?.containerId}&listId=${data?.listId}&cx=${data?.cx}`, data)
 }
 
-export const postRequest = async (url, data) => {
+module.exports.postRequest = async (url, data) => {
   const options = {
     method: "POST", // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
@@ -69,7 +69,7 @@ export const postRequest = async (url, data) => {
   return responseJson
 }
 
-export const getRequest = async(url) => {
+module.exports.getRequest = async(url) => {
   const response = await fetch(
     url,
     { credentials: "include" }
@@ -98,7 +98,7 @@ export const getRequest = async(url) => {
   return responseJson
 }
 
-export const deleteRequest = async (url, data) => {
+module.exports.deleteRequest = async (url, data) => {
   const options = {
     method: "DELETE", // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
