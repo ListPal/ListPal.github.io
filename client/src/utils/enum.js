@@ -202,31 +202,31 @@ module.exports.dialogueObject = {
 };
 
 // Engines
-const devEngineUrl1 = "http://Joses-MacBook-Pro-3.local:8080";
+const engine = "http://Joses-MacBook-Pro-3.local:8080";
 module.exports.URLS = {
   // Authentication endpoins
-  registerUri: `${devEngineUrl1}/api/v1/auth/register`,
-  loginUri: `${devEngineUrl1}/api/v1/auth/authenticate`,
-  logout: `${devEngineUrl1}/api/v1/auth/logout`,
-  getUserInfo: `${devEngineUrl1}/api/v1/auth/get-user-info`,
+  registerUri: `${engine}/api/v1/auth/register`,
+  loginUri: `${engine}/api/v1/auth/authenticate`,
+  logout: `${engine}/api/v1/auth/logout`,
+  getUserInfo: `${engine}/api/v1/auth/get-user-info`,
 
   // Authorized endpoints
-  getListsUri: `${devEngineUrl1}/server/get-lists`,
-  createListUri: `${devEngineUrl1}/server/create-list`,
-  createContainerUri: `${devEngineUrl1}/server/create-container`,
-  checkSession: `${devEngineUrl1}/api/v1/auth/check-login-status`,
-  deleteList: `${devEngineUrl1}/server/delete-list`,
-  updateListNameUri: `${devEngineUrl1}/server/update-list-name`,
-  getListUri: `${devEngineUrl1}/server/get-list`,
-  createListItemUri: `${devEngineUrl1}/server/create-list-item`,
-  updateListItemUri: `${devEngineUrl1}/server/update-list-item`,
-  checkListItemUri: `${devEngineUrl1}/server/check-list-items`,
-  deleteItem: `${devEngineUrl1}/server/delete-list-item`,
+  getListsUri: `${engine}/server/get-lists`,
+  createListUri: `${engine}/server/create-list`,
+  createContainerUri: `${engine}/server/create-container`,
+  checkSession: `${engine}/api/v1/auth/check-login-status`,
+  deleteList: `${engine}/server/delete-list`,
+  updateListNameUri: `${engine}/server/update-list-name`,
+  getListUri: `${engine}/server/get-list`,
+  createListItemUri: `${engine}/server/create-list-item`,
+  updateListItemUri: `${engine}/server/update-list-item`,
+  checkListItemUri: `${engine}/server/check-list-items`,
+  deleteItem: `${engine}/server/delete-list-item`,
 
   // Public endpoints
-  createPublicListItemUri: `${devEngineUrl1}/public/shared/create-list-item`,
-  getPublicListUri: `${devEngineUrl1}/public/shared/get-list`,
-  updatePublicListItemUri: `${devEngineUrl1}/public/shared/update-list-item`,
-  checkPublicListItemUri: `${devEngineUrl1}/public/shared/check-list-items`,
-  deletePublicItem: `${devEngineUrl1}/public/shared/delete-list-item`,
+  createPublicListItemUri: `${engine}/public/shared/create-list-item`,
+  getPublicListUri: `${engine}/public/shared/get-list`,
+  updatePublicListItemUri: `${engine}/public/shared/update-list-item`,
+  checkPublicListItemUri: `${engine}/public/shared/check-list-items`,
+  deletePublicItem: `${engine}/public/shared/delete-list-item`,
 };
