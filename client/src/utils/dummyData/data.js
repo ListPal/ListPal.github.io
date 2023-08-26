@@ -1,4 +1,4 @@
-module.exports.itemsObj = [
+export const itemsObj = [
     {
       "name": "Eggs",
       "category": "Misc",
