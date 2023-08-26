@@ -28,7 +28,7 @@ module.exports.deletePublicItem = async (data) => {
   return this.deleteRequest(`${URLS.deletePublicItem}?containerId=${data?.containerId}&listId=${data?.listId}&cx=${data?.cx}`, data)
 }
 
-module.exports.postRequest = async (url, data) => {
+const postRequest = async (url, data) => {
   const options = {
     method: "POST", // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
@@ -141,3 +141,4 @@ module.exports.deleteRequest = async (url, data) => {
   return responseJson
 }
 
+module.exports = {postRequest}
