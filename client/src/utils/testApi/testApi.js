@@ -1,43 +1,34 @@
-const { URLS } = require("../enum");
+const { URLS } = require("../enum")
 
-export const logout = async () => {
-  return this.postRequest(URLS.logout, null);
-};
+module.exports.logout = async () => {
+  return this.postRequest(URLS.logout, null)
+}
 
-export const checkSession = async () => {
-  return this.postRequest(URLS.checkSession, null);
-};
+module.exports.checkSession = async () => {
+  return this.postRequest(URLS.checkSession, null)
+}
 
-export const deleteItem = async (data) => {
-  return this.deleteRequest(URLS.deleteItem, data);
-};
+module.exports.deleteItem = async (data) => {
+  return this.deleteRequest(URLS.deleteItem, data)
+}
 
-export const deleteList = async (data) => {
-  return this.deleteRequest(URLS.deleteList, data);
-};
+module.exports.deleteList = async (data) => {
+  return this.deleteRequest(URLS.deleteList, data)
+}
 
-export const getAllLists = async (data) => {
-  return this.getRequest(
-    `${URLS.getListsUri}?userId=${data.userId}&containerId=${data.containerId}`,
-    null
-  );
-};
+module.exports.getAllLists = async (data) => {
+  return this.getRequest(`${URLS.getListsUri}?userId=${data.userId}&containerId=${data.containerId}`, null)
+}
 
-export const getPublicList = async (data) => {
-  return this.getRequest(
-    `${URLS.getPublicListUri}?containerId=${data?.containerId}&listId=${data?.listId}&cx=${data?.cx}`,
-    null
-  );
-};
+module.exports.getPublicList = async (data) => {
+  return this.getRequest(`${URLS.getPublicListUri}?containerId=${data?.containerId}&listId=${data?.listId}&cx=${data?.cx}`, null)
+}
 
-export const deletePublicItem = async (data) => {
-  return this.deleteRequest(
-    `${URLS.deletePublicItem}?containerId=${data?.containerId}&listId=${data?.listId}&cx=${data?.cx}`,
-    data
-  );
-};
+module.exports.deletePublicItem = async (data) => {
+  return this.deleteRequest(`${URLS.deletePublicItem}?containerId=${data?.containerId}&listId=${data?.listId}&cx=${data?.cx}`, data)
+}
 
-const postRequest = async (url, data) => {
+module.exports.postRequest = async (url, data) => {
   const options = {
     method: "POST", // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
@@ -51,60 +42,63 @@ const postRequest = async (url, data) => {
     redirect: "follow", // manual, *follow, error
     referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
     body: JSON.stringify(data), // body data type must match "Content-Type" header
-  };
+  }
 
   const response = await fetch(url, options).catch((e) => {
-    return { status: e.status };
-  });
+    return { status: e.status }
+  })
 
   if (response.status !== 200) {
     if (response.status === 403) {
       return {
         status: response.status,
         message: "Unauthorized user",
-      };
+      }
     } else {
       return {
         status: 500,
         message: "Error connecting to server",
-      };
+      }
     }
   }
 
-  const responseJson = await response.json(); // parses JSON response into native JavaScript
+  const responseJson = await response.json() // parses JSON response into native JavaScript
 
   // console.log(responseJson)
 
-  return responseJson;
-};
+  return responseJson
+}
 
-export const getRequest = async (url) => {
-  const response = await fetch(url, { credentials: "include" }).catch((e) => {
-    return { status: e.status };
-  });
+module.exports.getRequest = async(url) => {
+  const response = await fetch(
+    url,
+    { credentials: "include" }
+  ).catch((e) => {
+    return { status: e.status }
+  })
 
   if (response.status !== 200) {
     if (response.status === 403) {
       return {
         status: response.status,
         message: "Unauthorized user",
-      };
+      }
     } else {
       return {
         status: 500,
         message: "Error connecting to server",
-      };
+      }
     }
   }
 
-  const responseJson = await response.json(); // parses JSON response into native JavaScript
+  const responseJson = await response.json() // parses JSON response into native JavaScript
 
   // console.log(responseJson)
 
-  return responseJson;
-};
+  return responseJson
+}
 
-export const deleteRequest = async (url, data) => {
+module.exports.deleteRequest = async (url, data) => {
   const options = {
     method: "DELETE", // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
@@ -117,31 +111,33 @@ export const deleteRequest = async (url, data) => {
     redirect: "follow", // manual, *follow, error
     referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
     body: JSON.stringify(data), // body data type must match "Content-Type" header
-  };
+  }
 
-  const response = await fetch(url, options).catch((e) => {
-    return { status: e.status };
-  });
+  const response = await fetch(
+    url,
+    options
+  ).catch((e) => {
+    return { status: e.status }
+  })
 
   if (response.status !== 200) {
     if (response.status === 403) {
       return {
         status: response.status,
         message: "Unauthorized user",
-      };
+      }
     } else {
       return {
         status: 500,
         message: "Error connecting to server",
-      };
+      }
     }
   }
 
-  const responseJson = await response.json(); // parses JSON response into native JavaScript
+  const responseJson = await response.json() // parses JSON response into native JavaScript
 
   // console.log(responseJson)
 
-  return responseJson;
-};
+  return responseJson
+}
 
-export {postRequest, }
