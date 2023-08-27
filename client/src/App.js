@@ -1,7 +1,7 @@
 import "./App.css";
 import LandingPage from "./components/LandingPage/LandingPage";
 import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
-import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import GroceryListPage from "./components/GroceryListPage/GroceryListPage";
 import { useState } from "react";
 import Login from "./components/Login/Login";
