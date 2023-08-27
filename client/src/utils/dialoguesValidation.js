@@ -1,4 +1,4 @@
-module.exports.dialogueValidation = (input) => {
+const dialogueValidation = (input) => {
   if (input?.length < 1) 
   return {
     validated: false,
@@ -17,3 +17,5 @@ module.exports.dialogueValidation = (input) => {
     message: ''
   }
 }
+
+export {dialogueValidation}

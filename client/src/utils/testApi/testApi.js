@@ -1,31 +1,31 @@
 const { URLS } = require("../enum")
 
-module.exports.logout = async () => {
-  return this.postRequest(URLS.logout, null)
+const logout = async () => {
+  return postRequest(URLS.logout, null)
 }
 
-module.exports.checkSession = async () => {
-  return this.postRequest(URLS.checkSession, null)
+const checkSession = async () => {
+  return postRequest(URLS.checkSession, null)
 }
 
-module.exports.deleteItem = async (data) => {
-  return this.deleteRequest(URLS.deleteItem, data)
+const deleteItem = async (data) => {
+  return deleteRequest(URLS.deleteItem, data)
 }
 
-module.exports.deleteList = async (data) => {
-  return this.deleteRequest(URLS.deleteList, data)
+const deleteList = async (data) => {
+  return deleteRequest(URLS.deleteList, data)
 }
 
-module.exports.getAllLists = async (data) => {
-  return this.getRequest(`${URLS.getListsUri}?userId=${data.userId}&containerId=${data.containerId}`, null)
+const getAllLists = async (data) => {
+  return getRequest(`${URLS.getListsUri}?userId=${data.userId}&containerId=${data.containerId}`, null)
 }
 
-module.exports.getPublicList = async (data) => {
-  return this.getRequest(`${URLS.getPublicListUri}?containerId=${data?.containerId}&listId=${data?.listId}&cx=${data?.cx}`, null)
+const getPublicList = async (data) => {
+  return getRequest(`${URLS.getPublicListUri}?containerId=${data?.containerId}&listId=${data?.listId}&cx=${data?.cx}`, null)
 }
 
-module.exports.deletePublicItem = async (data) => {
-  return this.deleteRequest(`${URLS.deletePublicItem}?containerId=${data?.containerId}&listId=${data?.listId}&cx=${data?.cx}`, data)
+const deletePublicItem = async (data) => {
+  return deleteRequest(`${URLS.deletePublicItem}?containerId=${data?.containerId}&listId=${data?.listId}&cx=${data?.cx}`, data)
 }
 
 const postRequest = async (url, data) => {
@@ -69,7 +69,7 @@ const postRequest = async (url, data) => {
   return responseJson
 }
 
-module.exports.getRequest = async(url) => {
+const getRequest = async(url) => {
   const response = await fetch(
     url,
     { credentials: "include" }
@@ -98,7 +98,7 @@ module.exports.getRequest = async(url) => {
   return responseJson
 }
 
-module.exports.deleteRequest = async (url, data) => {
+const deleteRequest = async (url, data) => {
   const options = {
     method: "DELETE", // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
@@ -141,4 +141,4 @@ module.exports.deleteRequest = async (url, data) => {
   return responseJson
 }
 
-module.exports = {postRequest}
+export {logout, checkSession, deleteItem, deleteList, getAllLists, getPublicList, deletePublicItem, postRequest}

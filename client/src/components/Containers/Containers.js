@@ -4,7 +4,7 @@ import Container from "./Container/Container";
 import { truncateString } from "../../utils/helper";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { URLS, mobileWidth } from "../../utils/enum";
-import { postRequest, logout } from "../../utils/testApi/testApi";
+import { postRequest, logout } from "../../utils/testApi/testApi.js";
 import { useNavigate } from "react-router-dom";
 import grocery from "../../utils/assets/grocery.jpg";
 import shop from "../../utils/assets/shop.jpg";

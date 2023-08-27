@@ -13,9 +13,8 @@ const validationErrors = {
   phone_length: 'phone_length',
 }
 
-module.exports.validationErrors = validationErrors
 
-module.exports.usernamePasswordValidation = async (username, password) => {
+const usernamePasswordValidation = async (username, password) => {
   if (
     username.length < MIN_USERNAME_LENGTH ||
     password.length < MIN_PASSWORD_LENGTH
@@ -54,7 +53,7 @@ module.exports.usernamePasswordValidation = async (username, password) => {
   }
 }
 
-module.exports.registrationValidation = async (registration) => {
+const registrationValidation = async (registration) => {
   // validate name/lastname
   if (registration.name === '') {
     console.log('Empty name/lastname')
@@ -137,7 +136,7 @@ module.exports.registrationValidation = async (registration) => {
     }
   }
 
-  if (registration.phone.length != 10) {
+  if (registration.phone.length !== 10) {
     console.log('invalid phone length')
     return {
       error: validationErrors.phone_length,
@@ -170,3 +169,5 @@ module.exports.registrationValidation = async (registration) => {
     validated: true,
   }
 }
+
+export {validationErrors, usernamePasswordValidation, registrationValidation}

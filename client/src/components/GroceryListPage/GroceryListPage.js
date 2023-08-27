@@ -13,7 +13,7 @@ import {
   postRequest,
   checkSession,
   getAllLists,
-} from "../../utils/testApi/testApi";
+} from "../../utils/testApi/testApi.js";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useLocation, useNavigate } from "react-router-dom";

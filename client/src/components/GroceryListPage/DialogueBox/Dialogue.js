@@ -21,7 +21,7 @@ import {
   deleteList,
   deleteItem,
   deletePublicItem,
-} from '../../../utils/testApi/testApi'
+} from '../../../utils/testApi/testApi.js'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { dialogueValidation } from '../../../utils/dialoguesValidation'
 
