@@ -13,9 +13,8 @@ const validationErrors = {
   phone_length: 'phone_length',
 }
 
-module.exports.validationErrors = validationErrors
 
-module.exports.usernamePasswordValidation = async (username, password) => {
+const usernamePasswordValidation = async (username, password) => {
   if (
     username.length < MIN_USERNAME_LENGTH ||
     password.length < MIN_PASSWORD_LENGTH
@@ -26,8 +25,8 @@ module.exports.usernamePasswordValidation = async (username, password) => {
       validated: false,
     }
   }
-  
-  if (// eslint-disable-next-line
+
+  if (
     !/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])(?=.*\d)[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/.test(
       password
     )
@@ -54,7 +53,7 @@ module.exports.usernamePasswordValidation = async (username, password) => {
   }
 }
 
-module.exports.registrationValidation = async (registration) => {
+const registrationValidation = async (registration) => {
   // validate name/lastname
   if (registration.name === '') {
     console.log('Empty name/lastname')
@@ -123,7 +122,7 @@ module.exports.registrationValidation = async (registration) => {
     }
   }
 
-  if (// eslint-disable-next-line
+  if (
     !/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])(?=.*\d)[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/.test(
       registration.password
     )
@@ -154,7 +153,6 @@ module.exports.registrationValidation = async (registration) => {
       message: 'Exceeded phone number length.',
     }
   }
-  
   if (!/^\d{10}$/.test(registration.phone)) {
     console.log('Invalid phone')
     return {
@@ -170,3 +168,5 @@ module.exports.registrationValidation = async (registration) => {
     validated: true,
   }
 }
+
+export {validationErrors, usernamePasswordValidation, registrationValidation}
