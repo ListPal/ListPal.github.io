@@ -214,8 +214,7 @@ module.exports.dialogueObject = {
 };
 
 // Engines
-// const engine = "https://katespracticespace.com";
-const engine = "http://joses-macbook-pro-3.local:8080";
+const engine = "https://katespracticespace.com";
 module.exports.URLS = {
   // Authentication endpoins
   registerUri: `${engine}/api/v1/auth/register`,
