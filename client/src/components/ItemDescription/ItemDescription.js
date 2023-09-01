@@ -5,15 +5,21 @@ import {
   Backdrop,
   Paper,
   Stack,
-//   Button,
-//   TextField,
+  //   Button,
+  //   TextField,
 } from "@mui/material";
 
-const ItemDescription = ({borderColor, item, openItemDescription, setOpenItemDescription, setIsActive}) => {
+const ItemDescription = ({
+  borderColor,
+  item,
+  openItemDescription,
+  setOpenItemDescription,
+  setIsActive,
+}) => {
   const handleClose = () => {
-    setOpenItemDescription(false)
-    setIsActive(false)
-  }
+    setOpenItemDescription(false);
+    setIsActive(false);
+  };
   return (
     <Modal
       aria-labelledby="transition-modal-title"
@@ -45,10 +51,6 @@ const ItemDescription = ({borderColor, item, openItemDescription, setOpenItemDes
           }}
         >
           <Stack>
-            <Typography align="left" variant="h5">
-              {" "}
-              Item Details
-            </Typography>
             <Typography align="left" variant="button">
               {item?.name}
             </Typography>
