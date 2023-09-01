@@ -39,11 +39,10 @@ function GroceryListPage({
   setUser,
 }) {
   // States
-  const [loading, setLoading] = useState(false);
   const [alertMessage, setAlertMessage] = useState(null);
   const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
   const [groupedByIdentifier, setGroupedByIdentifier] = useState([]);
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Other globals
   let groupedByCurrentIdx = 0; // global var that keeps the idx count to decide when to display the identifier in the lis item
@@ -51,7 +50,7 @@ function GroceryListPage({
   const listName = location.state?.listName;
   const listId = location.state?.listId;
   const containerId = location.state?.containerId;
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(location.search);
   const isPublicUrl = urlParams.get("cx") && true;
   const navigate = useNavigate();
 
@@ -94,7 +93,6 @@ function GroceryListPage({
   const handleFetchList = async (isListPublic = false) => {
     // Reset states
     setActiveList(null);
-
     const data = {
       containerId: isListPublic ? urlParams.get("containerId") : containerId,
       listId: isListPublic ? urlParams.get("listId") : listId,
@@ -124,7 +122,7 @@ function GroceryListPage({
       setTimeout(() => setAlertMessage(null), 3000);
     } else if (res?.status === 403) {
       console.log(res);
-      navigate("/login");
+      navigate("/");
     } else {
       console.log(res);
       setAlertMessage("Apologies. Something went wrong on out end.");
@@ -133,7 +131,6 @@ function GroceryListPage({
   };
 
   const handleSync = async () => {
-    setButtonDisabled(true);
     setLoading(true);
     const res = await handleCheckItems(isPublicUrl);
     if (res?.status === 200) {
@@ -141,7 +138,7 @@ function GroceryListPage({
     } else if (res?.status === 400) {
       console.log(res);
     } else if (res?.status === 403) {
-      navigate("/login");
+      navigate("/");
       console.log(res);
     } else {
       setAlertMessage("Apologies. Something went wrong on our end.");
@@ -149,7 +146,6 @@ function GroceryListPage({
       console.log(res);
     }
     setLoading(false);
-    setButtonDisabled(false);
   };
 
   const handleBorderColor = (identifier) => {
@@ -171,12 +167,13 @@ function GroceryListPage({
   const handleFetchUserInfo = async () => {
     // Get user info if the user object is null
     if (!user) {
+      console.log('fetching user and container...')
       const userInfoResponse = await checkSession();
       if (userInfoResponse?.status === 200) {
         setUser(userInfoResponse?.user);
         return userInfoResponse;
       } else if (userInfoResponse?.status === 403) {
-        navigate("/login");
+        navigate("/");
         console.log(userInfoResponse);
       } else {
         navigate(-1);
@@ -194,7 +191,7 @@ function GroceryListPage({
         return containerInfoResponse;
       } else if (containerInfoResponse?.status === 403) {
         console.log(containerInfoResponse);
-        navigate("/login");
+        navigate("/");
       } else if (containerInfoResponse?.status !== 200) {
         console.log(containerInfoResponse);
         navigate(-1);
@@ -237,7 +234,7 @@ function GroceryListPage({
   };
 
   useEffect(() => {
-    // Fetch user if not a public list
+    // Fetch user and container if not a public list
     if (!isPublicUrl && !user) {
       handleAtomicUserAndContainerFetch();
     }
@@ -300,7 +297,7 @@ function GroceryListPage({
               <ArrowBackIosIcon sx={{ color: "white" }} />
             </IconButton>
 
-            <IconButton disabled={buttonDisabled} onClick={handleSync}>
+            <IconButton disabled={loading} onClick={handleSync}>
               <SyncIcon sx={{ color: "white" }} />
             </IconButton>
 

@@ -7,6 +7,7 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
+  FormHelperText,
 } from '@mui/material'
 import Slide from '@mui/material/Slide'
 import AddIcon from '@mui/icons-material/Add'
@@ -20,14 +21,14 @@ import { styled } from '@mui/material/styles'
 import { postRequest } from '../../../utils/testApi/testApi'
 import CloseIcon from '@mui/icons-material/Close'
 import IconButton from '@mui/material/IconButton'
-import { URLS, colors, groceryContainerTypes, mobileWidth } from '../../../utils/enum'
-import { useNavigate } from 'react-router-dom'
+import { URLS, colors, groceryContainerTypes, mobileWidth, newListFormHelperText, radioGroupHelperTextObject } from '../../../utils/enum'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { dialogueValidation } from '../../../utils/dialoguesValidation'
 
 
 function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer }) {
   // States
-  const [scope, setScope] = useState('PRIVATE')
+  const [listScope, setListScope] = useState('PRIVATE')
   const [severity, setSeverity] = useState('info')
   const [alertMessage, setAlertMessage] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -35,10 +36,21 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer 
   
   // Other locals
   const listNameRef = useRef(null)
-  const urlParams = new URLSearchParams(window.location.search)
+  const location = useLocation();
+  const urlParams = new URLSearchParams(location.search)
   const navigate = useNavigate()
   
   // Handlers
+  const handleRadioGroupHelperText = () => {
+    if (listScope === radioGroupHelperTextObject.public) {
+      return 'Everyone with a link to this list has access'
+    } else if (listScope === radioGroupHelperTextObject.private) {
+      return 'Only you have access to this list'
+    } else if (listScope === radioGroupHelperTextObject.restricted) {
+      return 'You, and people you add have access to this list.'
+    }
+  }
+
   const handleInputVlidation = async (input) => {
     return dialogueValidation(input)
   }
@@ -59,8 +71,20 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer 
     hideAlert()
   }
 
-  const handleScopeSelection = (event) => {
-    setScope(event.target.value)
+  const handleListScopeSelection = (event) => {
+    setListScope(event.target.value)
+  }
+
+  const handleHelperText = () => {
+    if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
+      return newListFormHelperText.shopping
+    } else if (activeContainer?.containerType === groceryContainerTypes.grocery) {
+      return newListFormHelperText.grocery
+    } else if (activeContainer?.containerType === groceryContainerTypes.todo) {
+      return newListFormHelperText.todo
+    } else {
+      return ""
+    }
   }
   
   const handleThemeColor = () => {
@@ -92,7 +116,7 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer 
       userId: user?.id,
       containerId: urlParams.get("containerId"),
       listName: name,
-      scope: scope,
+      scope: listScope,
     }
 
     const res = await postRequest(URLS.createListUri, data)
@@ -103,7 +127,7 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer 
       })
       closeDialogueWithoutDelay()
     } else if (res?.status === 403) {
-      navigate('/login')
+      navigate('/')
     } else {
       showAlert('error', "Sorry, couldn't create the list")
       closeDialogueWithoutDelay()
@@ -208,7 +232,7 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer 
                   helperText={
                     errorMessage
                       ? errorMessage
-                      : "(e.g. Walmart List, Nick's Party List, etc.)"
+                      : handleHelperText()
                   }
                   inputProps={{
                     maxLength: 30,
@@ -220,13 +244,14 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer 
                   aria-labelledby='demo-radio-buttons-group-label'
                   defaultValue='PRIVATE'
                   name='radio-buttons-group'
-                  onChange={handleScopeSelection}
+                  onChange={handleListScopeSelection}
 
                 >
                   <FormControlLabel
                     value='PUBLIC'
-                    control={<Radio sx={{color: handleThemeColor()}}/>}
+                    control={<Radio sx={{color: handleThemeColor()}} />}
                     label='Public'
+                    
                   />
                   <FormControlLabel
                     value='PRIVATE'
@@ -238,6 +263,7 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer 
                     control={<Radio sx={{color: handleThemeColor()}}/>}
                     label='Restricted'
                   />
+                  <FormHelperText>{handleRadioGroupHelperText()}</FormHelperText>
                 </RadioGroup>
               </FormControl>
               <Button

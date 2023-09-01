@@ -2,16 +2,20 @@ import {
   PUBLIC_CODE,
   groceryContainerTypes,
   mobileWidth,
+  radioGroupHelperTextObject,
 } from "../../../utils/enum";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import MoreOptions from "./MoreOptions/MoreOptions";
 import { Button, Stack, Typography, Slide, Alert } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { useState } from "react";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import PublicIcon from "@mui/icons-material/Public";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 // IMGS
 import groceryWallpaper from "../../../utils/assets/card1.jpg";
 import shoppingWallpaper from "../../../utils/assets/shoppingWallpaper.jpg";
@@ -24,7 +28,8 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
 
   // Other locals
   const navigate = useNavigate();
-  const urlParams = new URLSearchParams(window.location.search);
+  const location = useLocation();
+  const urlParams = new URLSearchParams(location.search);
 
   // Handlers
   const handleShowAlert = (severity, message) => {
@@ -57,6 +62,18 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
     }
   };
 
+  const handleDeriveListScopeIcon = () => {
+    if (listInfo?.scope === radioGroupHelperTextObject.private) {
+      return <LockOutlinedIcon sx={{fontSize: '15px'}} />;
+    } else if (listInfo?.scope === radioGroupHelperTextObject.public) {
+      return <PublicIcon sx={{fontSize: '15px'}} />;
+    } else if (listInfo?.scope === radioGroupHelperTextObject.public) {
+      return <AdminPanelSettingsIcon sx={{fontSize: '15px'}} />;
+    } else {
+      return "";
+    }
+  };
+
   const handleDeriveWallpaper = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
       return groceryWallpaper;
@@ -73,6 +90,7 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
       <Grid item>
         <Paper
           sx={{
+            paddingBottom:4,
             maxWidth: mobileWidth,
             borderRadius: 0,
             height: "60vmin",
@@ -82,11 +100,21 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
           }}
         >
           <Stack
+            sx={{ width: "100%", justifyContent: "space-between" }}
+            direction={"row"}
+          >
+            <span style={{ width: "10px" }} />
+            <MoreOptions
+              listInfo={listInfo}
+              activeContainer={activeContainer}
+              setActiveContainer={setActiveContainer}
+            />
+          </Stack>
+
+          <Stack
             direction={"column"}
             sx={{
-              justifyContent: "space-around",
               alignItems: "flex-start",
-              padding: "8px",
             }}
             spacing={2}
           >
@@ -104,44 +132,35 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
             </Slide>
             <div
               className="background-pic"
+              onClick={handleNavigate}
               style={{
                 display: "flex",
                 flexDirection: "column",
                 marginLeft: "calc(2.5%)",
-
                 backgroundImage: `url(${handleDeriveWallpaper()})`,
                 backgroundSize: "cover",
                 width: "95%",
                 height: 150,
                 borderRadius: "5px",
-                justifyContent: "space-between",
+                justifyContent: "center",
                 alignItems: "center",
               }}
             >
-              <Stack
-                sx={{ width: "100%", justifyContent: "space-between" }}
-                direction={"row"}
-              >
-                <span style={{ width: "10px" }} />
-                <MoreOptions
-                  listInfo={listInfo}
-                  activeContainer={activeContainer}
-                  setActiveContainer={setActiveContainer}
-                />
-              </Stack>
-
               <Typography
                 padding={1}
                 sx={{
+                  display: "flex",
                   zIndex: 1,
                   border: "1px solid #4B5563",
-                  // fontSize: ,
                   color: "#4B5563",
                   backdropFilter: "blur(5px)",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
                 variant="overline"
               >
                 {listInfo?.listName ? listInfo?.listName : "New List"}
+                {handleDeriveListScopeIcon()}
               </Typography>
 
               <span style={{ height: "20%" }} />

@@ -42,14 +42,14 @@ const Containers = ({
     if (res.status === 200) {
       setActiveList({ groceryListItems: [] });
       setActiveContainer({ collapsedLists: [] });
-      navigate("/login");
+      navigate("/");
     } else {
       console.log("Error logging out: " + res?.status);
     }
   };
 
   useEffect(() => {
-    if (!user) navigate("/login");
+    if (!user) navigate("/");
     else setActiveContainer({ collapsedLists: [] });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -118,7 +118,7 @@ const Containers = ({
 
         <Grid item>
           {user &&
-            ["Shopping List", "Grocery List", "To-do List"].map((e, i) => {
+            ["Shopping Lists", "Grocery Lists", "To-do Lists"].map((e, i) => {
               return (
                 <Container
                   key={i}

@@ -1,7 +1,7 @@
 import "./App.css";
 import LandingPage from "./components/LandingPage/LandingPage";
 import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Route, Routes, HashRouter } from "react-router-dom";
 import GroceryListPage from "./components/GroceryListPage/GroceryListPage";
 import { useState } from "react";
 import Login from "./components/Login/Login";
@@ -16,7 +16,7 @@ function App() {
   
   return (
     <div className="App">
-      <BrowserRouter>
+      <HashRouter>
         <ScrollToTop />
         <Routes>
           <Route
@@ -33,7 +33,7 @@ function App() {
             }
           />
           <Route
-            path="/login"
+            path="/"
             element={
               <Login
                 user={user}
@@ -85,7 +85,7 @@ function App() {
           />
           <Route path="/quick-list" element={<QuickList />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </div>
   );
 }

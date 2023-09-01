@@ -44,10 +44,11 @@ function Dialogue({
   const [errorMessage, setErrorMessage] = useState(null)
 
   // Other Locals
-  const urlParams = new URLSearchParams(window.location.search)
   const location = useLocation()
-  const textFieldRef = useRef(null)
   const navigate = useNavigate()
+  const textFieldRef = useRef(null)
+  const urlParams = new URLSearchParams(location.search)
+
 
   // Handlers
   const handleInputValidation = async (input) => {
@@ -133,7 +134,7 @@ function Dialogue({
       showAlert('success', 'item added')
       closeDialogueWithoutDelay()
     } else if (res?.status === 403) {
-      // navigate('/login') TODO:
+      // navigate('/') TODO:
     } else {
       showAlert('error', "Whoops!. Couldn't add item.")
       closeDialogueWithDelay()
@@ -185,7 +186,7 @@ function Dialogue({
       setActiveList({ ...activeList, groceryListItems: updatedItems })
       closeDialogueWithoutDelay()
     } else if (res?.status === 403) {
-      // navigate('/login') TODO:
+      // navigate('/') TODO:
     } else {
       showAlert('error', "Something went wrong. Couldn't update the item.")
       closeDialogueWithDelay()
@@ -222,7 +223,7 @@ function Dialogue({
       setActiveList({ ...activeList, groceryListItems: previousItems })
       closeDialogueWithoutDelay()
     } else if (res?.status === 403) {
-      navigate('/login')
+      navigate('/')
     } else {
       showAlert('error', 'Apologies. Something went wrong on our end.')
       closeDialogueWithDelay()

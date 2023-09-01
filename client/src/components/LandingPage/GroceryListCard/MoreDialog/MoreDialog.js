@@ -1,19 +1,19 @@
-import { Alert, Button, Typography } from '@mui/material'
-import { useState, useRef } from 'react'
-import Slide from '@mui/material/Slide'
-import Backdrop from '@mui/material/Backdrop'
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
-import Modal from '@mui/material/Modal'
-import Fade from '@mui/material/Fade'
-import { styled } from '@mui/material/styles'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
-import { dialogues, dialogueObject, URLS } from '../../../../utils/enum'
-import { deleteList, postRequest } from '../../../../utils/testApi/testApi'
-import { useNavigate } from 'react-router-dom'
-import { dialogueValidation } from '../../../../utils/dialoguesValidation'
+import { Alert, Button, Typography } from "@mui/material";
+import { useState, useRef } from "react";
+import Slide from "@mui/material/Slide";
+import Backdrop from "@mui/material/Backdrop";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Modal from "@mui/material/Modal";
+import Fade from "@mui/material/Fade";
+import { styled } from "@mui/material/styles";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { dialogues, dialogueObject, URLS } from "../../../../utils/enum";
+import { deleteList, postRequest } from "../../../../utils/testApi/testApi";
+import { useLocation, useNavigate } from "react-router-dom";
+import { dialogueValidation } from "../../../../utils/dialoguesValidation";
 
 const MoreDialog = ({
   listName,
@@ -24,29 +24,30 @@ const MoreDialog = ({
   setOpenDialogue,
 }) => {
   // States
-  const [severity, setSeverity] = useState('info')
-  const [alertMessage, setAlertMessage] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [severity, setSeverity] = useState("info");
+  const [alertMessage, setAlertMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [loading, setLoading] = useState(false);
   // Other locals
-  const textFieldRef = useRef(null)
-  const urlParams = new URLSearchParams(window.location.search)
-  const navigate = useNavigate()
+  const textFieldRef = useRef(null);
+  const location = useLocation();
+  const urlParams = new URLSearchParams(location.search);
+  const navigate = useNavigate();
 
   const handleInputValidation = async (input) => {
-    return dialogueValidation(input)
-  }
+    return dialogueValidation(input);
+  };
 
   const handleEditListName = async (newListName) => {
-    setLoading(true)
-    setErrorMessage(null)
-    setAlertMessage(null)
+    setLoading(true);
+    setErrorMessage(null);
+    setAlertMessage(null);
     // Validate input
-    const validation = await handleInputValidation(newListName)
+    const validation = await handleInputValidation(newListName);
     if (!validation?.validated) {
-      setErrorMessage(validation?.message)
-      setLoading(false)
-      return
+      setErrorMessage(validation?.message);
+      setLoading(false);
+      return;
     }
 
     // Send to db
@@ -54,126 +55,126 @@ const MoreDialog = ({
       containerId: urlParams.get("containerId"),
       listId: listId,
       listName: newListName,
-    }
+    };
 
-    const res = await postRequest(URLS.updateListNameUri, data)
+    const res = await postRequest(URLS.updateListNameUri, data);
     // Update state hierarchy
     if (res?.status === 200) {
       const updatedLists = activeContainer?.collapsedLists.map((list) => {
         if (list.id === listId) {
-          return { ...list, listName: newListName }
+          return { ...list, listName: newListName };
         } else {
-          return list
+          return list;
         }
-      })
-      setActiveContainer(container => {
-        return {...container, collapsedLists: updatedLists}
-      })
-      closeDialogueWithoutDelay()
+      });
+      setActiveContainer((container) => {
+        return { ...container, collapsedLists: updatedLists };
+      });
+      closeDialogueWithoutDelay();
     } else if (res?.status === 403) {
-      navigate('/login')
+      navigate("/");
     } else {
-      showAlert('error', 'Whoops!. Something went wrong in our end')
-      closeDialogueWithDelay()
+      showAlert("error", "Whoops!. Something went wrong in our end");
+      closeDialogueWithDelay();
     }
-  }
+  };
 
   const handleDeleteList = async () => {
-    setLoading(true)
-    setErrorMessage(null)
-    setAlertMessage(null)
+    setLoading(true);
+    setErrorMessage(null);
+    setAlertMessage(null);
     // validate that user entered acknowledgement
     if (textFieldRef.current.value !== listName) {
       showAlert(
-        'error',
+        "error",
         "Couldn't delete the list.\nMake sure you enter the name of the list correctly (case sensitive)"
-      )
+      );
       setTimeout(() => {
-        hideAlert()
-        setLoading(false)
-      }, 3000)
-      return
+        hideAlert();
+        setLoading(false);
+      }, 3000);
+      return;
     }
 
     // Send to db
     const data = {
       containerId: urlParams.get("containerId"),
       listId: listId,
-    }
+    };
 
-
-    const res = await deleteList(data)
+    const res = await deleteList(data);
     // Update state hierarchy
     if (res?.status === 200) {
-      const updatedLists = activeContainer?.collapsedLists.filter((list) => list.id !== listId)
-      setActiveContainer(container => {
-        return {...container, collapsedLists: updatedLists}
-      })
-      closeDialogueWithoutDelay()
+      const updatedLists = activeContainer?.collapsedLists.filter(
+        (list) => list.id !== listId
+      );
+      setActiveContainer((container) => {
+        return { ...container, collapsedLists: updatedLists };
+      });
+      closeDialogueWithoutDelay();
     } else if (res?.status === 403) {
-      navigate('/login')
+      navigate("/");
     } else {
-      showAlert('error', 'Whoops!. Something went wrong in our end')
-      closeDialogueWithDelay()
+      showAlert("error", "Whoops!. Something went wrong in our end");
+      closeDialogueWithDelay();
     }
-  }
+  };
 
   // TODO:
-  //eslint-disable-next-line 
+  //eslint-disable-next-line
   const handleAddPeople = () => {
-    setLoading(true)
+    setLoading(true);
     //
-    setLoading(false)
-  }
-
+    setLoading(false);
+  };
 
   const handleRedirectToVenmo = () => {
     // Redirect to p2p provider
-    setLoading(true)
-    window.open('venmo://accounts')
-    setLoading(false)
-  }
+    setLoading(true);
+    window.open("venmo://accounts");
+    setLoading(false);
+  };
 
   const handleRedirectToCashapp = () => {
     // Redirect to p2p provider
-    setLoading(true)
-    window.open('cashme://')
-    setLoading(false)
-  }
+    setLoading(true);
+    window.open("cashme://");
+    setLoading(false);
+  };
 
-  const actions = [handleRedirectToVenmo, handleRedirectToCashapp]
+  const actions = [handleRedirectToVenmo, handleRedirectToCashapp];
 
   const deriveCorrectIcon = (header) => {
-    if (header === 'deleteIcon') return <DeleteIcon />
-    if (header === 'editIcon') return <EditIcon />
-  }
+    if (header === "deleteIcon") return <DeleteIcon />;
+    if (header === "editIcon") return <EditIcon />;
+  };
 
   const showAlert = (severity, msg) => {
-    setSeverity(severity)
-    setAlertMessage(msg)
-  }
+    setSeverity(severity);
+    setAlertMessage(msg);
+  };
 
   const hideAlert = () => {
-    setAlertMessage(null)
-  }
+    setAlertMessage(null);
+  };
 
   const closeDialogueWithDelay = () => {
     setTimeout(() => {
-      setOpenDialogue(dialogues.closed)
-      setTimeout(() => setLoading(false), 1000)
-    }, 1000)
-  }
+      setOpenDialogue(dialogues.closed);
+      setTimeout(() => setLoading(false), 1000);
+    }, 1000);
+  };
 
   const closeDialogueWithoutDelay = () => {
-    setOpenDialogue(dialogues.closed)
-    setLoading(false)
-  }
+    setOpenDialogue(dialogues.closed);
+    setLoading(false);
+  };
 
   return (
     <>
       <Modal
-        aria-labelledby='transition-modal-title'
-        aria-describedby='transition-modal-description'
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
         open={openDialogue !== dialogues.closed}
         onClose={
           alertMessage ? closeDialogueWithDelay : closeDialogueWithoutDelay
@@ -189,115 +190,122 @@ const MoreDialog = ({
         <Fade in={openDialogue !== dialogues.closed}>
           <Paper
             sx={{
-              position: 'absolute',
-              top: '25%',
-              left: '50%',
-              transform: 'translate(-50%)',
+              position: "absolute",
+              top: "25%",
+              left: "50%",
+              transform: "translate(-50%)",
               borderRadius: 5,
-              width: '80vw',
+              width: "80vw",
               height: 300,
             }}
           >
             <Slide
-              className='alert-slide'
+              className="alert-slide"
               in={alertMessage && true}
               sx={{
-                position: 'absolute',
+                position: "absolute",
                 top: -100,
                 left: -15,
-                width: '80vw',
+                width: "80vw",
               }}
             >
               <Alert severity={severity}>{alertMessage}</Alert>
             </Slide>
 
             <Stack
-              direction={'column'}
+              direction={"column"}
               spacing={2}
               sx={{
-                height: '100%',
-                alignItems: 'center',
-                justifyContent: 'center',
+                height: "100%",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <Typography variant='h4'>
+              <Typography variant="h4">
                 {dialogueObject[openDialogue]?.header}
               </Typography>
 
-              {dialogueObject[openDialogue]?.textFields.map((textField, i) => (
-                !textField.hidden && <CssTextField
-                  error={errorMessage && true}
-                  required
-                  key={`${textField.text}${i}`}
-                  inputRef={textFieldRef}
-                  id='custom-css-outlined-input'
-                  label={textField.text}
-                  helperText={errorMessage ? errorMessage : textField.helperText}
-                  defaultValue={textField.defaultValue ? listName : null}
-                  sx={{ width: '80%' }}
-                  inputProps={{
-                    maxLength: 30,
-                    required: true,
-                  }}
-                />
-              ))}
+              {dialogueObject[openDialogue]?.textFields.map(
+                (textField, i) =>
+                  !textField.hidden && (
+                    <CssTextField
+                      error={errorMessage && true}
+                      required
+                      key={`${textField.text}${i}`}
+                      inputRef={textFieldRef}
+                      id="custom-css-outlined-input"
+                      label={textField.text}
+                      helperText={
+                        errorMessage ? errorMessage : textField.helperText
+                      }
+                      defaultValue={textField.defaultValue ? listName : null}
+                      sx={{ width: "80%" }}
+                      inputProps={{
+                        maxLength: 30,
+                        required: true,
+                      }}
+                    />
+                  )
+              )}
               {dialogueObject[openDialogue]?.button.map((button, i) => {
-                return (<Button
-                  fullWidth
-                  key={i}
-                  type='submit'
-                  disabled={loading}
-                  endIcon={deriveCorrectIcon(button.icon)}
-                  onClick={() => {
-                    if (openDialogue === dialogues.deleteList) {
-                      handleDeleteList()
-                    } else if (openDialogue === dialogues.editList) {
-                      handleEditListName(textFieldRef.current.value)
-                    } else if (openDialogue === dialogues.sendMoney) {
-                      actions[i]()
-                    }
-                  }}
-                  sx={{
-                    width: '80%',
-                    height: 50,
-                    '&:hover': {
+                return (
+                  <Button
+                    fullWidth
+                    key={i}
+                    type="submit"
+                    disabled={loading}
+                    endIcon={deriveCorrectIcon(button.icon)}
+                    onClick={() => {
+                      if (openDialogue === dialogues.deleteList) {
+                        handleDeleteList();
+                      } else if (openDialogue === dialogues.editList) {
+                        handleEditListName(textFieldRef.current.value);
+                      } else if (openDialogue === dialogues.sendMoney) {
+                        actions[i]();
+                      }
+                    }}
+                    sx={{
+                      width: "80%",
+                      height: 50,
+                      "&:hover": {
+                        background: button.color,
+                      },
                       background: button.color,
-                    },
-                    background: button.color,
-                    borderRadius: 0,
-                    color: button.textColor,
-                  }}
-                >
-                  {button.text}
-                </Button>)
+                      borderRadius: 0,
+                      color: button.textColor,
+                    }}
+                  >
+                    {button.text}
+                  </Button>
+                );
               })}
             </Stack>
           </Paper>
         </Fade>
       </Modal>
     </>
-  )
-}
+  );
+};
 
 const CssTextField = styled(TextField)({
-  '& label.Mui-focused': {
-    color: '#A0AAB4',
+  "& label.Mui-focused": {
+    color: "#A0AAB4",
   },
-  '& .MuiInput-underline:after': {
-    borderBottomColor: 'black',
+  "& .MuiInput-underline:after": {
+    borderBottomColor: "black",
   },
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': {
-      border: '2px solid black',
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      border: "2px solid black",
       borderRadius: 0,
     },
-    '&:hover fieldset': {
-      borderColor: 'black',
+    "&:hover fieldset": {
+      borderColor: "black",
     },
-    '&.Mui-focused fieldset': {
-      borderColor: 'black',
+    "&.Mui-focused fieldset": {
+      borderColor: "black",
     },
   },
-})
+});
 
-export default MoreDialog
+export default MoreDialog;

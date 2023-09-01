@@ -16,7 +16,7 @@ import AddIcon from "@mui/icons-material/Add";
 import GroceryListCard from "./GroceryListCard/GroceryListCard";
 import NewListForm from "./NewListForm/NewListForm";
 import { mobileWidth } from "../../utils/enum";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { truncateString } from "../../utils/helper";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -36,14 +36,14 @@ const LandingPage = ({
   setActiveContainer,
 }) => {
   // States
-  const [loading, setLoading] = useState(false);
   const [alertMessage, setAlertMessage] = useState(null);
   const [severity, setSeverity] = useState("info");
   const [newListFormOpen, setNewListFormOpen] = useState(false);
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [loading, setLoading] = useState(false);
   // Other locals
   const navigate = useNavigate();
-  const urlParams = new URLSearchParams(window.location.search);
+  const location = useLocation()
+  const urlParams = new URLSearchParams(location.search);
 
   // Handlers
   const showAlert = (severity, message) => {
@@ -63,18 +63,18 @@ const LandingPage = ({
   };
 
   const handleLogout = async () => {
-    setButtonDisabled(true);
+    setLoading(true);
     if (activeList?.groceryListItems.length > 0) {
       // save checked items
       const checkResponse = await checkItems();
       if (checkResponse?.status === 403) {
-        navigate("/login");
+        navigate("/");
       } else if (checkResponse?.status !== 200) {
         showAlert(
           "error",
           "Apologies. Somehing went wrong on our end. Please refresh the page and try again."
         );
-        setButtonDisabled(false);
+        setLoading(false);
         return;
       }
     }
@@ -85,14 +85,14 @@ const LandingPage = ({
       setUser(null);
       setActiveContainer({ collapsedLists: [] });
       setActiveList({ groceryListItems: [] });
-      navigate("/login");
+      navigate("/");
     } else {
       showAlert(
         "error",
         "Apologies. Failed log you out. Please refresh the page and try again."
       );
     }
-    setButtonDisabled(false);
+    setLoading(false);
   };
 
   const getAllList = async () => {
@@ -101,7 +101,7 @@ const LandingPage = ({
     let userInfoResponse = { user: user };
     if (!userInfoResponse?.user) {
       userInfoResponse = await checkSession();
-      if (userInfoResponse?.status !== 200) navigate("/login");
+      if (userInfoResponse?.status !== 200) navigate("/");
       setUser(userInfoResponse?.user);
     }
 
@@ -117,7 +117,8 @@ const LandingPage = ({
         showAlert("info", "No lists yet to display. Create your first list 🥳");
       else showAlert("info", null);
     } else if (res?.status === 403) {
-      navigate("/login");
+      console.log(res);
+      navigate("/");
     } else if (res?.status === 400) {
       console.log("Make sure you are completing all the required fields");
     } else {
@@ -164,6 +165,7 @@ const LandingPage = ({
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
       return shop;
     }
+    return grocery // TODO: error image
   };
 
   useEffect(() => {
@@ -242,7 +244,7 @@ const LandingPage = ({
                   </Typography>
 
                   <Button
-                    disabled={buttonDisabled}
+                    disabled={loading}
                     size="small"
                     endIcon={<LogoutIcon />}
                     onClick={() => {
@@ -352,14 +354,6 @@ const LandingPage = ({
               setActiveContainer={setActiveContainer}
               listInfo={e}
               key={i}
-              severity={severity}
-              setSeverity={setSeverity}
-              alertMessage={alertMessage}
-              setAlertMessage={setAlertMessage}
-              activeList={activeList}
-              setActiveList={setActiveList}
-              loading={loading}
-              setLoading={setLoading}
             />
           ))}
       </Grid>
@@ -389,12 +383,6 @@ const LandingPage = ({
         user={user}
         open={newListFormOpen}
         setOpen={setNewListFormOpen}
-        alertMessage={alertMessage}
-        setAlertMessage={setAlertMessage}
-        loading={loading}
-        setLoading={setLoading}
-        severity={severity}
-        setSeverity={setSeverity}
       />
     </>
   );

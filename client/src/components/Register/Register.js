@@ -1,4 +1,3 @@
-import { useState, useRef } from 'react'
 import {
   Button,
   Typography,
@@ -7,41 +6,41 @@ import {
   Stack,
   TextField,
   Divider,
-} from '@mui/material'
-import { postRequest, logout } from '../../utils/testApi/testApi'
-import { URLS, mobileWidth } from '../../utils/enum'
-import { useNavigate } from 'react-router-dom'
+} from "@mui/material";
 import {
   registrationValidation,
   validationErrors,
-} from '../../utils/inputValidation'
+} from "../../utils/inputValidation";
+import { useState, useRef } from "react";
+import { postRequest, logout } from "../../utils/testApi/testApi";
+import { URLS, mobileWidth } from "../../utils/enum";
+import { useNavigate } from "react-router-dom";
 
 const Register = ({ setUser, setActiveList }) => {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [buttonDisabled, setButtonDisabled] = useState(false)
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [validation, setValidation] = useState({
     validated: true,
-    message: '',
-  })
+    message: "",
+  });
 
-  const nameRef = useRef(null)
-  const lastnameRef = useRef(null)
-  const usernameRef = useRef(null)
-  const passwordRef = useRef(null)
-  const phoneRef = useRef(null)
-  const navigate = useNavigate()
+  const nameRef = useRef(null);
+  const lastnameRef = useRef(null);
+  const usernameRef = useRef(null);
+  const passwordRef = useRef(null);
+  const phoneRef = useRef(null);
+  const navigate = useNavigate();
 
   const handleDuplicatedAccountError = async () => {
     return {
       error: validationErrors.email_regex,
-      message: 'A user already exists with this email',
+      message: "A user already exists with this email",
       validated: false,
-    }
-  }
+    };
+  };
 
   const handleRegister = async (name, lastName, username, password, phone) => {
-    setButtonDisabled(true)
+    setLoading(true);
     const data = {
       name: name,
       lastName: lastName,
@@ -49,65 +48,64 @@ const Register = ({ setUser, setActiveList }) => {
       username: username,
       email: username,
       password: password,
-    }
+    };
 
     // Validate regisration input on client side
-    const valid = await registrationValidation(data)
+    const valid = await registrationValidation(data);
     if (!valid?.validated) {
-      setValidation(valid)
-      setError(valid?.error)
-      setButtonDisabled(false)
-      return
+      setValidation(valid);
+      setError(valid?.error);
+      setLoading(false);
+      return;
     }
 
     // Reset validation
-    setError(null)
-    setActiveList({ groceryListItems: [] })
+    setError(null);
+    setActiveList({ groceryListItems: [] });
     setValidation({
       validated: true,
-      message: '',
+      message: "",
       error: null,
-    })
+    });
 
     // Attempt to log user out if necessary
-    setLoading(true)
-    const loggedOut = await logout()
+    setLoading(true);
+    const loggedOut = await logout();
     if (loggedOut?.status === 200) {
       // logged out successfully, attempt to register new account
-      const res = await postRequest(URLS.registerUri, data)
-      setLoading(false)
+      const res = await postRequest(URLS.registerUri, data);
       if (res?.status === 200) {
-        setUser(res?.user)
-        navigate(`/containers`)
+        setUser(res?.user);
+        navigate(`/containers`);
       } else if (res?.status === 403) {
-        console.log(res)
-        const duplicatedResponse = await handleDuplicatedAccountError()
-        setValidation(duplicatedResponse)
-        setError(duplicatedResponse?.error)
+        console.log(res);
+        const duplicatedResponse = await handleDuplicatedAccountError();
+        setValidation(duplicatedResponse);
+        setError(duplicatedResponse?.error);
       } else {
-        console.log('Error on the server when registering user')
+        console.log("Error on the server when registering user");
       }
     } else if (loggedOut?.status === 403) {
-      console.lof(loggedOut)
-      setValidation({ error: null, validated: true, message: null })
+      console.lof(loggedOut);
+      setValidation({ error: null, validated: true, message: null });
     } else {
-      console.lof(loggedOut)
-      console.log('Server error when trying to log out user')
+      console.lof(loggedOut);
+      console.log("Server error when trying to log out user");
     }
-    setButtonDisabled(false)
-  }
+    setLoading(false);
+  };
 
   return (
     <>
       {loading && (
         <>
           <CircularProgress
-            color={'success'}
+            color={"success"}
             sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '45%',
-              transform: 'translate(-50%, 0)',
+              position: "absolute",
+              top: "50%",
+              left: "45%",
+              transform: "translate(-50%, 0)",
               zIndex: 10,
             }}
           />
@@ -117,38 +115,38 @@ const Register = ({ setUser, setActiveList }) => {
       <Grid
         container
         sx={{
-          backgroundImage: 'linear-gradient(to top, #c1dfc4 0%, #deecdd 100%)',
+          backgroundImage: "linear-gradient(to top, #c1dfc4 0%, #deecdd 100%)",
           maxWidth: mobileWidth,
         }}
       >
         <Stack
-          direction={'column'}
+          direction={"column"}
           spacing={3}
           sx={{
-            marginTop: '10vh',
-            height: '90vh',
-            width: '100vw',
+            marginTop: "10vh",
+            height: "90vh",
+            width: "100vw",
             maxWidth: mobileWidth,
-            borderRadius: '40px 40px 0px 0px',
-            boxShadow: '-1px -1px 8px lightgray',
-            background: 'white',
-            alignItems: 'center',
+            borderRadius: "40px 40px 0px 0px",
+            boxShadow: "-1px -1px 8px lightgray",
+            background: "white",
+            alignItems: "center",
           }}
         >
-          <Typography variant='h2'>
+          <Typography variant="h2">
             Signup 🥳
-            <Divider sx={{ mt: 1, width: '90vw', maxWidth: mobileWidth, }} />
+            <Divider sx={{ mt: 1, width: "90vw", maxWidth: mobileWidth }} />
           </Typography>
 
           <TextField
             error={error === validationErrors.name ? true : false}
             helperText={error === validationErrors.name && validation?.message}
-            color='success'
+            color="success"
             required
-            id='name-input'
-            label='Name'
-            variant='filled'
-            sx={{ width: '80vw', maxWidth: mobileWidth, }}
+            id="name-input"
+            label="Name"
+            variant="filled"
+            sx={{ width: "80vw", maxWidth: mobileWidth }}
             inputRef={nameRef}
             inputProps={{
               maxLength: 20,
@@ -159,12 +157,12 @@ const Register = ({ setUser, setActiveList }) => {
             helperText={
               error === validationErrors.lastName && validation?.message
             }
-            color='success'
+            color="success"
             required
-            id='last-name-input'
-            label='Last Name'
-            variant='filled'
-            sx={{ width: '80vw', maxWidth: mobileWidth, }}
+            id="last-name-input"
+            label="Last Name"
+            variant="filled"
+            sx={{ width: "80vw", maxWidth: mobileWidth }}
             inputRef={lastnameRef}
             inputProps={{
               maxLength: 40,
@@ -179,15 +177,15 @@ const Register = ({ setUser, setActiveList }) => {
               error === validationErrors.email_regex ||
               error === validationErrors.email_length
                 ? validation?.message
-                : 'This will be your username'
+                : "This will be your username"
             }
             required
-            color='success'
-            id='username-input'
-            label='Email'
-            type='email'
-            variant='filled'
-            sx={{ width: '80vw', maxWidth: mobileWidth, }}
+            color="success"
+            id="username-input"
+            label="Email"
+            type="email"
+            variant="filled"
+            sx={{ width: "80vw", maxWidth: mobileWidth }}
             inputRef={usernameRef}
             inputProps={{
               maxLength: 100,
@@ -204,13 +202,13 @@ const Register = ({ setUser, setActiveList }) => {
               validation?.message
             }
             required
-            color='success'
-            id='password-input'
-            label='Password'
-            type='password'
-            autoComplete='current-password'
-            variant='filled'
-            sx={{ width: '80vw', maxWidth: mobileWidth, }}
+            color="success"
+            id="password-input"
+            label="Password"
+            type="password"
+            autoComplete="current-password"
+            variant="filled"
+            sx={{ width: "80vw", maxWidth: mobileWidth }}
             inputRef={passwordRef}
             inputProps={{
               maxLength: 50,
@@ -226,31 +224,31 @@ const Register = ({ setUser, setActiveList }) => {
                 error === validationErrors.phone_length) &&
               validation?.message
             }
-            color='success'
-            id='phone-mumber-input'
-            label='Phone Number'
-            type='tel'
-            variant='filled'
-            sx={{ width: '80vw', maxWidth: mobileWidth, }}
+            color="success"
+            id="phone-mumber-input"
+            label="Phone Number"
+            type="tel"
+            variant="filled"
+            sx={{ width: "80vw", maxWidth: mobileWidth }}
             inputRef={phoneRef}
             inputProps={{
               maxLength: 10,
             }}
           />
           <Button
-            disabled={buttonDisabled}
+            disabled={loading}
             sx={{
               mt: 5,
-              height: '50px',
-              width: '60vw',
+              height: "50px",
+              width: "60vw",
               maxWidth: mobileWidth,
-              background: 'black',
-              '&:hover': {
-                background: 'black',
+              background: "black",
+              "&:hover": {
+                background: "black",
                 border: `2px solid black`,
               },
             }}
-            variant='contained'
+            variant="contained"
             onClick={() =>
               handleRegister(
                 nameRef.current.value,
@@ -266,7 +264,7 @@ const Register = ({ setUser, setActiveList }) => {
         </Stack>
       </Grid>
     </>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;

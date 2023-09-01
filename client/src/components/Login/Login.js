@@ -19,18 +19,18 @@ const Login = ({ setActiveContainer, setUser }) => {
     validated: true,
     message: null,
   });
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [loading, setLoading] = useState(false);
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
   const navigate = useNavigate();
 
   const handleLogin = async (username, password) => {
-    setButtonDisabled(true);
+    setLoading(true);
     // Attempting to validate login input on the client side
     const valid = await usernamePasswordValidation(username, password);
     if (!valid.validated) {
       setValidation(valid);
-      setButtonDisabled(false);
+      setLoading(false);
       return;
     }
 
@@ -58,7 +58,7 @@ const Login = ({ setActiveContainer, setUser }) => {
         message: "Whoops! Something went wrong on our end.",
       });
     }
-    setButtonDisabled(false);
+    setLoading(false);
   };
 
   const handleCheckSession = async () => {
@@ -143,7 +143,7 @@ const Login = ({ setActiveContainer, setUser }) => {
           sx={{ width: "80vw", maxWidth: mobileWidth }}
         />
         <Button
-          disabled={buttonDisabled}
+          disabled={loading}
           variant="contained"
           onClick={() =>
             handleLogin(usernameRef.current.value, passwordRef.current.value)
@@ -164,7 +164,7 @@ const Login = ({ setActiveContainer, setUser }) => {
         </Button>
 
         <Button
-          disabled={buttonDisabled}
+          disabled={loading}
           endIcon={<ElectricBoltIcon />}
           onClick={() => navigate("/quick-list")}
           sx={{

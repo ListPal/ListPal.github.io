@@ -31,7 +31,7 @@ const QuickList = () => {
         }}
       >
         <Toolbar>
-          <IconButton size={'medium'} onClick={() => navigate('/login')}>
+          <IconButton size={'medium'} onClick={() => navigate(-1)}>
             <ArrowBackIosIcon sx={{ color: 'white' }} />
           </IconButton>
           <Typography
@@ -85,18 +85,6 @@ const QuickList = () => {
           dialogueObject={dialogueObject.addQuickItem}
         />
       )}
-
-      <ElectricBoltIcon
-        sx={{
-          fontSize: '300pt',
-          color: '#D1D5DB',
-          position: 'fixed',
-          left: '50%',
-          top: '50%',
-          transform:'translate(-50%, -50%)',
-          zIndex: '-1',
-        }}
-      />
     </div>
   )
 }

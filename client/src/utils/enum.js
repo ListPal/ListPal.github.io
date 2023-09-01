@@ -58,6 +58,18 @@ module.exports.colors = {
   },
 };
 
+module.exports.newListFormHelperText = {
+  shopping: "(e.g. Christmas Shopping List, Kate's Birthday)",
+  grocery: "(e.g. Walmart List, Kate's Birthday, Dinner Recipe)",
+  todo: "(e.g. Home Remodel Project 🏠, Work to-do List)"
+}
+
+module.exports.radioGroupHelperTextObject = {
+  private: 'PRIVATE',
+  public: 'PUBLIC',
+  restricted: 'RESTRICTED',
+}
+
 module.exports.dialogueObject = {
   addItem: {
     header: "Add Item",
@@ -66,7 +78,7 @@ module.exports.dialogueObject = {
         defaultValue: true,
         hidden: false,
         text: "Enter item name",
-        helperText: "(e.g. Eggs, bread, ice cream, etc.)",
+        helperText: "Name your grocery list item",
       },
     ],
     button: [
@@ -85,7 +97,7 @@ module.exports.dialogueObject = {
         defaultValue: true,
         hidden: false,
         text: "Rename item",
-        helperText: "",
+        helperText: "Enter a different name for your item",
       },
     ],
     button: [
@@ -104,8 +116,8 @@ module.exports.dialogueObject = {
       {
         defaultValue: true,
         hidden: false,
-        text: "Are you sure you want to delete this item?",
-        helperText: " ",
+        text: "",
+        helperText: "Are you sure you want to delete this item?",
       },
     ],
     button: [
@@ -123,7 +135,7 @@ module.exports.dialogueObject = {
       {
         defaultValue: true,
         hidden: false,
-        text: "Enter the name of the list",
+        text: "Verify the name of the list",
         helperText: "You agree to delete the list",
       },
     ],
@@ -162,7 +174,7 @@ module.exports.dialogueObject = {
         defaultValue: true,
         hidden: false,
         text: "Enter item name",
-        helperText: "(e.g. Converse, Arism shirt, etc.)",
+        helperText: "Name your list item",
       },
     ],
     button: [
@@ -202,8 +214,8 @@ module.exports.dialogueObject = {
 };
 
 // Engines
-const engine = "https://katespracticespace.com";
-// const engine = "http://ec2-3-81-62-56.compute-1.amazonaws.com:8080";
+// const engine = "https://katespracticespace.com";
+const engine = "http://joses-macbook-pro-3.local:8080";
 module.exports.URLS = {
   // Authentication endpoins
   registerUri: `${engine}/api/v1/auth/register`,

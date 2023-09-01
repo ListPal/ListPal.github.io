@@ -30,9 +30,9 @@ const QuickDialogue = ({
 
   const [alertMessage, setAlertMessage] = useState(null)
   const [severity, setSeverity] = useState('info')
-  const [buttonDisable, setButtonDisable] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
-  const [error, setError] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState(null)
+
   const textFieldRef = useRef(null)
 
   const deriveCorrectIcon = (header) => {
@@ -58,46 +58,44 @@ const QuickDialogue = ({
   const closeDialogueWithoutDelay = () => {
     setOpenDialogue(dialogues.closed)
     hideAlert()
-    setTimeout(() => setButtonDisable(false), 1000)
+    setTimeout(() => setLoading(false), 1000)
   }
 
   const handleAddItem = (itemName) => {
-    setButtonDisable(true)
-    setError(false)
+    setLoading(true)
+    setErrorMessage(null)
     // Validate input
     const valid = dialogueValidation(itemName)
     if (!valid?.validated) {
       setErrorMessage(valid?.message)
-      setError(true)
-      setButtonDisable(false)
+      setLoading(false)
       return
     }
     const duplicate = itemsArray.filter((i) => i.name === itemName)
     if (duplicate.length > 0) {
       showAlert('warning', 'Item already exists in this list.')
-      setButtonDisable(false)
+      setLoading(false)
       return
     }
     setItemsArray((items) => [...items, { name: itemName }])
     closeDialogueWithoutDelay()
-    setButtonDisable(false)
+    setLoading(false)
   }
 
   const handleEditItem = (itemName) => {
-    setButtonDisable(true)
-    setError(false)
+    setLoading(true)
+    setErrorMessage(false)
     // Validate input
     const valid = dialogueValidation(itemName)
     if (!valid?.validated) {
       setErrorMessage(valid?.message)
-      setError(true)
-      setButtonDisable(false)
+      setLoading(false)
       return
     }
     const duplicate = itemsArray.filter((i) => i.name === itemName)
     if (duplicate.length > 0) {
       showAlert('warning', 'Item already exists in this list.')
-      setButtonDisable(false)
+      setLoading(false)
       return
     }
     const update = itemsArray.map((i) => {
@@ -109,16 +107,16 @@ const QuickDialogue = ({
     })
     setItemsArray(update)
     closeDialogueWithoutDelay()
-    setButtonDisable(false)
+    setLoading(false)
   }
 
   const handleDeleteItem = (item) => {
-    setButtonDisable(true)
-    setError(false)
+    setLoading(true)
+    setErrorMessage(null)
     const update = itemsArray.filter((i) => i.name !== item?.name)
     setItemsArray(update)
     closeDialogueWithoutDelay()
-    setButtonDisable(false)
+    setLoading(false)
     setIsActive(false)
   }
 
@@ -180,13 +178,13 @@ const QuickDialogue = ({
                   autoFocus={false}
                   fullWidth
                   sx={{minWidth:'60vw'}}
-                  error={error}
+                  error={errorMessage && true}
                   required
                   key={`${e.text}${i}`}
                   inputRef={textFieldRef}
                   id='custom-css-outlined-input'
                   label={e.text}
-                  helperText={error ? errorMessage : e.helperText}
+                  helperText={errorMessage ? errorMessage : e.helperText}
                   defaultValue={deriveDefaultText()}
                   inputProps={{
                     maxLength: 40,
@@ -199,7 +197,7 @@ const QuickDialogue = ({
                 <Button
                 key={i}
                 fullWidth
-                disabled={buttonDisable}
+                disabled={loading}
                 onClick={() => {
                   if (openDialogue === dialogues.addQuickItem) {
                     handleAddItem(textFieldRef.current.value)

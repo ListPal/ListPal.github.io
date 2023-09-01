@@ -108,11 +108,15 @@ const ListItem = ({
         {identifier && (
           <Typography
             variant="body2"
+            align="left"
             sx={{
-              textAlign: "left",
-              ml: 1,
-              pb: 1,
-              // color: borderColor,
+              border: "0.5px solid lightgray",
+              backdropFilter: "blur(2px)",
+              borderRadius: 2,
+              mb:1,
+              pl:1,
+
+              
             }}
           >
             {`@${identifier}`}
