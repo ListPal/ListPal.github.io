@@ -374,7 +374,7 @@ function Dialogue({
                       }
                       defaultValue={deriveDefaultText()}
                       inputProps={{
-                        maxLength: 20,
+                        maxLength: 99,
                         required: true,
                       }}
                     />

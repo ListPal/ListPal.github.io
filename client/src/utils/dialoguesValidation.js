@@ -5,10 +5,10 @@ const dialogueValidation = (input) => {
     message: 'Filed cannot be empty.'
   }
 
-  if (input?.length > 30) {
+  if (input?.length > 100) {
     return {
       validated: false,
-      message: 'Filed cannot exceed 30 characters.'
+      message: 'Filed cannot exceed 40 characters.'
     }
   }
 

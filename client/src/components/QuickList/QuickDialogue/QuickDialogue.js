@@ -187,7 +187,7 @@ const QuickDialogue = ({
                   helperText={errorMessage ? errorMessage : e.helperText}
                   defaultValue={deriveDefaultText()}
                   inputProps={{
-                    maxLength: 40,
+                    maxLength: 100,
                     required: true,
                   }}
                 />

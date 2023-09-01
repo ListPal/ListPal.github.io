@@ -5,6 +5,7 @@ import {
   groceryListScopes,
 } from "../../../utils/enum";
 import { useState } from "react";
+import ItemDescription from "../../ItemDescription/ItemDescription";
 import Dialogue from "../DialogueBox/Dialogue";
 import EditIcon from "@mui/icons-material/Edit";
 import PaidIcon from "@mui/icons-material/Paid";
@@ -45,22 +46,30 @@ const ListItem = ({
   setUser,
 }) => {
   // States
+  const [openItemDescrition, setOpenItemDescription] = useState(false);
   const [checked, setChecked] = useState(item?.checked);
-  const [active, setActive] = useState(false);
+  const [isActive, setIsActive] = useState(false);
 
   // Handlers
+  const handleOpenItemDescription = () => {
+    if (item?.name.length > 30) {
+      setOpenItemDescription(true);
+      setIsActive(true);
+    }
+  };
+
   const handleDeriveOpenOrCloseIcon = () => {
-    if (active) {
+    if (isActive) {
       return (
         <CloseIcon
-          onClick={() => setActive(!active)}
+          onClick={() => setIsActive(!isActive)}
           sx={{ color: "black", position: "relative", right: 18 }}
         />
       );
     } else {
       return (
         <MoreHorizIcon
-          onClick={() => setActive(!active)}
+          onClick={() => setIsActive(!isActive)}
           sx={{ color: "black", position: "relative", right: 18 }}
         />
       );
@@ -113,10 +122,8 @@ const ListItem = ({
               border: "0.5px solid lightgray",
               backdropFilter: "blur(2px)",
               borderRadius: 2,
-              mb:1,
-              pl:1,
-
-              
+              mb: 1,
+              pl: 1,
             }}
           >
             {`@${identifier}`}
@@ -135,7 +142,6 @@ const ListItem = ({
           }}
         >
           <Stack
-            paddingLeft={1}
             paddingRight={1}
             direction={"row"}
             sx={{
@@ -149,19 +155,30 @@ const ListItem = ({
                 <Button disableRipple onClick={handleCheck}>
                   <CheckCircleIcon
                     fontSize="large"
-                    sx={{ color: borderColor ? borderColor : colors.landingPageColors.bold }}
+                    sx={{
+                      color: borderColor
+                        ? borderColor
+                        : colors.landingPageColors.bold,
+                    }}
                   />
                 </Button>
               ) : (
                 <Button disableRipple onClick={handleCheck}>
                   <RadioButtonUncheckedIcon
                     fontSize="large"
-                    sx={{ color: borderColor ? borderColor : colors.landingPageColors.bold }}
+                    sx={{
+                      color: borderColor
+                        ? borderColor
+                        : colors.landingPageColors.bold,
+                    }}
                   />
                 </Button>
               )}
-              <Typography variant={"button"} sx={{ paddingLeft: 2 }}>
-                {item?.name && truncateString(item?.name, 21)}
+              <Typography
+                onClick={handleOpenItemDescription}
+                variant={"button"}
+              >
+                {item?.name && truncateString(item?.name, 30)}
                 {item?.quantity > 1 && ` (${item?.quantity})`}
               </Typography>
             </Stack>
@@ -170,7 +187,7 @@ const ListItem = ({
               ariaLabel="SpeedDial"
               direction={"left"}
               icon={handleDeriveOpenOrCloseIcon()}
-              open={active}
+              open={isActive}
               sx={{
                 display: "flex",
                 height: 35,
@@ -194,7 +211,17 @@ const ListItem = ({
         </Paper>
       </Grid>
 
-      {openDialogue && active && (
+      {openItemDescrition && isActive && (
+        <ItemDescription
+          setIsActive={setIsActive}
+          item={item}
+          openItemDescription={openItemDescrition}
+          setOpenItemDescription={setOpenItemDescription}
+          borderColor={borderColor}
+        />
+      )}
+
+      {openDialogue && isActive && (
         <Dialogue
           setUser={setUser}
           user={user}

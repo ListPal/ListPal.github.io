@@ -209,6 +209,15 @@ function GroceryListPage({
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
       return shoppingWallpaper;
     }
+    if (urlParams.get("containerId").includes(groceryContainerTypes.grocery)) {
+      return groceryWallpaper;
+    }
+    if (urlParams.get("containerId").includes(groceryContainerTypes.todo)) {
+      return todoWallpaper
+    }
+    if (urlParams.get("containerId").includes(groceryContainerTypes.whishlist)) {
+      return shoppingWallpaper
+    }
     return todoWallpaper;
   };
 
@@ -220,6 +229,15 @@ function GroceryListPage({
       return colors.todoColors.bold;
     }
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
+      return colors.shoppingColors.bold;
+    }
+    if (urlParams.get("containerId").includes(groceryContainerTypes.grocery)) {
+      return colors.landingPageColors.bold;
+    }
+    if (urlParams.get("containerId").includes(groceryContainerTypes.todo)) {
+      return colors.todoColors.bold;
+    }
+    if (urlParams.get("containerId").includes(groceryContainerTypes.whishlist)) {
       return colors.shoppingColors.bold;
     }
     return "#0D324F";
