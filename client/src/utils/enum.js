@@ -192,29 +192,36 @@ module.exports.dialogueObject = {
       {
         defaultValue: false,
         hidden: true,
-        text: "Venmo or Cashapp username",
-        helperText: "This is the venmo or cashapp username of the other party",
+        text: "",
+        helperText: "",
       },
     ],
     button: [
       {
+        textColor: "#1F2937",
+        color: "#f5f5f7",
+        text: "Apple Wallet",
+        icon: "appleIcon",
+      },
+      {
         textColor: "white",
         color: "#378fe9",
-        text: "Go to Venmo",
-        icon: "sendMoneyIcon",
+        text: "Open Venmo",
+        icon: "venmoIcon",
       },
       {
         textColor: "white",
         color: "#3fb950",
-        text: "Go to Cash App",
-        icon: "sendMoneyIcon",
+        text: "Open Cash App",
+        icon: "cashappIcon",
       },
     ],
   },
 };
 
 // Engines
-const engine = "https://katespracticespace.com";
+// const engine = "https://katespracticespace.com";
+const engine = "http://joses-macbook-pro-3.local:8080";
 
 module.exports.URLS = {
   // Authentication endpoins

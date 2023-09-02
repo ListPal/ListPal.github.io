@@ -14,6 +14,7 @@ import { dialogues, dialogueObject, URLS } from "../../../../utils/enum";
 import { deleteList, postRequest } from "../../../../utils/testApi/testApi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../../utils/dialoguesValidation";
+import AppleIcon from "@mui/icons-material/Apple";
 
 const MoreDialog = ({
   listName,
@@ -128,6 +129,13 @@ const MoreDialog = ({
     setLoading(false);
   };
 
+  const handleRedirectToApple = () => {
+    // Redirect to p2p provider
+    setLoading(true);
+    window.open("wallet://cash");
+    setLoading(false);
+  };
+
   const handleRedirectToVenmo = () => {
     // Redirect to p2p provider
     setLoading(true);
@@ -142,11 +150,16 @@ const MoreDialog = ({
     setLoading(false);
   };
 
-  const actions = [handleRedirectToVenmo, handleRedirectToCashapp];
+  const actions = [
+    handleRedirectToApple,
+    handleRedirectToVenmo,
+    handleRedirectToCashapp,
+  ];
 
-  const deriveCorrectIcon = (header) => {
-    if (header === "deleteIcon") return <DeleteIcon />;
-    if (header === "editIcon") return <EditIcon />;
+  const deriveCorrectIcon = (icon) => {
+    if (icon === "deleteIcon") return <DeleteIcon />;
+    if (icon === "editIcon") return <EditIcon />;
+    if (icon === "appleIcon") return <AppleIcon />;
   };
 
   const showAlert = (severity, msg) => {
