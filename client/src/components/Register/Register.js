@@ -86,10 +86,10 @@ const Register = ({ setUser, setActiveList }) => {
         console.log("Error on the server when registering user");
       }
     } else if (loggedOut?.status === 403) {
-      console.lof(loggedOut);
+      console.log(loggedOut);
       setValidation({ error: null, validated: true, message: null });
     } else {
-      console.lof(loggedOut);
+      console.log(loggedOut);
       console.log("Server error when trying to log out user");
     }
     setLoading(false);
