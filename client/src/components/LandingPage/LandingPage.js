@@ -112,6 +112,7 @@ const LandingPage = ({
     };
     const res = await getAllLists(data);
     if (res?.status === 200) {
+      console.log(res?.body)
       setActiveContainer(res?.body);
       if (activeContainer?.collapsedLists.length === 0)
         showAlert("info", "No lists yet to display. Create your first list 🥳");

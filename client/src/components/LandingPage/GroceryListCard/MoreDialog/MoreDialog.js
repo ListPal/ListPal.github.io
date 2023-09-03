@@ -1,4 +1,12 @@
-import { Alert, Button, Typography } from "@mui/material";
+import {
+  Alert,
+  Button,
+  Typography,
+  FormControl,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+} from "@mui/material";
 import { useState, useRef } from "react";
 import Slide from "@mui/material/Slide";
 import Backdrop from "@mui/material/Backdrop";
@@ -10,7 +18,11 @@ import Fade from "@mui/material/Fade";
 import { styled } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { dialogues, dialogueObject, URLS } from "../../../../utils/enum";
+import {
+  dialogues,
+  dialogueObject,
+  URLS,
+} from "../../../../utils/enum";
 import { deleteList, postRequest } from "../../../../utils/testApi/testApi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../../utils/dialoguesValidation";
@@ -29,8 +41,9 @@ const MoreDialog = ({
   const [alertMessage, setAlertMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [listScope, setListScope] = useState("PRIVATE");
   // Other locals
-  const textFieldRef = useRef(null);
+  const listNameRef = useRef(null);
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
   const navigate = useNavigate();
@@ -39,7 +52,11 @@ const MoreDialog = ({
     return dialogueValidation(input);
   };
 
-  const handleEditListName = async (newListName) => {
+  const handleListScopeSelection = (event) => {
+    setListScope(event.target.value);
+  };
+
+  const handleEditListOptions = async (newListName, listScope) => {
     setLoading(true);
     setErrorMessage(null);
     setAlertMessage(null);
@@ -56,6 +73,7 @@ const MoreDialog = ({
       containerId: urlParams.get("containerId"),
       listId: listId,
       listName: newListName,
+      scope: listScope,
     };
 
     const res = await postRequest(URLS.updateListNameUri, data);
@@ -63,7 +81,7 @@ const MoreDialog = ({
     if (res?.status === 200) {
       const updatedLists = activeContainer?.collapsedLists.map((list) => {
         if (list.id === listId) {
-          return { ...list, listName: newListName };
+          return { ...list, listName: newListName, scope: listScope };
         } else {
           return list;
         }
@@ -85,7 +103,7 @@ const MoreDialog = ({
     setErrorMessage(null);
     setAlertMessage(null);
     // validate that user entered acknowledgement
-    if (textFieldRef.current.value !== listName) {
+    if (listNameRef.current.value !== listName) {
       showAlert(
         "error",
         "Couldn't delete the list.\nMake sure you enter the name of the list correctly (case sensitive)"
@@ -208,8 +226,9 @@ const MoreDialog = ({
               left: "50%",
               transform: "translate(-50%)",
               borderRadius: 5,
-              width: "80vw",
-              height: 300,
+              minWidth:320,
+              minHeight: 250,
+              padding:2,
             }}
           >
             <Slide
@@ -229,37 +248,63 @@ const MoreDialog = ({
               direction={"column"}
               spacing={2}
               sx={{
-                height: "100%",
                 alignItems: "center",
-                justifyContent: "center",
               }}
             >
               <Typography variant="h4">
                 {dialogueObject[openDialogue]?.header}
               </Typography>
 
-              {dialogueObject[openDialogue]?.textFields.map(
-                (textField, i) =>
-                  !textField.hidden && (
-                    <CssTextField
-                      error={errorMessage && true}
-                      required
-                      key={`${textField.text}${i}`}
-                      inputRef={textFieldRef}
-                      id="custom-css-outlined-input"
-                      label={textField.text}
-                      helperText={
-                        errorMessage ? errorMessage : textField.helperText
-                      }
-                      defaultValue={textField.defaultValue ? listName : null}
-                      sx={{ width: "80%" }}
-                      inputProps={{
-                        maxLength: 30,
-                        required: true,
-                      }}
-                    />
-                  )
-              )}
+              <FormControl sx={{ alignItems: "center" }}>
+                {dialogueObject[openDialogue]?.textFields.map(
+                  (textField, i) =>
+                    !textField.hidden && (
+                      <CssTextField
+                        fullWidth
+                        error={errorMessage && true}
+                        required
+                        key={`${textField.text}${i}`}
+                        inputRef={listNameRef}
+                        id="custom-css-outlined-input"
+                        label={textField.text}
+                        helperText={
+                          errorMessage ? errorMessage : textField.helperText
+                        }
+                        defaultValue={textField.defaultValue ? listName : null}
+                        inputProps={{
+                          maxLength: 30,
+                          required: true,
+                        }}
+                      />
+                    )
+                )}
+
+                {openDialogue === dialogues.editList && <RadioGroup
+                  row
+                  aria-labelledby="demo-radio-buttons-group-label"
+                  defaultValue="PRIVATE"
+                  name="radio-buttons-group"
+                  onChange={handleListScopeSelection}
+                  sx={{ justifyContent: "center" }}
+                >
+                  <FormControlLabel
+                    value="PUBLIC"
+                    control={<Radio />}
+                    label="Public"
+                  />
+                  <FormControlLabel
+                    value="PRIVATE"
+                    control={<Radio />}
+                    label="Private"
+                  />
+                  <FormControlLabel
+                    value="RESTRICTED"
+                    control={<Radio />}
+                    label="Restricted"
+                  />
+                </RadioGroup>}
+              </FormControl>
+
               {dialogueObject[openDialogue]?.button.map((button, i) => {
                 return (
                   <Button
@@ -272,13 +317,13 @@ const MoreDialog = ({
                       if (openDialogue === dialogues.deleteList) {
                         handleDeleteList();
                       } else if (openDialogue === dialogues.editList) {
-                        handleEditListName(textFieldRef.current.value);
+                        handleEditListOptions(listNameRef.current.value, listScope);
                       } else if (openDialogue === dialogues.sendMoney) {
                         actions[i]();
                       }
                     }}
                     sx={{
-                      width: "80%",
+                      width: "90%",
                       height: 50,
                       "&:hover": {
                         background: button.color,

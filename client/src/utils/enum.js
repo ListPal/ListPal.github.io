@@ -149,7 +149,7 @@ module.exports.dialogueObject = {
     ],
   },
   editList: {
-    header: "Change List Name",
+    header: "Edit List",
     textFields: [
       {
         defaultValue: true,
@@ -236,7 +236,7 @@ module.exports.URLS = {
   createContainerUri: `${engine}/server/create-container`,
   checkSession: `${engine}/api/v1/auth/check-login-status`,
   deleteList: `${engine}/server/delete-list`,
-  updateListNameUri: `${engine}/server/update-list-name`,
+  updateListNameUri: `${engine}/server/update-list`,
   getListUri: `${engine}/server/get-list`,
   createListItemUri: `${engine}/server/create-list-item`,
   updateListItemUri: `${engine}/server/update-list-item`,

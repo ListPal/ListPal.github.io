@@ -14,6 +14,7 @@ import { useState, useRef } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
+import AppleIcon from "@mui/icons-material/Apple";
 import { styled } from '@mui/material/styles'
 import { URLS, dialogueObject, dialogues } from '../../../utils/enum'
 import {
@@ -59,6 +60,7 @@ function Dialogue({
     if (header === 'addIcon') return <AddIcon />
     if (header === 'deleteIcon') return <DeleteIcon />
     if (header === 'editIcon') return <EditIcon />
+    if (header === 'appleIcon') return <AppleIcon />
   }
 
   const deriveDefaultText = () => {
@@ -387,6 +389,7 @@ function Dialogue({
                     key={i}
                     fullWidth
                     disabled={loading}
+                    endIcon={deriveCorrectIcon(button.icon)}
                     onClick={() => {
                       if (openDialogue === dialogues.addItem) {
                         handleAddItem(textFieldRef.current.value, listId)
@@ -409,7 +412,6 @@ function Dialogue({
                     }}
                   >
                     {button.text}
-                    {deriveCorrectIcon(button.icon)}
                   </Button>
                 )
               })}
