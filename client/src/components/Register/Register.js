@@ -285,8 +285,8 @@ const Register = ({ setUser, setActiveList }) => {
             }
             helperText={
               (validation.error === validationErrors.phone_regex ||
-                validation.error === validationErrors.phone_length) &&
-              validation?.message
+                validation.error === validationErrors.phone_length) ?
+              validation?.message : 'We will not share your phone number.'
             }
             id="phone-mumber-input"
             label="Phone Number"

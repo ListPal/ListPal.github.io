@@ -137,7 +137,7 @@ const registrationValidation = async (registration) => {
     }
   }
 
-  if (registration.phone.length !== 10) {
+  if (registration.phone.length > 0 && registration.phone.length !== 10) {
     console.log('invalid phone length')
     return {
       error: validationErrors.phone_length,
@@ -154,7 +154,7 @@ const registrationValidation = async (registration) => {
       message: 'Exceeded phone number length.',
     }
   }
-  if (!/^\d{10}$/.test(registration.phone)) {
+  if (registration.phone.length > 0 && !/^\d{10}$/.test(registration.phone)) {
     console.log('Invalid phone')
     return {
       error: validationErrors.phone_regex,
@@ -162,7 +162,7 @@ const registrationValidation = async (registration) => {
       message: 'Invalid phone number.',
     }
   }
-  console.log('Validated')
+  console.log('Registration Validated')
   return {
     error: null,
     message: null,
