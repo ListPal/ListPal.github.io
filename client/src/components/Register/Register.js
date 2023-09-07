@@ -5,7 +5,7 @@ import {
   Grid,
   Stack,
   TextField,
-  Divider,
+  IconButton,
 } from "@mui/material";
 import {
   registrationValidation,
@@ -15,9 +15,13 @@ import { useState, useRef } from "react";
 import { postRequest, logout } from "../../utils/testApi/testApi";
 import { URLS, mobileWidth } from "../../utils/enum";
 import { useNavigate } from "react-router-dom";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 const Register = ({ setUser, setActiveList }) => {
-  const [error, setError] = useState(null);
+  const [isPasswordVisibile, setIsPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisibile, setIsConfirmPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [validation, setValidation] = useState({
     validated: true,
@@ -28,6 +32,7 @@ const Register = ({ setUser, setActiveList }) => {
   const lastnameRef = useRef(null);
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
+  const confirmPasswordRef = useRef(null);
   const phoneRef = useRef(null);
   const navigate = useNavigate();
 
@@ -37,6 +42,14 @@ const Register = ({ setUser, setActiveList }) => {
       message: "A user already exists with this email",
       validated: false,
     };
+  };
+
+  const handleEnsureCorrectPasswords = () => {
+    return passwordRef.current.value === confirmPasswordRef.current.value;
+  };
+
+  const handleDeriveVisibilityIcon = (visibilityState, setVisibilityState) => {
+    setVisibilityState(!visibilityState)
   };
 
   const handleRegister = async (name, lastName, username, password, phone) => {
@@ -54,13 +67,22 @@ const Register = ({ setUser, setActiveList }) => {
     const valid = await registrationValidation(data);
     if (!valid?.validated) {
       setValidation(valid);
-      setError(valid?.error);
+      setLoading(false);
+      return;
+    }
+
+    // Ensure passwords match
+    if (!handleEnsureCorrectPasswords()) {
+      setValidation({
+        error: validationErrors.password_mismatch,
+        validated: false,
+        message: "Passwords do not match.",
+      });
       setLoading(false);
       return;
     }
 
     // Reset validation
-    setError(null);
     setActiveList({ groceryListItems: [] });
     setValidation({
       validated: true,
@@ -81,7 +103,6 @@ const Register = ({ setUser, setActiveList }) => {
         console.log(res);
         const duplicatedResponse = await handleDuplicatedAccountError();
         setValidation(duplicatedResponse);
-        setError(duplicatedResponse?.error);
       } else {
         console.log("Error on the server when registering user");
       }
@@ -115,33 +136,46 @@ const Register = ({ setUser, setActiveList }) => {
       <Grid
         container
         sx={{
-          backgroundImage: "linear-gradient(to top, #c1dfc4 0%, #deecdd 100%)",
           maxWidth: mobileWidth,
         }}
       >
+        <div
+          style={{
+            padding: 5,
+            borderRadius: "0px 0px 40px 0px",
+            display: "flex",
+            alignItems: "center",
+            textAlign: "left",
+            width: "100vw",
+            height: "10vh",
+            background: "#1F2937",
+            background: "#1F2937",
+          }}
+        >
+          <ArrowBackIosIcon
+            sx={{ color: "white" }}
+            onClick={() => navigate("/")}
+          />
+          <Typography sx={{ color: "white" }} variant="h4">
+            Create Account
+          </Typography>
+        </div>
         <Stack
           direction={"column"}
+          pt={2}
           spacing={3}
           sx={{
-            marginTop: "10vh",
-            height: "90vh",
             width: "100vw",
             maxWidth: mobileWidth,
-            borderRadius: "40px 40px 0px 0px",
-            boxShadow: "-1px -1px 8px lightgray",
-            background: "white",
+            // boxShadow: "-1px -1px 8px lightgray",
             alignItems: "center",
           }}
         >
-          <Typography variant="h2">
-            Signup 🥳
-            <Divider sx={{ mt: 1, width: "90vw", maxWidth: mobileWidth }} />
-          </Typography>
-
           <TextField
-            error={error === validationErrors.name ? true : false}
-            helperText={error === validationErrors.name && validation?.message}
-            color="success"
+            error={validation.error === validationErrors.name}
+            helperText={
+              validation.error === validationErrors.name && validation?.message
+            }
             required
             id="name-input"
             label="Name"
@@ -153,11 +187,11 @@ const Register = ({ setUser, setActiveList }) => {
             }}
           />
           <TextField
-            error={error === validationErrors.lastName}
+            error={validation.error === validationErrors.lastName}
             helperText={
-              error === validationErrors.lastName && validation?.message
+              validation.error === validationErrors.lastName &&
+              validation?.message
             }
-            color="success"
             required
             id="last-name-input"
             label="Last Name"
@@ -170,17 +204,16 @@ const Register = ({ setUser, setActiveList }) => {
           />
           <TextField
             error={
-              error === validationErrors.email_regex ||
-              error === validationErrors.email_length
+              validation.error === validationErrors.email_regex ||
+              validation.error === validationErrors.email_length
             }
             helperText={
-              error === validationErrors.email_regex ||
-              error === validationErrors.email_length
+              validation.error === validationErrors.email_regex ||
+              validation.error === validationErrors.email_length
                 ? validation?.message
                 : "This will be your username"
             }
             required
-            color="success"
             id="username-input"
             label="Email"
             type="email"
@@ -193,19 +226,18 @@ const Register = ({ setUser, setActiveList }) => {
           />
           <TextField
             error={
-              error === validationErrors.password_regex ||
-              error === validationErrors.password_length
+              validation.error === validationErrors.password_regex ||
+              validation.error === validationErrors.password_length
             }
             helperText={
-              (error === validationErrors.password_regex ||
-                error === validationErrors.password_length) &&
+              (validation.error === validationErrors.password_regex ||
+                validation.error === validationErrors.password_length) &&
               validation?.message
             }
             required
-            color="success"
             id="password-input"
             label="Password"
-            type="password"
+            type={isPasswordVisibile ? "text" : "password"}
             autoComplete="current-password"
             variant="filled"
             sx={{ width: "80vw", maxWidth: mobileWidth }}
@@ -213,18 +245,49 @@ const Register = ({ setUser, setActiveList }) => {
             inputProps={{
               maxLength: 50,
             }}
+            InputProps={{
+              endAdornment: (
+                <IconButton size="small" onClick={() => handleDeriveVisibilityIcon(isPasswordVisibile, setIsPasswordVisible)}>
+                  {isPasswordVisibile ? <VisibilityOffIcon /> : <VisibilityIcon/> }
+                </IconButton>
+              ),
+            }}
+          />
+          <TextField
+            error={validation.error === validationErrors.password_mismatch}
+            helperText={
+              validation.error === validationErrors.password_mismatch &&
+              validation?.message
+            }
+            required
+            id="password-input2"
+            label="Confirm Password"
+            type={isConfirmPasswordVisibile ? "text" : "password"}
+            autoComplete="current-password"
+            variant="filled"
+            sx={{ width: "80vw", maxWidth: mobileWidth }}
+            inputRef={confirmPasswordRef}
+            inputProps={{
+              maxLength: 50,
+            }}
+            InputProps={{
+              endAdornment: (
+                <IconButton size="small" onClick={() => handleDeriveVisibilityIcon(isConfirmPasswordVisibile, setIsConfirmPasswordVisible)}>
+                  {isConfirmPasswordVisibile ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              ),
+            }}
           />
           <TextField
             error={
-              error === validationErrors.phone_regex ||
-              error === validationErrors.phone_length
+              validation.error === validationErrors.phone_regex ||
+              validation.error === validationErrors.phone_length
             }
             helperText={
-              (error === validationErrors.phone_regex ||
-                error === validationErrors.phone_length) &&
+              (validation.error === validationErrors.phone_regex ||
+                validation.error === validationErrors.phone_length) &&
               validation?.message
             }
-            color="success"
             id="phone-mumber-input"
             label="Phone Number"
             type="tel"
@@ -239,13 +302,14 @@ const Register = ({ setUser, setActiveList }) => {
             disabled={loading}
             sx={{
               mt: 5,
+              borderRadius: "20px 0px 20px 0px",
               height: "50px",
               width: "60vw",
               maxWidth: mobileWidth,
-              background: "black",
+              background: "#1F2937",
               "&:hover": {
-                background: "black",
-                border: `2px solid black`,
+                background: "#1F2937",
+                border: `2px solid "#1F2937`,
               },
             }}
             variant="contained"

@@ -4,6 +4,7 @@ const MIN_PASSWORD_LENGTH = 8
 const validationErrors = {
   email_length: 'email_length',
   password_length: 'password_length',
+  password_mismatch: 'password_mismatch',
   name: 'name',
   lastName: 'lastName',
   email_regex: 'email_regex',

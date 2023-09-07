@@ -149,7 +149,6 @@ const Login = ({ setActiveContainer, setUser }) => {
             handleLogin(usernameRef.current.value, passwordRef.current.value)
           }
           sx={{
-            borderRadius: "50px",
             height: "50px",
             width: "80vw",
             maxWidth: mobileWidth,
@@ -171,7 +170,7 @@ const Login = ({ setActiveContainer, setUser }) => {
             height: "50px",
             width: "80vw",
             maxWidth: mobileWidth,
-            borderRadius: "50px",
+            borderRadius:'20px 0px 20px 0px',
             background: "#1F2937",
             "&:hover": {
               background: "#1F2937",
