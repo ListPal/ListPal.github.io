@@ -324,7 +324,7 @@ function GroceryListPage({
               variant="h5"
               sx={{ color: "white", flexGrow: 1 }}
             >
-              {listName && truncateString(listName)}
+              {listName && truncateString(listName, 18)}
               {!listName && "Shared List"}
             </Typography>
 
