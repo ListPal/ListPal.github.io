@@ -149,7 +149,7 @@ function GroceryListPage({
   };
 
   const handleBorderColor = (identifier) => {
-    if (groupedByIdentifier.indexOf(identifier) === 0) {
+    if (groupedByIdentifier.indexOf(identifier) == -1 || groupedByIdentifier.indexOf(identifier) === 0) {
       return handleDeriveThemeColor();
     }
     return borderColors[groupedByIdentifier.indexOf(identifier)];

@@ -53,8 +53,8 @@ module.exports.colors = {
     bold: "#8b949e",
   },
   shoppingColors: {
-    low: "#e8f3ff",
-    bold: "#378fe9",
+    low: "#eefdff",
+    bold: "#5BC1D7",
   },
 };
 
@@ -220,7 +220,8 @@ module.exports.dialogueObject = {
 };
 
 // Engines
-const engine = "https://katespracticespace.com";
+// const engine = "https://katespracticespace.com";
+const engine = "http://joses-macbook-pro-3.local:8080";
 
 
 module.exports.URLS = {

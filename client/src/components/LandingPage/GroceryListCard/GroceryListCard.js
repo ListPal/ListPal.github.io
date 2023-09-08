@@ -144,6 +144,7 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
                 borderRadius: "5px",
                 justifyContent: "center",
                 alignItems: "center",
+                border: '0.8px solid lightgrey'
               }}
             >
               <Typography
