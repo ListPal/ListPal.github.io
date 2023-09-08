@@ -49,12 +49,12 @@ module.exports.colors = {
     banana: "#f8e3a1",
   },
   todoColors: {
-    low: "#f0f6fc",
-    bold: "#8b949e",
+    low: "#F3F4F6",
+    bold: "#9CA3AF",
   },
   shoppingColors: {
-    low: "#eefdff",
-    bold: "#5BC1D7",
+    low: "#E1F2F6",
+    bold: "#007CAD",
   },
 };
 
