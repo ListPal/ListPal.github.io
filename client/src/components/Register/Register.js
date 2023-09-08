@@ -141,13 +141,12 @@ const Register = ({ setUser, setActiveList }) => {
       >
         <div
           style={{
-            padding: 5,
+            padding: 10,
             borderRadius: "0px 0px 40px 0px",
             display: "flex",
             alignItems: "center",
             textAlign: "left",
             width: "100vw",
-            height: "10vh",
             background: "#1F2937",
             background: "#1F2937",
           }}
@@ -304,7 +303,7 @@ const Register = ({ setUser, setActiveList }) => {
               mt: 5,
               borderRadius: "20px 0px 20px 0px",
               height: "50px",
-              width: "60vw",
+              width: "80vw",
               maxWidth: mobileWidth,
               background: "#1F2937",
               "&:hover": {
