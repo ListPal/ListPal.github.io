@@ -92,7 +92,11 @@ const MoreDialog = ({
       closeDialogueWithoutDelay();
     } else if (res?.status === 403) {
       navigate("/");
+    } else if (res?.status === 401) {
+      showAlert("warning", "Cannot do this action cause you did not create this list.");
+      closeDialogueWithDelay();
     } else {
+      console.log(res)
       showAlert("error", "Whoops!. Something went wrong in our end");
       closeDialogueWithDelay();
     }
@@ -192,8 +196,8 @@ const MoreDialog = ({
   const closeDialogueWithDelay = () => {
     setTimeout(() => {
       setOpenDialogue(dialogues.closed);
-      setTimeout(() => setLoading(false), 1000);
-    }, 1000);
+      setTimeout(() => setLoading(false), 2000);
+    }, 2000);
   };
 
   const closeDialogueWithoutDelay = () => {

@@ -67,7 +67,6 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer }) => {
           </IconButton>
           <IconButton
             onClick={() => {
-              // setOpenDialogue(dialogues.editList)
               setOpenDialogue(dialogues.editList);
             }}
           >

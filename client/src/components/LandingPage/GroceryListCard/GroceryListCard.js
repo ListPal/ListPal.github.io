@@ -1,6 +1,7 @@
 import {
   PUBLIC_CODE,
   groceryContainerTypes,
+  groceryListScopes,
   mobileWidth,
   radioGroupHelperTextObject,
 } from "../../../utils/enum";
@@ -10,7 +11,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import MoreOptions from "./MoreOptions/MoreOptions";
-import { Button, Stack, Typography, Slide, Alert } from "@mui/material";
+import {
+  Button,
+  Stack,
+  Typography,
+  Slide,
+  Alert,
+  IconButton,
+} from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { useState } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -39,9 +47,9 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
   };
 
   const handleNavigate = () => {
-    if (listInfo?.scope === "PUBLIC") {
+    if (listInfo?.scope === groceryListScopes.public) {
       const data = {
-        containerId: urlParams.get("containerId"),
+        containerId: extractContainerIdFromListId(),
         listName: listInfo?.listName,
         listId: listInfo?.id,
         cx: PUBLIC_CODE,
@@ -50,9 +58,19 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
         `/list?containerId=${data.containerId}&listId=${data.listId}&cx=${data.cx}`,
         { state: data }
       );
+    } else if (listInfo?.scope === groceryListScopes.restricted) {
+      console.log(listInfo?.id.split(listInfo?.listName)[0])
+      const data = {
+        containerId: extractContainerIdFromListId(),
+        listName: listInfo?.listName,
+        listId: listInfo?.id,
+      };
+      navigate(`/list?containerId=${data.containerId}&listId=${data.listId}`, {
+        state: data,
+      });
     } else {
       const data = {
-        containerId: urlParams.get("containerId"),
+        containerId: extractContainerIdFromListId(),
         listName: listInfo?.listName,
         listId: listInfo?.id,
       };
@@ -64,11 +82,11 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
 
   const handleDeriveListScopeIcon = () => {
     if (listInfo?.scope === radioGroupHelperTextObject.private) {
-      return <LockOutlinedIcon sx={{fontSize: '15px'}} />;
+      return <LockOutlinedIcon sx={{ fontSize: "15px" }} />;
     } else if (listInfo?.scope === radioGroupHelperTextObject.public) {
-      return <PublicIcon sx={{fontSize: '15px'}} />;
+      return <PublicIcon sx={{ fontSize: "15px" }} />;
     } else if (listInfo?.scope === radioGroupHelperTextObject.public) {
-      return <AdminPanelSettingsIcon sx={{fontSize: '15px'}} />;
+      return <AdminPanelSettingsIcon sx={{ fontSize: "15px" }} />;
     } else {
       return "";
     }
@@ -85,12 +103,17 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
       return shoppingWallpaper;
     }
   };
+
+  const extractContainerIdFromListId = () => {
+    return listInfo?.id.split(listInfo?.listName)[0]
+  }
+
   return (
     <>
       <Grid item>
         <Paper
           sx={{
-            paddingBottom:4,
+            paddingBottom: 4,
             maxWidth: mobileWidth,
             borderRadius: 0,
             height: "60vmin",
@@ -144,7 +167,7 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
                 borderRadius: "5px",
                 justifyContent: "center",
                 alignItems: "center",
-                border: '0.8px solid lightgrey'
+                border: "0.8px solid lightgrey",
               }}
             >
               <Typography
@@ -171,19 +194,21 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
               direction={"row"}
               sx={{ width: "100%", justifyContent: "space-around" }}
             >
-              {listInfo?.people.length > 0 &&
-                listInfo?.people.map((e, i) => (
-                  <AvatarGroup max={4}>
+              {/* {listInfo?.people.length > 0 && (
+                <AvatarGroup>
+                  {listInfo?.people.map((e, i) => (
                     <Avatar
                       key={i}
                       sx={{ width: 40, height: 40 }}
-                      alt="Remy Sharp"
+                      alt={e.toUpperCase()}
                       src="/static/images/avatar/1.jpg"
                     />
-                  </AvatarGroup>
-                ))}
+                  ))}
+                  <IconButton>+</IconButton>
+                </AvatarGroup>
+              )} */}
 
-              {listInfo?.people.length === 0 && (
+              {
                 <Button
                   onClick={() =>
                     handleShowAlert(
@@ -202,7 +227,7 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
                 >
                   Add People to List
                 </Button>
-              )}
+              }
 
               <Button
                 onClick={handleNavigate}
