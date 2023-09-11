@@ -84,8 +84,9 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer }) => {
 
       {openDialogue && (
         <MoreDialog
-          listName={listInfo?.listName}
-          listId={listInfo?.id}
+          listInfo={listInfo}
+          // listName={listInfo?.listName}
+          // listId={listInfo?.id}
           activeContainer={activeContainer}
           setActiveContainer={setActiveContainer}
           openDialogue={openDialogue}

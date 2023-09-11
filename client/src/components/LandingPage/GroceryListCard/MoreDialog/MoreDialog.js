@@ -18,10 +18,13 @@ import Fade from "@mui/material/Fade";
 import { styled } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+
 import {
   dialogues,
   dialogueObject,
   URLS,
+  groceryListScopes,
+  messages,
 } from "../../../../utils/enum";
 import { deleteList, postRequest } from "../../../../utils/testApi/testApi";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -29,8 +32,7 @@ import { dialogueValidation } from "../../../../utils/dialoguesValidation";
 import AppleIcon from "@mui/icons-material/Apple";
 
 const MoreDialog = ({
-  listName,
-  listId,
+  listInfo,
   activeContainer,
   setActiveContainer,
   openDialogue,
@@ -41,7 +43,7 @@ const MoreDialog = ({
   const [alertMessage, setAlertMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [listScope, setListScope] = useState("PRIVATE");
+  const [listScope, setListScope] = useState(listInfo?.scope);
   // Other locals
   const listNameRef = useRef(null);
   const location = useLocation();
@@ -71,7 +73,7 @@ const MoreDialog = ({
     // Send to db
     const data = {
       containerId: urlParams.get("containerId"),
-      listId: listId,
+      listId: listInfo?.id,
       listName: newListName,
       scope: listScope,
     };
@@ -80,7 +82,7 @@ const MoreDialog = ({
     // Update state hierarchy
     if (res?.status === 200) {
       const updatedLists = activeContainer?.collapsedLists.map((list) => {
-        if (list.id === listId) {
+        if (list.id === listInfo?.id) {
           return { ...list, listName: newListName, scope: listScope };
         } else {
           return list;
@@ -93,10 +95,13 @@ const MoreDialog = ({
     } else if (res?.status === 403) {
       navigate("/");
     } else if (res?.status === 401) {
-      showAlert("warning", "Cannot do this action cause you did not create this list.");
+      showAlert(
+        "warning",
+        "Cannot do this action cause you did not create this list."
+      );
       closeDialogueWithDelay();
     } else {
-      console.log(res)
+      console.log(res);
       showAlert("error", "Whoops!. Something went wrong in our end");
       closeDialogueWithDelay();
     }
@@ -107,7 +112,7 @@ const MoreDialog = ({
     setErrorMessage(null);
     setAlertMessage(null);
     // validate that user entered acknowledgement
-    if (listNameRef.current.value !== listName) {
+    if (listNameRef.current.value !== listInfo?.listName) {
       showAlert(
         "error",
         "Couldn't delete the list.\nMake sure you enter the name of the list correctly (case sensitive)"
@@ -122,14 +127,15 @@ const MoreDialog = ({
     // Send to db
     const data = {
       containerId: urlParams.get("containerId"),
-      listId: listId,
+      scope: listInfo?.scope,
+      listId: listInfo?.id,
     };
 
     const res = await deleteList(data);
     // Update state hierarchy
     if (res?.status === 200) {
       const updatedLists = activeContainer?.collapsedLists.filter(
-        (list) => list.id !== listId
+        (list) => list.id !== listInfo?.id
       );
       setActiveContainer((container) => {
         return { ...container, collapsedLists: updatedLists };
@@ -137,8 +143,11 @@ const MoreDialog = ({
       closeDialogueWithoutDelay();
     } else if (res?.status === 403) {
       navigate("/");
+    } else if (res?.status === 401) {
+      showAlert("warning", messages.unauthorizedAction);
+      closeDialogueWithDelay();
     } else {
-      showAlert("error", "Whoops!. Something went wrong in our end");
+      showAlert("Something went wrong on our end. Couldn't delete the list.");
       closeDialogueWithDelay();
     }
   };
@@ -227,27 +236,14 @@ const MoreDialog = ({
             sx={{
               position: "absolute",
               top: "25%",
-              left: "50%",
+              left: "50vw",
               transform: "translate(-50%)",
               borderRadius: 5,
-              minWidth:320,
+              minWidth: 320,
               minHeight: 250,
-              padding:2,
+              padding: 2,
             }}
           >
-            <Slide
-              className="alert-slide"
-              in={alertMessage && true}
-              sx={{
-                position: "absolute",
-                top: -100,
-                left: -15,
-                width: "80vw",
-              }}
-            >
-              <Alert severity={severity}>{alertMessage}</Alert>
-            </Slide>
-
             <Stack
               direction={"column"}
               spacing={2}
@@ -274,7 +270,9 @@ const MoreDialog = ({
                         helperText={
                           errorMessage ? errorMessage : textField.helperText
                         }
-                        defaultValue={textField.defaultValue ? listName : null}
+                        defaultValue={
+                          textField.defaultValue ? listInfo?.listName : null
+                        }
                         inputProps={{
                           maxLength: 30,
                           required: true,
@@ -283,30 +281,32 @@ const MoreDialog = ({
                     )
                 )}
 
-                {openDialogue === dialogues.editList && <RadioGroup
-                  row
-                  aria-labelledby="demo-radio-buttons-group-label"
-                  defaultValue="PRIVATE"
-                  name="radio-buttons-group"
-                  onChange={handleListScopeSelection}
-                  sx={{ justifyContent: "center" }}
-                >
-                  <FormControlLabel
-                    value="PUBLIC"
-                    control={<Radio />}
-                    label="Public"
-                  />
-                  <FormControlLabel
-                    value="PRIVATE"
-                    control={<Radio />}
-                    label="Private"
-                  />
-                  <FormControlLabel
-                    value="RESTRICTED"
-                    control={<Radio />}
-                    label="Restricted"
-                  />
-                </RadioGroup>}
+                {openDialogue === dialogues.editList && (
+                  <RadioGroup
+                    row
+                    aria-labelledby="demo-radio-buttons-group-label"
+                    defaultValue={listInfo?.scope}
+                    name="radio-buttons-group"
+                    onChange={handleListScopeSelection}
+                    sx={{ justifyContent: "center" }}
+                  >
+                    <FormControlLabel
+                      value="PUBLIC"
+                      control={<Radio />}
+                      label="Public"
+                    />
+                    <FormControlLabel
+                      value="PRIVATE"
+                      control={<Radio />}
+                      label="Private"
+                    />
+                    <FormControlLabel
+                      value="RESTRICTED"
+                      control={<Radio />}
+                      label="Restricted"
+                    />
+                  </RadioGroup>
+                )}
               </FormControl>
 
               {dialogueObject[openDialogue]?.button.map((button, i) => {
@@ -321,7 +321,10 @@ const MoreDialog = ({
                       if (openDialogue === dialogues.deleteList) {
                         handleDeleteList();
                       } else if (openDialogue === dialogues.editList) {
-                        handleEditListOptions(listNameRef.current.value, listScope);
+                        handleEditListOptions(
+                          listNameRef.current.value,
+                          listScope
+                        );
                       } else if (openDialogue === dialogues.sendMoney) {
                         actions[i]();
                       }
@@ -342,6 +345,18 @@ const MoreDialog = ({
                 );
               })}
             </Stack>
+            <Slide
+              className="alert-slide"
+              in={alertMessage && true}
+              sx={{
+                position: "fixed",
+                top: "-25vh",
+                left: "-10%",
+                width: "100vw",
+              }}
+            >
+              <Alert severity={severity}>{alertMessage}</Alert>
+            </Slide>
           </Paper>
         </Fade>
       </Modal>

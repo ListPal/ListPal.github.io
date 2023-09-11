@@ -49,7 +49,7 @@ const postRequest = async (url, data) => {
   })
 
   if (response.status !== 200) {
-    if (response.status === 403) {
+    if (response.status === 403 || response.status === 401) {
       return {
         status: response.status,
         message: "Unauthorized user",
@@ -78,7 +78,7 @@ const getRequest = async(url) => {
   })
 
   if (response.status !== 200) {
-    if (response.status === 403) {
+    if (response.status === 403 || response.status === 401) {
       return {
         status: response.status,
         message: "Unauthorized user",
@@ -121,7 +121,7 @@ const deleteRequest = async (url, data) => {
   })
 
   if (response.status !== 200) {
-    if (response.status === 403) {
+    if (response.status === 403 || response.status === 401) {
       return {
         status: response.status,
         message: "Unauthorized user",

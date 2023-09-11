@@ -21,10 +21,14 @@ import { styled } from "@mui/material/styles";
 import { postRequest } from "../../../utils/testApi/testApi";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
+import KeyIcon from '@mui/icons-material/Key';
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import PublicIcon from "@mui/icons-material/Public";
 import {
   URLS,
   colors,
   groceryContainerTypes,
+  groceryListScopes,
   mobileWidth,
   newListFormHelperText,
   radioGroupHelperTextObject,
@@ -40,7 +44,7 @@ function NewListForm({
   activeContainer,
 }) {
   // States
-  const [listScope, setListScope] = useState("PRIVATE");
+  const [listScope, setListScope] = useState(groceryListScopes.private);
   const [severity, setSeverity] = useState("info");
   const [alertMessage, setAlertMessage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -55,11 +59,11 @@ function NewListForm({
   // Handlers
   const handleRadioGroupHelperText = () => {
     if (listScope === radioGroupHelperTextObject.public) {
-      return "Everyone with a link to this list has access";
+      return <Typography variant="subtitle4"> <PublicIcon sx={{ fontSize: "15px" }} /> Everyone with a link to this list has access</Typography>;
     } else if (listScope === radioGroupHelperTextObject.private) {
-      return "Only you have access to this list";
+      return <Typography variant="subtitle4"> <LockOutlinedIcon sx={{ fontSize: "15px" }} /> Only you have access to this list</Typography>;
     } else if (listScope === radioGroupHelperTextObject.restricted) {
-      return "You, and people you add have access to this list.";
+      return <Typography variant="subtitle4"> <KeyIcon sx={{ fontSize: "15px" }} /> You, and people you add have access to this list.</Typography>;
     }
   };
 
@@ -112,6 +116,7 @@ function NewListForm({
       return colors.landingPageColors.bold;
     }
   };
+  
   const handleCreateList = async (name) => {
     setLoading(true);
     setErrorMessage(null);

@@ -21,6 +21,7 @@ import {
 } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { useState } from "react";
+import KeyIcon from '@mui/icons-material/Key';
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PublicIcon from "@mui/icons-material/Public";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
@@ -55,28 +56,29 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
         cx: PUBLIC_CODE,
       };
       navigate(
-        `/list?containerId=${data.containerId}&listId=${data.listId}&cx=${data.cx}`,
+        `/list?containerId=${data.containerId}&listId=${data.listId}&scope=${listInfo?.scope}`,
         { state: data }
       );
     } else if (listInfo?.scope === groceryListScopes.restricted) {
-      console.log(listInfo?.id.split(listInfo?.listName)[0])
       const data = {
         containerId: extractContainerIdFromListId(),
         listName: listInfo?.listName,
         listId: listInfo?.id,
       };
-      navigate(`/list?containerId=${data.containerId}&listId=${data.listId}`, {
-        state: data,
-      });
+      navigate(
+        `/list?containerId=${data.containerId}&listId=${data.listId}&scope=${listInfo?.scope}`,
+        { state: data }
+      );
     } else {
       const data = {
         containerId: extractContainerIdFromListId(),
         listName: listInfo?.listName,
         listId: listInfo?.id,
       };
-      navigate(`/list?containerId=${data.containerId}&listId=${data.listId}`, {
-        state: data,
-      });
+      navigate(
+        `/list?containerId=${data.containerId}&listId=${data.listId}&scope=${listInfo?.scope}`,
+        { state: data }
+      );
     }
   };
 
@@ -86,7 +88,9 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
     } else if (listInfo?.scope === radioGroupHelperTextObject.public) {
       return <PublicIcon sx={{ fontSize: "15px" }} />;
     } else if (listInfo?.scope === radioGroupHelperTextObject.public) {
-      return <AdminPanelSettingsIcon sx={{ fontSize: "15px" }} />;
+      return <AdminPanelSettingsIcon sx={{ fontSize: "15px"}} />;
+    } else if (listInfo?.scope === groceryListScopes.restricted) {
+      return <KeyIcon sx={{ fontSize: "15px" }} />
     } else {
       return "";
     }
@@ -105,8 +109,8 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
   };
 
   const extractContainerIdFromListId = () => {
-    return listInfo?.id.split(listInfo?.listName)[0]
-  }
+    return listInfo?.id.split(listInfo?.listName)[0];
+  };
 
   return (
     <>

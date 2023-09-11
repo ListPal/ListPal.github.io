@@ -6,7 +6,7 @@ import {
   postRequest,
   checkSession,
 } from "../../utils/testApi/testApi";
-import { colors, groceryContainerTypes, URLS } from "../../utils/enum";
+import { colors, groceryContainerTypes, messages, URLS } from "../../utils/enum";
 import "./LandingPage.scss";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
@@ -42,7 +42,7 @@ const LandingPage = ({
   const [loading, setLoading] = useState(false);
   // Other locals
   const navigate = useNavigate();
-  const location = useLocation()
+  const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
 
   // Handlers
@@ -112,16 +112,17 @@ const LandingPage = ({
     };
     const res = await getAllLists(data);
     if (res?.status === 200) {
-      console.log(res?.body)
       setActiveContainer(res?.body);
       if (activeContainer?.collapsedLists.length === 0)
         showAlert("info", "No lists yet to display. Create your first list 🥳");
       else showAlert("info", null);
+    } else if (res?.status === 401) {
+      showAlert("warning", messages.unauthorizedAction);
     } else if (res?.status === 403) {
       console.log(res);
       navigate("/");
     } else if (res?.status === 400) {
-      console.log("Make sure you are completing all the required fields");
+      console.log(res);
     } else {
       showAlert("error", "Apologies, we are trying to fix an error.");
     }
@@ -166,7 +167,7 @@ const LandingPage = ({
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
       return shop;
     }
-    return grocery // TODO: error image
+    return grocery; // TODO: error image
   };
 
   useEffect(() => {

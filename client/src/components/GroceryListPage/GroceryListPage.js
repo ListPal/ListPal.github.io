@@ -6,6 +6,7 @@ import {
   groceryListScopes,
   mobileWidth,
   groceryContainerTypes,
+  messages,
 } from "../../utils/enum";
 import { Typography, Toolbar, Grid, AppBar, Slide, Alert } from "@mui/material";
 import {
@@ -39,19 +40,18 @@ function GroceryListPage({
   setUser,
 }) {
   // States
+  const location = useLocation();
   const [alertMessage, setAlertMessage] = useState(null);
   const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
   const [groupedByIdentifier, setGroupedByIdentifier] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [listName, setListName] = useState(location.state?.listName)
   // Other globals
   let groupedByCurrentIdx = 0; // global var that keeps the idx count to decide when to display the identifier in the lis item
-  const location = useLocation();
-  const listName = location.state?.listName;
-  const listId = location.state?.listId;
-  const containerId = location.state?.containerId;
   const urlParams = new URLSearchParams(location.search);
-  const isPublicUrl = urlParams.get("cx") && true;
+  const containerId = urlParams.get("containerId");
+  const listId = urlParams.get("listId");
+  const scope = urlParams.get("scope");
   const navigate = useNavigate();
 
   // Handlers
@@ -74,72 +74,33 @@ function GroceryListPage({
     return localItemsMap;
   };
 
-  const handleCheckItems = async (isListPublic = false) => {
+  const handleCheckItems = async () => {
     // TODO: only send if there are modified items
     const data = {
-      containerId: urlParams.get("containerId"),
-      listId: activeList?.id,
+      scope: scope,
+      containerId: containerId,
+      listId: listId,
       itemIds: activeList?.groceryListItems
         .filter((item) => item.checked)
         .map((item) => item.id),
     };
-    const uri = isListPublic
+    const uri = scope === groceryListScopes.public
       ? URLS.checkPublicListItemUri
       : URLS.checkListItemUri;
     const res = await postRequest(uri, data);
     return res;
   };
 
-  const handleFetchList = async (isListPublic = false) => {
-    // Reset states
-    setActiveList(null);
-    const data = {
-      containerId: isListPublic ? urlParams.get("containerId") : containerId,
-      listId: isListPublic ? urlParams.get("listId") : listId,
-      cx: urlParams.get("cx"),
-    };
-    setLoading(true);
-    const res = isListPublic
-      ? await getPublicList(data)
-      : await postRequest(URLS.getListUri, data);
-    setLoading(false);
-
-    // Cache it in state
-    if (res?.status === 200) {
-      // Group by items by username (Default)
-      setAlertMessage(null);
-      const activeListMap = await handleGroupByUsername(
-        res?.body?.groceryListItems
-      ); // Map: username => items
-      const responseBody = await {
-        ...res?.body,
-        groceryListItems: Array.from(activeListMap.values()).flat(),
-      };
-
-      setActiveList(responseBody);
-    } else if (res?.status === 401) {
-      setAlertMessage("Error. It seems like this is not a valid public link.");
-      setTimeout(() => setAlertMessage(null), 3000);
-    } else if (res?.status === 403) {
-      console.log(res);
-      navigate("/");
-    } else {
-      console.log(res);
-      setAlertMessage("Apologies. Something went wrong on out end.");
-      setTimeout(() => setAlertMessage(null), 3000);
-    }
-  };
-
   const handleSync = async () => {
     setLoading(true);
-    const res = await handleCheckItems(isPublicUrl);
+    const res = await handleCheckItems(scope);
     if (res?.status === 200) {
-      handleFetchList(isPublicUrl);
+      handleFetchList(scope);
     } else if (res?.status === 400) {
       console.log(res);
     } else if (res?.status === 403) {
-      navigate("/");
       console.log(res);
+      navigate("/");
     } else {
       setAlertMessage("Apologies. Something went wrong on our end.");
       setTimeout(() => setAlertMessage(null), 1000);
@@ -149,7 +110,7 @@ function GroceryListPage({
   };
 
   const handleBorderColor = (identifier) => {
-    if (groupedByIdentifier.indexOf(identifier) == -1 || groupedByIdentifier.indexOf(identifier) === 0) {
+    if (groupedByIdentifier.indexOf(identifier) === -1 || groupedByIdentifier.indexOf(identifier) === 0) {
       return handleDeriveThemeColor();
     }
     return borderColors[groupedByIdentifier.indexOf(identifier)];
@@ -164,41 +125,6 @@ function GroceryListPage({
     return null;
   };
 
-  const handleFetchUserInfo = async () => {
-    // Get user info if the user object is null
-    if (!user) {
-      console.log('fetching user and container...')
-      const userInfoResponse = await checkSession();
-      if (userInfoResponse?.status === 200) {
-        setUser(userInfoResponse?.user);
-        return userInfoResponse;
-      } else if (userInfoResponse?.status === 403) {
-        navigate("/");
-        console.log(userInfoResponse);
-      } else {
-        navigate(-1);
-        console.log(userInfoResponse);
-      }
-    }
-  };
-
-  const handleFetchContainer = async (data) => {
-    if (!activeContainer) {
-      const containerInfoResponse = await getAllLists(data);
-      if (containerInfoResponse?.status === 200) {
-        setActiveContainer(containerInfoResponse?.body);
-        console.log(containerInfoResponse);
-        return containerInfoResponse;
-      } else if (containerInfoResponse?.status === 403) {
-        console.log(containerInfoResponse);
-        navigate("/");
-      } else if (containerInfoResponse?.status !== 200) {
-        console.log(containerInfoResponse);
-        navigate(-1);
-      }
-    }
-  };
-
   const handleDeriveWallpaper = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
       return groceryWallpaper;
@@ -209,13 +135,13 @@ function GroceryListPage({
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
       return shoppingWallpaper;
     }
-    if (urlParams.get("containerId").includes(groceryContainerTypes.grocery)) {
+    if (containerId.includes(groceryContainerTypes.grocery)) {
       return groceryWallpaper;
     }
-    if (urlParams.get("containerId").includes(groceryContainerTypes.todo)) {
+    if (containerId.includes(groceryContainerTypes.todo)) {
       return todoWallpaper
     }
-    if (urlParams.get("containerId").includes(groceryContainerTypes.whishlist)) {
+    if (containerId.includes(groceryContainerTypes.whishlist)) {
       return shoppingWallpaper
     }
     return todoWallpaper;
@@ -231,45 +157,124 @@ function GroceryListPage({
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
       return colors.shoppingColors.bold;
     }
-    if (urlParams.get("containerId").includes(groceryContainerTypes.grocery)) {
+    if (containerId.includes(groceryContainerTypes.grocery)) {
       return colors.landingPageColors.bold;
     }
-    if (urlParams.get("containerId").includes(groceryContainerTypes.todo)) {
+    if (containerId.includes(groceryContainerTypes.todo)) {
       return colors.todoColors.bold;
     }
-    if (urlParams.get("containerId").includes(groceryContainerTypes.whishlist)) {
+    if (containerId.includes(groceryContainerTypes.whishlist)) {
       return colors.shoppingColors.bold;
     }
     return "#0D324F";
+  };
+
+  const handleFetchUserInfo = async () => {
+    // Get user info if the user object is null
+    if (!user) {
+      console.log('fetching user')
+      const userInfoResponse = await checkSession();
+      if (userInfoResponse?.status === 200) {
+        setUser(userInfoResponse?.user);
+        return userInfoResponse;
+      } else if (userInfoResponse?.status === 403) {
+        console.log(userInfoResponse);
+        navigate("/");
+      } else {
+        console.log(userInfoResponse);
+        navigate(-1);
+      }
+    }
+  };
+
+  const handleFetchContainer = async (data) => {
+    if (!activeContainer) {
+      console.log('fetching container with container id: ' + data.containerId)
+      const containerInfoResponse = await getAllLists(data);
+      if (containerInfoResponse?.status === 200) {
+        setActiveContainer(containerInfoResponse?.body);
+        return containerInfoResponse;
+      } else if (containerInfoResponse?.status === 403) {
+        console.log(containerInfoResponse);
+        navigate("/");
+      } else if (containerInfoResponse?.status === 401) {
+        console.log(containerInfoResponse)
+        navigate(-1);
+      } else {
+        console.log(containerInfoResponse);
+        navigate(-1);
+      }
+    }
   };
 
   const handleAtomicUserAndContainerFetch = async () => {
     const user = await handleFetchUserInfo();
     await handleFetchContainer({
       userId: user?.user?.id,
-      containerId: urlParams.get("containerId"),
+      containerId: containerId,
+      scope: scope
     });
+  };
+
+  const handleFetchList = async (scope) => {
+    // Reset states
+    setActiveList(null);
+    const data = {
+      containerId: containerId,
+      listId: listId,
+      scope: scope,
+    };
+    setLoading(true);
+    const res = scope === groceryListScopes.public
+      ? await getPublicList(data)
+      : await postRequest(URLS.getListUri, data);
+    setLoading(false);
+
+    // Cache it in state
+    if (res?.status === 200) {
+      setListName(res?.body.listName)
+      // Group by items by username (Default)
+      setAlertMessage(null);
+      const activeListMap = await handleGroupByUsername(
+        res?.body?.groceryListItems
+      ); // Map: username => items
+      const responseBody = await {
+        ...res?.body,
+        groceryListItems: Array.from(activeListMap.values()).flat(),
+      };
+
+      setActiveList(responseBody);
+    } else if (res?.status === 401) {
+      setAlertMessage(messages.unauthorizedAccess);
+    } else if (res?.status === 403) {
+      console.log(res);
+      navigate("/");
+    } else {
+      console.log(res);
+      setAlertMessage("Apologies. Something went wrong on our end.");
+      setTimeout(() => setAlertMessage(null), 3000);
+    }
   };
 
   useEffect(() => {
     // Fetch user and container if not a public list
-    if (!isPublicUrl && !user) {
+    if (scope !== groceryListScopes.public && !user) {
       handleAtomicUserAndContainerFetch();
     }
 
     // Check for cached list only if list is not public
-    if (!isPublicUrl && activeList?.groceryListItems[0]?.listId === listId) {
+    if (activeList?.groceryListItems[0]?.listId === listId) {
       console.log("no need to fetch items.");
       return;
     }
 
     // Mark items checked
     if (activeList?.groceryListItems.length > 0) {
-      handleCheckItems(isPublicUrl);
+      handleCheckItems(scope);
     }
 
     // Fetch new active list
-    handleFetchList(isPublicUrl);
+    handleFetchList(scope);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -324,8 +329,8 @@ function GroceryListPage({
               variant="h5"
               sx={{ color: "white", flexGrow: 1 }}
             >
-              {listName && truncateString(listName, 18)}
-              {!listName && "Shared List"}
+              {listName && <Typography fontSize={16} variant="button">{truncateString(listName, 16)}</Typography>}
+              {!listName && <Typography fontSize={16} variant="button">UNKNOWN LIST</Typography>}
             </Typography>
 
             <IconButton onClick={() => setOpenDialogue(dialogues.addItem)}>
@@ -333,6 +338,7 @@ function GroceryListPage({
             </IconButton>
 
             <IconButton
+              disabled={activeList?.scope === groceryListScopes.public}
               variant="contained"
               onClick={() => setOpenDialogue(dialogues.deleteList)}
             >
@@ -370,14 +376,12 @@ function GroceryListPage({
           <Dialogue
             setUser={setUser}
             user={user}
-            isPublic={activeList?.scope === groceryListScopes.public}
             setOpenDialogue={setOpenDialogue}
             activeList={activeList}
             setActiveList={setActiveList}
             activeContainer={activeContainer}
             setActiveContainer={setActiveContainer}
             openDialogue={openDialogue}
-            listId={listId}
           />
         )}
       </Grid>

@@ -61,14 +61,14 @@ module.exports.colors = {
 module.exports.newListFormHelperText = {
   shopping: "(e.g. Christmas Shopping List, Kate's Birthday)",
   grocery: "(e.g. Walmart List, Kate's Birthday, Dinner Recipe)",
-  todo: "(e.g. Home Remodel Project 🏠, Work to-do List)"
-}
+  todo: "(e.g. Home Remodel Project 🏠, Work to-do List)",
+};
 
 module.exports.radioGroupHelperTextObject = {
-  private: 'PRIVATE',
-  public: 'PUBLIC',
-  restricted: 'RESTRICTED',
-}
+  private: "PRIVATE",
+  public: "PUBLIC",
+  restricted: "RESTRICTED",
+};
 
 module.exports.dialogueObject = {
   addItem: {
@@ -220,9 +220,8 @@ module.exports.dialogueObject = {
 };
 
 // Engines
-const engine = "https://katespracticespace.com";
-// const engine = "http://joses-macbook-pro-3.local:8080";
-
+// const engine = "https://katespracticespace.com";
+const engine = "http://joses-macbook-pro-3.local:8080";
 
 module.exports.URLS = {
   // Authentication endpoins
@@ -250,4 +249,9 @@ module.exports.URLS = {
   updatePublicListItemUri: `${engine}/public/shared/update-list-item`,
   checkPublicListItemUri: `${engine}/public/shared/check-list-items`,
   deletePublicItem: `${engine}/public/shared/delete-list-item`,
+};
+
+module.exports.messages = {
+  unauthorizedAction: "Hmmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities.",
+  unauthorizedAccess: "Hmmm... It seems like you don't have access to this link. Please make sure that you are accessing a list in which you are added.",
 };
