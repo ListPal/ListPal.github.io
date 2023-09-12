@@ -255,3 +255,10 @@ module.exports.messages = {
   unauthorizedAction: "Hmmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities.",
   unauthorizedAccess: "Hmmm... It seems like you don't have access to this link. Please make sure that you are accessing a list in which you are added.",
 };
+
+module.exports.filterCardsBy = {
+  all: 0,
+  public: 1,
+  private: 2,
+  restricted: 3,
+}
