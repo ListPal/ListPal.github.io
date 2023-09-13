@@ -8,7 +8,15 @@ import {
   groceryContainerTypes,
   messages,
 } from "../../utils/enum";
-import { Typography, Toolbar, Grid, AppBar, Slide, Alert } from "@mui/material";
+import {
+  Typography,
+  Toolbar,
+  Grid,
+  AppBar,
+  Slide,
+  Alert,
+  Skeleton,
+} from "@mui/material";
 import {
   getPublicList,
   postRequest,
@@ -30,6 +38,7 @@ import ListItem from "./ListItem/ListItem";
 import groceryWallpaper from "../../utils/assets/card1.jpg";
 import todoWallpaper from "../../utils/assets/todoWallpaperPlus.jpg";
 import shoppingWallpaper from "../../utils/assets/shoppingWallpaperPlus.jpg";
+import christmasWallpaperPlus from "../../utils/assets/christmasWallpaperPlus.jpg";
 
 function GroceryListPage({
   activeList,
@@ -45,7 +54,7 @@ function GroceryListPage({
   const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
   const [groupedByIdentifier, setGroupedByIdentifier] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [listName, setListName] = useState(location.state?.listName)
+  const [listName, setListName] = useState(location.state?.listName);
   // Other globals
   let groupedByCurrentIdx = 0; // global var that keeps the idx count to decide when to display the identifier in the lis item
   const urlParams = new URLSearchParams(location.search);
@@ -84,9 +93,10 @@ function GroceryListPage({
         .filter((item) => item.checked)
         .map((item) => item.id),
     };
-    const uri = scope === groceryListScopes.public
-      ? URLS.checkPublicListItemUri
-      : URLS.checkListItemUri;
+    const uri =
+      scope === groceryListScopes.public
+        ? URLS.checkPublicListItemUri
+        : URLS.checkListItemUri;
     const res = await postRequest(uri, data);
     return res;
   };
@@ -110,7 +120,10 @@ function GroceryListPage({
   };
 
   const handleBorderColor = (identifier) => {
-    if (groupedByIdentifier.indexOf(identifier) === -1 || groupedByIdentifier.indexOf(identifier) === 0) {
+    if (
+      groupedByIdentifier.indexOf(identifier) === -1 ||
+      groupedByIdentifier.indexOf(identifier) === 0
+    ) {
       return handleDeriveThemeColor();
     }
     return borderColors[groupedByIdentifier.indexOf(identifier)];
@@ -133,16 +146,18 @@ function GroceryListPage({
       return todoWallpaper;
     }
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
-      return shoppingWallpaper;
+      return activeList?.listName?.toUpperCase().includes("CHRISTMAS")
+        ? christmasWallpaperPlus
+        : shoppingWallpaper;
     }
     if (containerId.includes(groceryContainerTypes.grocery)) {
       return groceryWallpaper;
     }
     if (containerId.includes(groceryContainerTypes.todo)) {
-      return todoWallpaper
+      return todoWallpaper;
     }
     if (containerId.includes(groceryContainerTypes.whishlist)) {
-      return shoppingWallpaper
+      return shoppingWallpaper;
     }
     return todoWallpaper;
   };
@@ -172,7 +187,7 @@ function GroceryListPage({
   const handleFetchUserInfo = async () => {
     // Get user info if the user object is null
     if (!user) {
-      console.log('fetching user')
+      console.log("fetching user");
       const userInfoResponse = await checkSession();
       if (userInfoResponse?.status === 200) {
         setUser(userInfoResponse?.user);
@@ -189,7 +204,7 @@ function GroceryListPage({
 
   const handleFetchContainer = async (data) => {
     if (!activeContainer) {
-      console.log('fetching container with container id: ' + data.containerId)
+      console.log("fetching container with container id: " + data.containerId);
       const containerInfoResponse = await getAllLists(data);
       if (containerInfoResponse?.status === 200) {
         setActiveContainer(containerInfoResponse?.body);
@@ -198,7 +213,7 @@ function GroceryListPage({
         console.log(containerInfoResponse);
         navigate("/");
       } else if (containerInfoResponse?.status === 401) {
-        console.log(containerInfoResponse)
+        console.log(containerInfoResponse);
         navigate(-1);
       } else {
         console.log(containerInfoResponse);
@@ -212,7 +227,7 @@ function GroceryListPage({
     await handleFetchContainer({
       userId: user?.user?.id,
       containerId: containerId,
-      scope: scope
+      scope: scope,
     });
   };
 
@@ -225,14 +240,15 @@ function GroceryListPage({
       scope: scope,
     };
     setLoading(true);
-    const res = scope === groceryListScopes.public
-      ? await getPublicList(data)
-      : await postRequest(URLS.getListUri, data);
+    const res =
+      scope === groceryListScopes.public
+        ? await getPublicList(data)
+        : await postRequest(URLS.getListUri, data);
     setLoading(false);
 
     // Cache it in state
     if (res?.status === 200) {
-      setListName(res?.body.listName)
+      setListName(res?.body.listName);
       // Group by items by username (Default)
       setAlertMessage(null);
       const activeListMap = await handleGroupByUsername(
@@ -294,82 +310,95 @@ function GroceryListPage({
         />
       )}
 
+      <AppBar
+        component="nav"
+        sx={{
+          pb:1,
+          height: 60,
+          width: "100vw",
+          maxWidth: mobileWidth,
+          background: handleDeriveThemeColor(),
+          alignItems: "space-between",
+          left: 0,
+        }}
+      >
+        <Toolbar>
+          <IconButton size="small" onClick={() => navigate(-1)}>
+            <ArrowBackIosIcon sx={{ color: "white" }} />
+          </IconButton>
+
+          <IconButton size="small" disabled={loading} onClick={handleSync}>
+            <SyncIcon sx={{ color: "white" }} />
+          </IconButton>
+
+          <Typography
+            padding={1}
+            variant="h5"
+            sx={{ color: "white", flexGrow: 1 }}
+          >
+            {listName && (
+              <Typography fontSize={16} variant="button">
+                {truncateString(listName, 20)}
+              </Typography>
+            )}
+            {!listName && (
+              <Typography fontSize={16} variant="button">
+                UNKNOWN LIST
+              </Typography>
+            )}
+          </Typography>
+
+          <IconButton
+            size="small"
+            onClick={() => setOpenDialogue(dialogues.addItem)}
+          >
+            <AddIcon sx={{ color: "white" }} />
+          </IconButton>
+
+          <IconButton
+            size="small"
+            disabled={activeList?.scope === groceryListScopes.public}
+            variant="contained"
+            onClick={() => setOpenDialogue(dialogues.deleteList)}
+          >
+            <DeleteIcon sx={{ color: "red" }} />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+
       <Grid
         container
-        padding={2}
+        mt={"8vh"}
+        pb={2}
         spacing={2}
         sx={{
-          paddingTop: 8,
           justifyContent: "center",
           justifyItems: "center",
           maxWidth: mobileWidth,
         }}
       >
-        <AppBar
-          component="nav"
-          sx={{
-            width: "100vw",
-            maxWidth: mobileWidth,
-            background: handleDeriveThemeColor(),
-            alignItems: "space-between",
-            left: 0,
-          }}
-        >
-          <Toolbar>
-            <IconButton size={"medium"} onClick={() => navigate(-1)}>
-              <ArrowBackIosIcon sx={{ color: "white" }} />
-            </IconButton>
-
-            <IconButton disabled={loading} onClick={handleSync}>
-              <SyncIcon sx={{ color: "white" }} />
-            </IconButton>
-
-            <Typography
-              padding={1}
-              variant="h5"
-              sx={{ color: "white", flexGrow: 1 }}
-            >
-              {listName && <Typography fontSize={16} variant="button">{truncateString(listName, 16)}</Typography>}
-              {!listName && <Typography fontSize={16} variant="button">UNKNOWN LIST</Typography>}
-            </Typography>
-
-            <IconButton onClick={() => setOpenDialogue(dialogues.addItem)}>
-              <AddIcon sx={{ color: "white" }} />
-            </IconButton>
-
-            <IconButton
-              disabled={activeList?.scope === groceryListScopes.public}
-              variant="contained"
-              onClick={() => setOpenDialogue(dialogues.deleteList)}
-            >
-              <DeleteIcon sx={{ color: "red" }} />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-
-        <Slide className="alert-slide" in={alertMessage && true}>
-          <Alert severity={"error"} sx={{ position: "fixed", width: "96vw" }}>
-            {alertMessage}
-          </Alert>
-        </Slide>
-
-        {activeList?.groceryListItems.map((e, i) => (
-          <ListItem
-            borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
-            identifier={handleShowIdentifier(e?.user?.username.split("@")[0])}
-            setOpenDialogue={setOpenDialogue}
-            setActiveList={setActiveList}
-            openDialogue={openDialogue}
-            activeContainer={activeContainer}
-            setActiveContainer={setActiveContainer}
-            activeList={activeList}
-            listId={listId}
-            item={e}
-            user={user}
-            setUser={setUser}
-            key={i}
-          />
-        ))}
+        {!loading &&
+          activeList?.groceryListItems.map((e, i) => (
+            <Grid item key={i + "grid"}>
+              <ListItem
+                borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
+                identifier={handleShowIdentifier(
+                  e?.user?.username.split("@")[0]
+                )}
+                setOpenDialogue={setOpenDialogue}
+                setActiveList={setActiveList}
+                openDialogue={openDialogue}
+                activeContainer={activeContainer}
+                setActiveContainer={setActiveContainer}
+                activeList={activeList}
+                listId={listId}
+                item={e}
+                user={user}
+                setUser={setUser}
+                key={i + "item"}
+              />
+            </Grid>
+          ))}
 
         {(openDialogue === dialogues.addItem ||
           openDialogue === dialogues.deleteList) && (
@@ -385,6 +414,13 @@ function GroceryListPage({
           />
         )}
       </Grid>
+
+      {/* Alert  messages*/}
+      <Slide className="alert-slide" in={alertMessage && true}>
+        <Alert severity={"error"} sx={{ position: "fixed", width: "96vw" }}>
+          {alertMessage}
+        </Alert>
+      </Slide>
 
       {/* Background Wallpaper */}
       <div

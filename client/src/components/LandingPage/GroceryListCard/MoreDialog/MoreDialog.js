@@ -25,6 +25,7 @@ import {
   URLS,
   groceryListScopes,
   messages,
+  mobileWidth,
 } from "../../../../utils/enum";
 import { deleteList, postRequest } from "../../../../utils/testApi/testApi";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -89,7 +90,7 @@ const MoreDialog = ({
         }
       });
       setActiveContainer((container) => {
-        return { ...container, collapsedLists: updatedLists };
+        return { ...container,  collapsedLists: updatedLists };
       });
       closeDialogueWithoutDelay();
     } else if (res?.status === 403) {
@@ -156,7 +157,6 @@ const MoreDialog = ({
   //eslint-disable-next-line
   const handleAddPeople = () => {
     setLoading(true);
-    //
     setLoading(false);
   };
 
@@ -234,14 +234,19 @@ const MoreDialog = ({
         <Fade in={openDialogue !== dialogues.closed}>
           <Paper
             sx={{
-              position: "absolute",
-              top: "25%",
+              position: "relative",
+              display: "flex",
+              justifyContent: "center",
+              direction: "column",
+              top: "45vh",
               left: "50vw",
-              transform: "translate(-50%)",
+              transform: "translate(-50%, -50%)",
               borderRadius: 5,
-              minWidth: 320,
-              minHeight: 250,
-              padding: 2,
+              width: "85vw",
+              maxWidth: mobileWidth,
+              p: 2,
+              pt: 5,
+              pb: 5,
             }}
           >
             <Stack
@@ -327,6 +332,8 @@ const MoreDialog = ({
                         );
                       } else if (openDialogue === dialogues.sendMoney) {
                         actions[i]();
+                      } else if (openDialogue === dialogues.addPeople) {
+                        handleAddPeople();
                       }
                     }}
                     sx={{
@@ -345,21 +352,22 @@ const MoreDialog = ({
                 );
               })}
             </Stack>
-            <Slide
-              className="alert-slide"
-              in={alertMessage && true}
-              sx={{
-                position: "fixed",
-                top: "-25vh",
-                left: "-10%",
-                width: "100vw",
-              }}
-            >
-              <Alert severity={severity}>{alertMessage}</Alert>
-            </Slide>
           </Paper>
         </Fade>
       </Modal>
+      <Slide
+        className="alert-slide"
+        in={alertMessage && true}
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+        }}
+      >
+        <Alert severity={severity}>
+          <Typography>{alertMessage}</Typography>
+        </Alert>
+      </Slide>
     </>
   );
 };

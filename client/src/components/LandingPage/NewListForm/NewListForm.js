@@ -189,17 +189,18 @@ function NewListForm({
         <Fade in={open}>
           <Paper
             sx={{
-              position: "absolute",
+              position: "relative",
               display: "flex",
               justifyContent: "center",
               direction: "column",
-              top: "25vh",
+              top: "45vh",
               left: "50vw",
-              transform: "translate(-50%)",
+              transform: "translate(-50%, -50%)",
               borderRadius: 5,
-              width: 330,
-              height: 350,
+              width: '85vw',
+              maxWidth: mobileWidth,
               p: 2,
+              pb:4,
             }}
           >
             <Slide
@@ -207,8 +208,6 @@ function NewListForm({
               in={alertMessage && true}
               sx={{
                 position: "fixed",
-                top: "-25vh",
-                width: "95vw",
                 maxWidth: `calc(${mobileWidth} - 10px`,
               }}
             >

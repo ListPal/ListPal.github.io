@@ -1,12 +1,14 @@
 {
   "files": {
     "main.css": "/static/css/main.2abbe235.css",
-    "main.js": "/static/js/main.85661711.js",
+    "main.js": "/static/js/main.b9e30219.js",
     "static/js/787.28cb0dcd.chunk.js": "/static/js/787.28cb0dcd.chunk.js",
     "static/media/shoppingWallpaper.jpg": "/static/media/shoppingWallpaper.d99614fb82d22ac818a5.jpg",
     "static/media/grocery.jpg": "/static/media/grocery.5cf977894196b810be81.jpg",
     "static/media/card1.jpg": "/static/media/card1.25f6e36aafd3b0f487b1.jpg",
+    "static/media/christmasWallpaperPlus.jpg": "/static/media/christmasWallpaperPlus.6e8b4f76c9ba0c89627a.jpg",
     "static/media/todoWallpaperPlus.jpg": "/static/media/todoWallpaperPlus.10180a85b46b4703fef2.jpg",
+    "static/media/christmasWallpaper.jpg": "/static/media/christmasWallpaper.1a4bba58737b5596f48c.jpg",
     "static/media/shoppingWallpaperPlus.jpg": "/static/media/shoppingWallpaperPlus.db3ea5886d9d02751207.jpg",
     "static/media/todo.jpg": "/static/media/todo.60d281087fdee94cf260.jpg",
     "static/media/todoWallpaper.jpg": "/static/media/todoWallpaper.e8651e5437c4b31d24d4.jpg",
@@ -15,11 +17,11 @@
     "static/media/foodStrip.jpg": "/static/media/foodStrip.ded1345f143a3900122d.jpg",
     "index.html": "/index.html",
     "main.2abbe235.css.map": "/static/css/main.2abbe235.css.map",
-    "main.85661711.js.map": "/static/js/main.85661711.js.map",
+    "main.b9e30219.js.map": "/static/js/main.b9e30219.js.map",
     "787.28cb0dcd.chunk.js.map": "/static/js/787.28cb0dcd.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.2abbe235.css",
-    "static/js/main.85661711.js"
+    "static/js/main.b9e30219.js"
   ]
 }

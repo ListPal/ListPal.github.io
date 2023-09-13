@@ -3,16 +3,17 @@ import Popover from "@mui/material/Popover";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import PaidIcon from "@mui/icons-material/Paid";
-// import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import IconButton from "@mui/material/Button";
 import MoreOutlinedIcon from "@mui/icons-material/MoreOutlined";
-import { Stack } from "@mui/material";
+import { Alert, Slide, Stack, Typography } from "@mui/material";
 import { dialogues } from "../../../../utils/enum";
 import MoreDialog from "../MoreDialog/MoreDialog";
 
 const MoreOptions = ({ listInfo, activeContainer, setActiveContainer }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
+  const [alert, setAlert] = useState(false);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -50,14 +51,15 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer }) => {
         }}
       >
         <Stack direction={"row"}>
-          {/* <IconButton
-            disabled
+          <IconButton
             onClick={() => {
-              setOpenDialogue(dialogues.addPeople);
+              // setOpenDialogue(dialogues.addPeople);
+              setAlert(true)
+              setTimeout(() => setAlert(false), 3000)
             }}
           >
-            <GroupAddIcon sx={{ color: "black" }} />
-          </IconButton> */}
+            <PersonAddIcon sx={{ color: "black" }} />
+          </IconButton>
           <IconButton
             onClick={() => {
               setOpenDialogue(dialogues.sendMoney);
@@ -82,11 +84,21 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer }) => {
         </Stack>
       </Popover>
 
+      <Slide
+        className="alert-slide"
+        in={alert}
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+        }}
+      >
+        <Alert severity={"info"}><Typography>Coming soon. This feature is still on the works</Typography></Alert>
+      </Slide>
+
       {openDialogue && (
         <MoreDialog
           listInfo={listInfo}
-          // listName={listInfo?.listName}
-          // listId={listInfo?.id}
           activeContainer={activeContainer}
           setActiveContainer={setActiveContainer}
           openDialogue={openDialogue}

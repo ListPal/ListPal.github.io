@@ -7,7 +7,6 @@ import {
   checkSession,
 } from "../../utils/testApi/testApi";
 import {
-  borderColors,
   colors,
   filterCardsBy,
   groceryContainerTypes,
@@ -50,7 +49,9 @@ const LandingPage = ({
 }) => {
   // States
   const [filter, setFilter] = useState(filterCardsBy.all);
-  const [alertMessage, setAlertMessage] = useState("No lists yet to display. Create your first list 🥳");
+  const [alertMessage, setAlertMessage] = useState(
+    "No lists yet to display. Create your first list 🥳"
+  );
   const [severity, setSeverity] = useState("info");
   const [newListFormOpen, setNewListFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -212,9 +213,11 @@ const LandingPage = ({
 
   return (
     <>
-      <Grid container spacing={1} paddingTop={2} sx={{ maxWidth: mobileWidth }}>
+      <Grid container sx={{ maxWidth: mobileWidth }}>
+        {/* User Info Menu Bar */}
         <Grid item>
           <Paper
+            elevation={0.5}
             sx={{
               borderRadius: 0,
               height: "50vmin",
@@ -235,7 +238,11 @@ const LandingPage = ({
             )}
 
             {!loading && (
-              <Stack direction="column" padding={1} spacing={6}>
+              <Stack
+                direction="column"
+                padding={1}
+                sx={{ height: "100%", justifyContent: "space-between" }}
+              >
                 <Stack
                   direction={"row"}
                   padding={1}
@@ -285,6 +292,7 @@ const LandingPage = ({
                     }}
                   />
                 </Stack>
+
                 <Stack
                   direction={"column"}
                   sx={{
@@ -300,6 +308,7 @@ const LandingPage = ({
           </Paper>
         </Grid>
 
+        {/* Create List Menu */}
         <Grid item>
           {loading && (
             <Skeleton
@@ -313,19 +322,16 @@ const LandingPage = ({
           {!loading && (
             <Paper
               sx={{
-                height: "35vmin",
+                display: "flex",
                 width: "100vmin",
                 maxWidth: mobileWidth,
                 borderRadius: 0,
                 backgroundColor: handleDeriveBodyColor(),
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              <Stack
-                direction="column"
-                padding={5}
-                spacing={2}
-                sx={{ justifyContent: "center", alignItems: "center" }}
-              >
+              <Stack direction="column" padding={5} spacing={2}>
                 <Button
                   variant={"outlined"}
                   onClick={() => setNewListFormOpen(!newListFormOpen)}
@@ -347,147 +353,119 @@ const LandingPage = ({
         </Grid>
 
         {/* Filter options below */}
-        {loading && (
-          <Paper>
-            <Skeleton
-              animation={"wave"}
-              variant="rectangular"
-              sx={{ ml: 1, maxWidth: mobileWidth }}
-              width={"100vw"}
-              height={50}
-            />
-          </Paper>
-        )}
-
-        {!loading && (
-          <Paper elevation={0}>
-            <Stack p spacing={1} width={"100vw"} ml direction={"row"}>
-              <IconButton
-                onClick={() => setFilter(filterCardsBy.public)}
-                sx={{
-                  color:
-                    filter === filterCardsBy.public && handleDeriveBodyColor(),
-                  background:
-                    filter === filterCardsBy.public &&
-                    handleDeriveHeadingColor(),
-                  "&:hover": {
-                    background: handleDeriveHeadingColor(),
-                  },
-                }}
-              >
-                <PublicIcon />
-              </IconButton>
-              <IconButton
-                onClick={() => setFilter(filterCardsBy.all)}
-                sx={{
-                  color:
-                    filter === filterCardsBy.all && handleDeriveBodyColor(),
-                  background:
-                    filter === filterCardsBy.all && handleDeriveHeadingColor(),
-                  "&:hover": {
-                    background: handleDeriveHeadingColor(),
-                  },
-                }}
-              >
-                <AllInclusiveIcon />
-              </IconButton>
-              <IconButton
-                onClick={() => setFilter(filterCardsBy.private)}
-                sx={{
-                  color:
-                    filter === filterCardsBy.private && handleDeriveBodyColor(),
-                  background:
-                    filter === filterCardsBy.private &&
-                    handleDeriveHeadingColor(),
-                  "&:hover": {
-                    background: handleDeriveHeadingColor(),
-                  },
-                }}
-              >
-                <LockOutlinedIcon />
-              </IconButton>
-              <IconButton
-                onClick={() => setFilter(filterCardsBy.restricted)}
-                sx={{
-                  color:
-                    filter === filterCardsBy.restricted &&
-                    handleDeriveBodyColor(),
-                  background:
-                    filter === filterCardsBy.restricted &&
-                    handleDeriveHeadingColor(),
-                  "&:hover": {
-                    background: handleDeriveHeadingColor(),
-                  },
-                }}
-              >
-                <KeyIcon />
-              </IconButton>
-            </Stack>
-          </Paper>
-        )}
+        <Grid item>
+          {!loading && (
+            <Paper elevation={0}>
+              <Stack p spacing={1} width={"100vw"} ml direction={"row"}>
+                <IconButton
+                  onClick={() => setFilter(filterCardsBy.public)}
+                  sx={{
+                    color:
+                      filter === filterCardsBy.public &&
+                      handleDeriveBodyColor(),
+                    background:
+                      filter === filterCardsBy.public &&
+                      handleDeriveHeadingColor(),
+                    "&:hover": {
+                      background: handleDeriveHeadingColor(),
+                    },
+                  }}
+                >
+                  <PublicIcon />
+                </IconButton>
+                <IconButton
+                  onClick={() => setFilter(filterCardsBy.all)}
+                  sx={{
+                    color:
+                      filter === filterCardsBy.all && handleDeriveBodyColor(),
+                    background:
+                      filter === filterCardsBy.all &&
+                      handleDeriveHeadingColor(),
+                    "&:hover": {
+                      background: handleDeriveHeadingColor(),
+                    },
+                  }}
+                >
+                  <AllInclusiveIcon />
+                </IconButton>
+                <IconButton
+                  onClick={() => setFilter(filterCardsBy.private)}
+                  sx={{
+                    color:
+                      filter === filterCardsBy.private &&
+                      handleDeriveBodyColor(),
+                    background:
+                      filter === filterCardsBy.private &&
+                      handleDeriveHeadingColor(),
+                    "&:hover": {
+                      background: handleDeriveHeadingColor(),
+                    },
+                  }}
+                >
+                  <LockOutlinedIcon />
+                </IconButton>
+                <IconButton
+                  onClick={() => setFilter(filterCardsBy.restricted)}
+                  sx={{
+                    color:
+                      filter === filterCardsBy.restricted &&
+                      handleDeriveBodyColor(),
+                    background:
+                      filter === filterCardsBy.restricted &&
+                      handleDeriveHeadingColor(),
+                    "&:hover": {
+                      background: handleDeriveHeadingColor(),
+                    },
+                  }}
+                >
+                  <KeyIcon />
+                </IconButton>
+              </Stack>
+            </Paper>
+          )}
+        </Grid>
 
         {/* ListCard below */}
-        {loading && (
-          <Paper sx={{ ml: 1, mt: 2, height: "60vmin", width: "100vmin" }}>
-            <Stack direction={"column"}>
-              <Skeleton
-                animation={"wave"}
-                variant="rectangular"
-                sx={{ mt: 0, ml: 2, maxWidth: mobileWidth }}
-                width={"92%"}
-                height={150}
-              />
-              <Stack
-                direction={"row"}
-                sx={{ justifyContent: "space-between", pl: 4, pr: 4 }}
-              >
+        <Grid item>
+          {loading && (
+              <Stack width={'100vw'} direction={"column"} mt={5} sx={{alignItems:'center'}}>
                 <Skeleton
                   animation={"wave"}
-                  sx={{ mt: 1 }}
-                  width={"50%"}
-                  height={60}
-                />
-                <Skeleton
-                  animation={"wave"}
-                  sx={{ mt: 1, maxWidth: mobileWidth }}
-                  width={"30%"}
-                  height={60}
+                  variant="rectangular"
+                  sx={{ maxWidth: mobileWidth }}
+                  width={"95%"}
+                  height={150}
                 />
               </Stack>
-            </Stack>
-          </Paper>
-        )}
+          )}
 
-        {!loading &&
-          activeContainer?.collapsedLists &&
-          handlefilterByScope(activeContainer?.collapsedLists).map((e, i) => (
-            <GroceryListCard
-              activeContainer={activeContainer}
-              setActiveContainer={setActiveContainer}
-              listInfo={e}
-              key={i}
-            />
-          ))}
-      </Grid>
-
-      {activeContainer?.collapsedLists.length === 0 && !loading && (
-        <Grid item sx={{ maxWidth: mobileWidth }}>
-          <Slide
-            className="alert-slide"
-            in={true}
-            direction="right"
-          >
-            <Alert severity={severity}>{alertMessage}</Alert>
-          </Slide>
-          <img
-            alt="decorative-background"
-            src={handleEmptyContainerImg()}
-            loading="lazy"
-            height={400}
-            width={400}
-          />
+          {!loading &&
+            activeContainer?.collapsedLists &&
+            handlefilterByScope(activeContainer?.collapsedLists).map((e, i) => (
+              <GroceryListCard
+                activeContainer={activeContainer}
+                setActiveContainer={setActiveContainer}
+                listInfo={e}
+                key={i}
+              />
+            ))}
         </Grid>
-      )}
+
+        {activeContainer?.collapsedLists.length === 0 && !loading && (
+          <Grid item sx={{ maxWidth: mobileWidth }}>
+            <Slide className="alert-slide" in={true} direction="right">
+              <Alert severity={severity}>{alertMessage}</Alert>
+            </Slide>
+            <img
+              alt="decorative-background"
+              src={handleEmptyContainerImg()}
+              loading="lazy"
+              height={400}
+              width={400}
+            />
+          </Grid>
+        )}
+      </Grid>
 
       <NewListForm
         activeContainer={activeContainer}
