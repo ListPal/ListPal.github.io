@@ -8,6 +8,7 @@ import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
 import QuickList from "./components/QuickList/QuickList";
 import Containers from "./components/Containers/Containers";
+import AddPeopleList from "./components/AddPeopleList/AddPeopleList";
 
 function App() {
   const [activeList, setActiveList] = useState({ groceryListItems: [] });
@@ -74,6 +75,19 @@ function App() {
             path="/list"
             element={
               <GroceryListPage
+                activeContainer={activeContainer}
+                setActiveContainer={setActiveContainer}
+                user={user}
+                setUser={setUser}
+                activeList={activeList}
+                setActiveList={setActiveList}
+              />
+            }
+          />
+          <Route
+            path="/addPeople"
+            element={
+              <AddPeopleList
                 activeContainer={activeContainer}
                 setActiveContainer={setActiveContainer}
                 user={user}

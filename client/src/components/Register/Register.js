@@ -58,8 +58,8 @@ const Register = ({ setUser, setActiveList }) => {
       name: name,
       lastName: lastName,
       phone: phone,
-      username: username,
-      email: username,
+      username: username.toLowerCase(),
+      email: username.toLowerCase(),
       password: password,
     };
 

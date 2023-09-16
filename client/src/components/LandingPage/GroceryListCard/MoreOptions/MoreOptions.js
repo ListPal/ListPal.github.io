@@ -7,13 +7,15 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import IconButton from "@mui/material/Button";
 import MoreOutlinedIcon from "@mui/icons-material/MoreOutlined";
 import { Alert, Slide, Stack, Typography } from "@mui/material";
-import { dialogues } from "../../../../utils/enum";
+import { dialogues, groceryListScopes } from "../../../../utils/enum";
 import MoreDialog from "../MoreDialog/MoreDialog";
+import { useNavigate } from "react-router-dom";
 
 const MoreOptions = ({ listInfo, activeContainer, setActiveContainer }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
   const [alert, setAlert] = useState(false);
+  const navigate = useNavigate();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -51,22 +53,30 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer }) => {
         }}
       >
         <Stack direction={"row"}>
-          <IconButton
-            onClick={() => {
-              // setOpenDialogue(dialogues.addPeople);
-              setAlert(true)
-              setTimeout(() => setAlert(false), 3000)
-            }}
-          >
-            <PersonAddIcon sx={{ color: "black" }} />
-          </IconButton>
-          <IconButton
-            onClick={() => {
-              setOpenDialogue(dialogues.sendMoney);
-            }}
-          >
-            <PaidIcon sx={{ color: "black" }} />
-          </IconButton>
+          {listInfo?.scope === groceryListScopes.restricted && (
+            <IconButton
+              onClick={() => {
+                navigate("/addPeople", {
+                  state: {
+                    containerId: activeContainer?.id,
+                    listId: listInfo?.id,
+                  },
+                });
+              }}
+            >
+              <PersonAddIcon sx={{ color: "black" }} />
+            </IconButton>
+          )}
+
+          {listInfo?.scope === groceryListScopes.restricted && (
+            <IconButton
+              onClick={() => {
+                setOpenDialogue(dialogues.sendMoney);
+              }}
+            >
+              <PaidIcon sx={{ color: "black" }} />
+            </IconButton>
+          )}
           <IconButton
             onClick={() => {
               setOpenDialogue(dialogues.editList);
@@ -93,7 +103,11 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer }) => {
           left: 0,
         }}
       >
-        <Alert severity={"info"}><Typography>Coming soon. This feature is still on the works</Typography></Alert>
+        <Alert severity={"info"}>
+          <Typography>
+            Coming soon. This feature is still on the works
+          </Typography>
+        </Alert>
       </Slide>
 
       {openDialogue && (

@@ -28,6 +28,14 @@ const deletePublicItem = async (data) => {
   return deleteRequest(`${URLS.deletePublicItem}?containerId=${data?.containerId}&listId=${data?.listId}&cx=${data?.cx}`, data)
 }
 
+const lookupUser = async (data) => {
+  return postRequest(URLS.lookupUser, data)
+}
+
+const addPeopleToList = async (data) => {
+  return postRequest(URLS.addPeople, data)
+}
+
 const postRequest = async (url, data) => {
   const options = {
     method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -53,6 +61,16 @@ const postRequest = async (url, data) => {
       return {
         status: response.status,
         message: "Unauthorized user",
+      }
+    } else if (response.status === 400) {
+      return {
+        status: response.status,
+        message: "Illegal argument sent to server",
+      }
+    } else if (response.status === 201) {
+      return {
+        status: response.status,
+        message: "Not found",
       }
     } else {
       return {
@@ -82,6 +100,16 @@ const getRequest = async(url) => {
       return {
         status: response.status,
         message: "Unauthorized user",
+      }
+    } else if (response.status === 400) {
+      return {
+        status: response.status,
+        message: "Illegal argument sent to server",
+      }
+    } else if (response.status === 201) {
+      return {
+        status: response.status,
+        message: "Not found",
       }
     } else {
       return {
@@ -126,6 +154,16 @@ const deleteRequest = async (url, data) => {
         status: response.status,
         message: "Unauthorized user",
       }
+    } else if (response.status === 400) {
+      return {
+        status: response.status,
+        message: "Illegal argument sent to server",
+      }
+    } else if (response.status === 201) {
+      return {
+        status: response.status,
+        message: "Not found",
+      }
     } else {
       return {
         status: 500,
@@ -133,7 +171,7 @@ const deleteRequest = async (url, data) => {
       }
     }
   }
-
+  
   const responseJson = await response.json() // parses JSON response into native JavaScript
 
   // console.log(responseJson)
@@ -141,4 +179,4 @@ const deleteRequest = async (url, data) => {
   return responseJson
 }
 
-export {logout, checkSession, deleteItem, deleteList, getAllLists, getPublicList, deletePublicItem, postRequest}
+export {logout, checkSession, deleteItem, deleteList, getAllLists, getPublicList, deletePublicItem, postRequest, lookupUser, addPeopleToList}

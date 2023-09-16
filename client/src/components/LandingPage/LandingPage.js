@@ -213,14 +213,13 @@ const LandingPage = ({
 
   return (
     <>
-      <Grid container sx={{ maxWidth: mobileWidth }}>
-        {/* User Info Menu Bar */}
+      <Grid spacing={1} container sx={{ maxWidth: mobileWidth, alignItems:'center' }}>
         <Grid item>
           <Paper
-            elevation={0.5}
+            elevation={1}
             sx={{
               borderRadius: 0,
-              height: "50vmin",
+              height: "25vh",
               width: "100vmin",
               maxWidth: mobileWidth,
               display: "flex",
@@ -236,7 +235,8 @@ const LandingPage = ({
                 height={130}
               />
             )}
-
+            
+            {/* User Info Menu Bar */}
             {!loading && (
               <Stack
                 direction="column"
@@ -323,7 +323,7 @@ const LandingPage = ({
             <Paper
               sx={{
                 display: "flex",
-                width: "100vmin",
+                width:"100vw",
                 maxWidth: mobileWidth,
                 borderRadius: 0,
                 backgroundColor: handleDeriveBodyColor(),
@@ -356,7 +356,7 @@ const LandingPage = ({
         <Grid item>
           {!loading && (
             <Paper elevation={0}>
-              <Stack p spacing={1} width={"100vw"} ml direction={"row"}>
+              <Stack p spacing={1} width={"100%"} ml direction={"row"}>
                 <IconButton
                   onClick={() => setFilter(filterCardsBy.public)}
                   sx={{
@@ -426,14 +426,13 @@ const LandingPage = ({
         </Grid>
 
         {/* ListCard below */}
-        <Grid item>
+        <Grid item pb>
           {loading && (
-              <Stack width={'100vw'} direction={"column"} mt={5} sx={{alignItems:'center'}}>
+              <Stack width={'100vw'} direction={"column"} mt={5} >
                 <Skeleton
                   animation={"wave"}
                   variant="rectangular"
                   sx={{ maxWidth: mobileWidth }}
-                  width={"95%"}
                   height={150}
                 />
               </Stack>

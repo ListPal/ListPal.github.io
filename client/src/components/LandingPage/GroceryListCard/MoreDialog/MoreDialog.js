@@ -6,6 +6,7 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
+  Box,
 } from "@mui/material";
 import { useState, useRef } from "react";
 import Slide from "@mui/material/Slide";
@@ -18,6 +19,8 @@ import Fade from "@mui/material/Fade";
 import { styled } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import SearchIcon from "@mui/icons-material/Search";
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 
 import {
   dialogues,
@@ -27,7 +30,11 @@ import {
   messages,
   mobileWidth,
 } from "../../../../utils/enum";
-import { deleteList, postRequest } from "../../../../utils/testApi/testApi";
+import {
+  addPeopleToList,
+  deleteList,
+  postRequest,
+} from "../../../../utils/testApi/testApi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../../utils/dialoguesValidation";
 import AppleIcon from "@mui/icons-material/Apple";
@@ -45,8 +52,9 @@ const MoreDialog = ({
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [listScope, setListScope] = useState(listInfo?.scope);
+
   // Other locals
-  const listNameRef = useRef(null);
+  const textFieldRef = useRef(null);
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
   const navigate = useNavigate();
@@ -73,7 +81,7 @@ const MoreDialog = ({
 
     // Send to db
     const data = {
-      containerId: urlParams.get("containerId"),
+      containerId: activeContainer?.id,
       listId: listInfo?.id,
       listName: newListName,
       scope: listScope,
@@ -90,7 +98,7 @@ const MoreDialog = ({
         }
       });
       setActiveContainer((container) => {
-        return { ...container,  collapsedLists: updatedLists };
+        return { ...container, collapsedLists: updatedLists };
       });
       closeDialogueWithoutDelay();
     } else if (res?.status === 403) {
@@ -113,7 +121,7 @@ const MoreDialog = ({
     setErrorMessage(null);
     setAlertMessage(null);
     // validate that user entered acknowledgement
-    if (listNameRef.current.value !== listInfo?.listName) {
+    if (textFieldRef.current.value !== listInfo?.listName) {
       showAlert(
         "error",
         "Couldn't delete the list.\nMake sure you enter the name of the list correctly (case sensitive)"
@@ -153,13 +161,6 @@ const MoreDialog = ({
     }
   };
 
-  // TODO:
-  //eslint-disable-next-line
-  const handleAddPeople = () => {
-    setLoading(true);
-    setLoading(false);
-  };
-
   const handleRedirectToApple = () => {
     // Redirect to p2p provider
     setLoading(true);
@@ -181,7 +182,7 @@ const MoreDialog = ({
     setLoading(false);
   };
 
-  const actions = [
+  const moneyActions = [
     handleRedirectToApple,
     handleRedirectToVenmo,
     handleRedirectToCashapp,
@@ -191,6 +192,8 @@ const MoreDialog = ({
     if (icon === "deleteIcon") return <DeleteIcon />;
     if (icon === "editIcon") return <EditIcon />;
     if (icon === "appleIcon") return <AppleIcon />;
+    if (icon === "lookup") return <SearchIcon />;
+    if (icon === 'phone') return <LocalPhoneIcon />
   };
 
   const showAlert = (severity, msg) => {
@@ -234,6 +237,7 @@ const MoreDialog = ({
         <Fade in={openDialogue !== dialogues.closed}>
           <Paper
             sx={{
+              zIndex: 5,
               position: "relative",
               display: "flex",
               justifyContent: "center",
@@ -269,7 +273,7 @@ const MoreDialog = ({
                         error={errorMessage && true}
                         required
                         key={`${textField.text}${i}`}
-                        inputRef={listNameRef}
+                        inputRef={textFieldRef}
                         id="custom-css-outlined-input"
                         label={textField.text}
                         helperText={
@@ -327,13 +331,11 @@ const MoreDialog = ({
                         handleDeleteList();
                       } else if (openDialogue === dialogues.editList) {
                         handleEditListOptions(
-                          listNameRef.current.value,
+                          textFieldRef.current.value,
                           listScope
                         );
                       } else if (openDialogue === dialogues.sendMoney) {
-                        actions[i]();
-                      } else if (openDialogue === dialogues.addPeople) {
-                        handleAddPeople();
+                        moneyActions[i]();
                       }
                     }}
                     sx={{

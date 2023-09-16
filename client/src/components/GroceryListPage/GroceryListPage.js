@@ -366,10 +366,11 @@ function GroceryListPage({
         </Toolbar>
       </AppBar>
 
+      {/* List items */}
       <Grid
         container
         mt={"8vh"}
-        pb={2}
+        p={1}
         spacing={2}
         sx={{
           justifyContent: "center",

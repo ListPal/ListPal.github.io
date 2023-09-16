@@ -1,4 +1,4 @@
-module.exports.mobileWidth = "500px";
+module.exports.mobileWidth = "480px";
 
 module.exports.PUBLIC_CODE = "leknlkenwknlknklwncfc1edi7e2y97ry48032ujdede";
 
@@ -217,11 +217,36 @@ module.exports.dialogueObject = {
       },
     ],
   },
+  addPeople: {
+    header: "Add People to List",
+    textFields: [
+      {
+        defaultValue: false,
+        hidden: true,
+        text: "username, phone number",
+        helperText: "Lookup user by username or phone number",
+      },
+    ],
+    button: [
+      {
+        textColor: "#1F2937",
+        color: "#fed59a",
+        text: "Lookup By Username",
+        icon: 'lookup',
+      },
+      {
+        textColor: "#1F2937",
+        color: "#fed59a",
+        text: "Lookup By Phone ",
+        icon: 'phone',
+      },
+    ],
+  },
 };
 
 // Engines
-const engine = "https://katespracticespace.com";
-// const engine = "http://joses-macbook-pro-3.local:8080";
+// const engine = "https://katespracticespace.com";
+const engine = "http://joses-macbook-pro-3.local:8080";
 
 module.exports.URLS = {
   // Authentication endpoins
@@ -242,6 +267,8 @@ module.exports.URLS = {
   updateListItemUri: `${engine}/server/update-list-item`,
   checkListItemUri: `${engine}/server/check-list-items`,
   deleteItem: `${engine}/server/delete-list-item`,
+  addPeople: `${engine}/server/add-people`,
+  lookupUser: `${engine}/server/lookup-user`,
 
   // Public endpoints
   createPublicListItemUri: `${engine}/public/shared/create-list-item`,
@@ -252,8 +279,10 @@ module.exports.URLS = {
 };
 
 module.exports.messages = {
-  unauthorizedAction: "Hmmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities.",
-  unauthorizedAccess: "Hmmm... It seems like you don't have access to this link. Please make sure that you are accessing a list in which you are added.",
+  unauthorizedAction:
+    "Hmmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities.",
+  unauthorizedAccess:
+    "Hmmm... It seems like you don't have access to this link. Please make sure that you are accessing a list in which you are added.",
 };
 
 module.exports.filterCardsBy = {
@@ -261,4 +290,4 @@ module.exports.filterCardsBy = {
   public: 1,
   private: 2,
   restricted: 3,
-}
+};
