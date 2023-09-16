@@ -7,8 +7,6 @@ import {
 } from "../../../utils/enum";
 import Paper from "@mui/material/Paper";
 import { useLocation, useNavigate } from "react-router-dom";
-import Avatar from "@mui/material/Avatar";
-import AvatarGroup from "@mui/material/AvatarGroup";
 import MoreOptions from "./MoreOptions/MoreOptions";
 import { Stack, Typography, Slide, Alert, Divider } from "@mui/material";
 import { useState } from "react";

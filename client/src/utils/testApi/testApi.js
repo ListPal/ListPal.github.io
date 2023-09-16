@@ -36,6 +36,10 @@ const addPeopleToList = async (data) => {
   return postRequest(URLS.addPeople, data)
 }
 
+const removePeopleFromList = async (data) => {
+  return deleteRequest(URLS.removePeople, data)
+}
+
 const postRequest = async (url, data) => {
   const options = {
     method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -171,7 +175,7 @@ const deleteRequest = async (url, data) => {
       }
     }
   }
-  
+
   const responseJson = await response.json() // parses JSON response into native JavaScript
 
   // console.log(responseJson)
@@ -179,4 +183,4 @@ const deleteRequest = async (url, data) => {
   return responseJson
 }
 
-export {logout, checkSession, deleteItem, deleteList, getAllLists, getPublicList, deletePublicItem, postRequest, lookupUser, addPeopleToList}
+export {logout, checkSession, deleteItem, deleteList, getAllLists, getPublicList, deletePublicItem, postRequest, lookupUser, addPeopleToList, removePeopleFromList}

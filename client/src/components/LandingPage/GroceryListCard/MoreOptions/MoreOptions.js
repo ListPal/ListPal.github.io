@@ -5,6 +5,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import PaidIcon from "@mui/icons-material/Paid";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import IconButton from "@mui/material/Button";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import MoreOutlinedIcon from "@mui/icons-material/MoreOutlined";
 import { Alert, Slide, Stack, Typography } from "@mui/material";
 import { dialogues, groceryListScopes } from "../../../../utils/enum";
@@ -14,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 const MoreOptions = ({ listInfo, activeContainer, setActiveContainer }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
-  const [alert, setAlert] = useState(false);
+  const [alert, _] = useState(false);
   const navigate = useNavigate();
 
   const handleClick = (event) => {
@@ -58,13 +59,23 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer }) => {
               onClick={() => {
                 navigate("/addPeople", {
                   state: {
-                    containerId: activeContainer?.id,
+                    containerId: listInfo?.reference,
                     listId: listInfo?.id,
                   },
                 });
               }}
             >
               <PersonAddIcon sx={{ color: "black" }} />
+            </IconButton>
+          )}
+
+          {listInfo?.scope === groceryListScopes.restricted && (
+            <IconButton
+              onClick={() => {
+                setOpenDialogue(dialogues.deletePeople);
+              }}
+            >
+              <PersonRemoveIcon sx={{ color: "black" }} />
             </IconButton>
           )}
 

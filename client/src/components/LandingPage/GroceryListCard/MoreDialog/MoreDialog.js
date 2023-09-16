@@ -20,7 +20,8 @@ import { styled } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
-import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
+import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 
 import {
   dialogues,
@@ -31,13 +32,14 @@ import {
   mobileWidth,
 } from "../../../../utils/enum";
 import {
-  addPeopleToList,
+  removePeopleFromList,
   deleteList,
   postRequest,
 } from "../../../../utils/testApi/testApi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../../utils/dialoguesValidation";
 import AppleIcon from "@mui/icons-material/Apple";
+import RemovePeople from "../../../RemovePeople/RemovePeople";
 
 const MoreDialog = ({
   listInfo,
@@ -52,6 +54,7 @@ const MoreDialog = ({
   const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [listScope, setListScope] = useState(listInfo?.scope);
+  const [peopleToDelete, setPeopleToDelete] = useState([]);
 
   // Other locals
   const textFieldRef = useRef(null);
@@ -65,6 +68,40 @@ const MoreDialog = ({
 
   const handleListScopeSelection = (event) => {
     setListScope(event.target.value);
+  };
+
+  const handleDeletePeople = async () => {
+    const data = {
+      people: peopleToDelete,
+      listId: listInfo?.id,
+      containerId: listInfo?.reference,
+    };
+    setLoading(true);
+    const res = await removePeopleFromList(data);
+    if (res?.status === 200) {
+      console.log(res?.body);
+      closeDialogueWithoutDelay();
+    } else if (res?.status === 201) {
+      console.log(res);
+      showAlert({ severity: "warning", message: "User not found." });
+    } else if (res?.status === 401) {
+      console.log(res);
+      showAlert({
+        severity: "error",
+        message: "Hmm... It seems like you are not authorized to do this.",
+      });
+    } else if (res?.status === 403) {
+      console.log(res);
+      navigate("/login");
+    } else {
+      showAlert({
+        severity: "error",
+        message:
+          "Whoops! Something went wrong on our end. We are working to fix this",
+      });
+      console.log(res);
+    }
+    setLoading(false);
   };
 
   const handleEditListOptions = async (newListName, listScope) => {
@@ -193,7 +230,8 @@ const MoreDialog = ({
     if (icon === "editIcon") return <EditIcon />;
     if (icon === "appleIcon") return <AppleIcon />;
     if (icon === "lookup") return <SearchIcon />;
-    if (icon === 'phone') return <LocalPhoneIcon />
+    if (icon === "phone") return <LocalPhoneIcon />;
+    if (icon === "deletePeople") return <PeopleAltIcon />;
   };
 
   const showAlert = (severity, msg) => {
@@ -318,13 +356,21 @@ const MoreDialog = ({
                 )}
               </FormControl>
 
+              {openDialogue === dialogues.deletePeople && <RemovePeople
+                listInfo={listInfo}
+                setLoading={setLoading}
+                peopleToDelete={peopleToDelete}
+                setPeopleToDelete={setPeopleToDelete}
+                activeContainer={activeContainer}
+              />}
+
               {dialogueObject[openDialogue]?.button.map((button, i) => {
                 return (
                   <Button
                     fullWidth
                     key={i}
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || ((openDialogue === dialogues.deletePeople) && peopleToDelete.length === 0)}
                     endIcon={deriveCorrectIcon(button.icon)}
                     onClick={() => {
                       if (openDialogue === dialogues.deleteList) {
@@ -336,6 +382,8 @@ const MoreDialog = ({
                         );
                       } else if (openDialogue === dialogues.sendMoney) {
                         moneyActions[i]();
+                      } else if (openDialogue === dialogues.deletePeople) {
+                        handleDeletePeople();
                       }
                     }}
                     sx={{

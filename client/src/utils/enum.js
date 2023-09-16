@@ -36,6 +36,7 @@ module.exports.dialogues = {
   select: "selectItem",
   editList: "editList",
   addPeople: "addPeople",
+  deletePeople: "deletePeople",
   sendMoney: "sendMoney",
   addQuickItem: "addQuickItem",
 };
@@ -60,7 +61,7 @@ module.exports.colors = {
 
 module.exports.newListFormHelperText = {
   shopping: "(e.g. Christmas Shopping List, Kate's Birthday)",
-  grocery: "(e.g. Walmart List, Kate's Birthday, Dinner Recipe)",
+  grocery: "(e.g. Walmart List, Thanksgiving Party, Dinner Recipe)",
   todo: "(e.g. Home Remodel Project 🏠, Work to-do List)",
 };
 
@@ -217,28 +218,15 @@ module.exports.dialogueObject = {
       },
     ],
   },
-  addPeople: {
-    header: "Add People to List",
-    textFields: [
-      {
-        defaultValue: false,
-        hidden: true,
-        text: "username, phone number",
-        helperText: "Lookup user by username or phone number",
-      },
-    ],
+  deletePeople: {
+    header: "Remove People",
+    textFields: [],
     button: [
       {
         textColor: "#1F2937",
-        color: "#fed59a",
-        text: "Lookup By Username",
-        icon: 'lookup',
-      },
-      {
-        textColor: "#1F2937",
-        color: "#fed59a",
-        text: "Lookup By Phone ",
-        icon: 'phone',
+        color: "red",
+        text: "Delete Checked",
+        icon: "deletePeople",
       },
     ],
   },
@@ -268,7 +256,9 @@ module.exports.URLS = {
   checkListItemUri: `${engine}/server/check-list-items`,
   deleteItem: `${engine}/server/delete-list-item`,
   addPeople: `${engine}/server/add-people`,
+  removePeople: `${engine}/server/remove-people-from-list`,
   lookupUser: `${engine}/server/lookup-user`,
+  getPeopleFromList: `${engine}/server/get-people-from-list`,
 
   // Public endpoints
   createPublicListItemUri: `${engine}/public/shared/create-list-item`,
@@ -278,6 +268,7 @@ module.exports.URLS = {
   deletePublicItem: `${engine}/public/shared/delete-list-item`,
 };
 
+// Generalized messages here
 module.exports.messages = {
   unauthorizedAction:
     "Hmmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities.",
@@ -285,6 +276,7 @@ module.exports.messages = {
     "Hmmm... It seems like you don't have access to this link. Please make sure that you are accessing a list in which you are added.",
 };
 
+// Enum to display cards in landing page
 module.exports.filterCardsBy = {
   all: 0,
   public: 1,
