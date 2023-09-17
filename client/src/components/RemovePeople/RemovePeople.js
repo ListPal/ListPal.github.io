@@ -47,7 +47,6 @@ const RemovePeople = ({
     if (res?.status === 200) {
       const people = res?.body.filter(username => username !== activeContainer?.username)
       setCurrentPeople(people)
-      console.log(res?.body)
     } else if (res?.status === 201) {
       console.log(res);
     } else if (res?.status === 401) {

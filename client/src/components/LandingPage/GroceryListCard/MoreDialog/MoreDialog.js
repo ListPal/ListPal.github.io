@@ -79,7 +79,6 @@ const MoreDialog = ({
     setLoading(true);
     const res = await removePeopleFromList(data);
     if (res?.status === 200) {
-      console.log(res?.body);
       closeDialogueWithoutDelay();
     } else if (res?.status === 201) {
       console.log(res);

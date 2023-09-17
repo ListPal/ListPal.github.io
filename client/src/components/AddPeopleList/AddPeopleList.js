@@ -168,58 +168,63 @@ const AddPeopleList = () => {
               sx={{ color: "#4B5563" }}
             >{`Toggle lookup option`}</Typography>
           </Stack>
-          {lookupByPhone && (
-            <TextField
-              error={message?.error && true}
-              inputRef={textFieldUserRef}
-              label={"Lookup user by phone"}
-              type="tel"
-              helperText={
-                <Typography color={message?.severity} variant="helperText">
-                  {message?.message}
-                </Typography>
-              }
-              inputProps={{
-                maxLength: 10,
-              }}
-              InputProps={{
-                endAdornment: (
-                  <IconButton
-                    disabled={loading}
-                    onClick={() => handleLookupUser()}
-                  >
-                    <SearchIcon />
-                  </IconButton>
-                ),
-              }}
-            />
-          )}
-          {!lookupByPhone && (
-            <TextField
-              type="email"
-              error={message?.error && true}
-              inputRef={textFieldUserRef}
-              label={"Lookup user by email"}
-              helperText={
-                <Typography color={message?.severity} variant="helperText">
-                  {message?.message}
-                </Typography>
-              }
-              inputProps={{
-                maxLength: 100,
-              }}
-              InputProps={{
-                endAdornment: (
-                  <IconButton
-                    disabled={loading}
-                    onClick={() => handleLookupUser()}
-                  >
-                    <SearchIcon />
-                  </IconButton>
-                ),
-              }}
-            />
-          )}
+          <Stack sx={{ width: "95vw" }}>
+            {lookupByPhone && (
+              <TextField
+                sx={{}}
+                error={message?.error && true}
+                inputRef={textFieldUserRef}
+                label={"Lookup user by phone"}
+                type="tel"
+                helperText={
+                  <Typography color={message?.severity} variant="helperText">
+                    {message?.message}
+                  </Typography>
+                }
+                inputProps={{
+                  maxLength: 10,
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton
+                      sx={{ background: "#f2f3ff" }}
+                      disabled={loading}
+                      onClick={() => handleLookupUser()}
+                    >
+                      <SearchIcon />
+                    </IconButton>
+                  ),
+                }}
+              />
+            )}
+            {!lookupByPhone && (
+              <TextField
+                type="email"
+                error={message?.error && true}
+                inputRef={textFieldUserRef}
+                label={"Lookup user by email"}
+                helperText={
+                  <Typography color={message?.severity} variant="helperText">
+                    {message?.message}
+                  </Typography>
+                }
+                inputProps={{
+                  maxLength: 100,
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton
+                      sx={{ background: "#f2f3ff" }}
+                      disabled={loading}
+                      onClick={() => handleLookupUser()}
+                    >
+                      <SearchIcon />
+                    </IconButton>
+                  ),
+                }}
+              />
+            )}
+          </Stack>
         </Stack>
       </Grid>
 
