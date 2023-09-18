@@ -233,8 +233,8 @@ module.exports.dialogueObject = {
 };
 
 // Engines
-// const engine = "https://katespracticespace.com";
-const engine = "http://joses-macbook-pro-3.local:8080";
+const engine = "https://katespracticespace.com";
+// const engine = "http://joses-macbook-pro-3.local:8080";
 
 module.exports.URLS = {
   // Authentication endpoins

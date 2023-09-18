@@ -19,6 +19,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { useLocation, useNavigate } from "react-router-dom";
 import { addPeopleToList } from "../../utils/testApi/testApi";
 import { lookupUser } from "../../utils/testApi/testApi";
@@ -159,6 +160,9 @@ const AddPeopleList = () => {
       <Grid item sx={{ width: "100vw" }}>
         <Stack direction={"column"} spacing={1}>
           <Stack direction={"row"} alignItems={"center"}>
+            <IconButton onClick={() => navigate(-1)}>
+              <ArrowBackIosIcon />
+            </IconButton>
             <Switch
               checked={lookupByPhone}
               onChange={() => setLookupByPhone(!lookupByPhone)}

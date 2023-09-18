@@ -244,7 +244,6 @@ function GroceryListPage({
       scope === groceryListScopes.public
         ? await getPublicList(data)
         : await postRequest(URLS.getListUri, data);
-    setLoading(false);
 
     // Cache it in state
     if (res?.status === 200) {
@@ -270,6 +269,7 @@ function GroceryListPage({
       setAlertMessage("Apologies. Something went wrong on our end.");
       setTimeout(() => setAlertMessage(null), 3000);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
