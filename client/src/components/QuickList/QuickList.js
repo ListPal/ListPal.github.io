@@ -1,55 +1,60 @@
-import { useState } from 'react'
-import QuickDialogue from './QuickDialogue/QuickDialogue'
-import QuickListItem from './QuickListItem/QuickListItem'
-import { dialogueObject, dialogues } from '../../utils/enum'
-import { Typography, Toolbar, Grid, AppBar, Alert, Slide } from '@mui/material'
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
-import AddIcon from '@mui/icons-material/Add'
-import IconButton from '@mui/material/IconButton'
-import ElectricBoltIcon from '@mui/icons-material/ElectricBolt'
-import { useNavigate } from 'react-router-dom'
+import { useState } from "react";
+import QuickDialogue from "./QuickDialogue/QuickDialogue";
+import QuickListItem from "./QuickListItem/QuickListItem";
+import { dialogueObject, dialogues } from "../../utils/enum";
+import { Typography, Toolbar, Grid, AppBar, Alert, Slide } from "@mui/material";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import AddIcon from "@mui/icons-material/Add";
+import IconButton from "@mui/material/IconButton";
+import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
+import { useNavigate } from "react-router-dom";
+import { colors } from "../../utils/enum";
 
 const QuickList = () => {
-  const [itemsArray, setItemsArray] = useState([])
-  const [openDialogue, setOpenDialogue] = useState(dialogues.closed)
-  const navigate = useNavigate()
+  const [itemsArray, setItemsArray] = useState([]);
+  const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
+  const navigate = useNavigate();
 
   return (
     <div
       style={{
-        minHeight: '100vh',
-        overflowX: 'hidden',
+        minHeight: "100vh",
+        overflowX: "hidden",
       }}
     >
       <AppBar
-        component='nav'
+        component="nav"
         sx={{
-          paddingLeft: '10px',
-          width: '105vw',
-          background: '#1F2937',
-          alignItems: 'space-between',
+          paddingLeft: "10px",
+          width: "105vw",
+          background: colors.quickListColors.bold,
+          alignItems: "space-between",
         }}
       >
         <Toolbar>
-          <IconButton size={'medium'} onClick={() => navigate(-1)}>
-            <ArrowBackIosIcon sx={{ color: 'white' }} />
+          <IconButton size={"medium"} onClick={() => navigate(-1)}>
+            <ArrowBackIosIcon sx={{ color: "white" }} />
           </IconButton>
           <Typography
             padding={1}
-            variant='h5'
-            sx={{ color: 'white', flexGrow: 1 }}
+            variant="h5"
+            sx={{ color: "white", flexGrow: 1 }}
           >
-            {'Quick List'} <ElectricBoltIcon />
+            {"Quick List"} <ElectricBoltIcon />
           </Typography>
-          <IconButton onClick={() => {setOpenDialogue(dialogues.addQuickItem)}}>
-            <AddIcon sx={{ color: 'white' }} />
+          <IconButton
+            onClick={() => {
+              setOpenDialogue(dialogues.addQuickItem);
+            }}
+          >
+            <AddIcon sx={{ color: "white" }} />
           </IconButton>
         </Toolbar>
       </AppBar>
-      <Slide className='alert-slide' in={true}>
-        <Alert severity='warning' sx={{marginTop:8}}>
+      <Slide className="alert-slide" in={true}>
+        <Alert severity="warning" sx={{ marginTop: 8 }}>
           {
-            'In QuickList items live on the tab. If you refresh this tab all content will be lost. To have persistent lists and unlock all our features, please create a free account.'
+            "In QuickList items live on the tab. If you refresh this tab all content will be lost. To have persistent lists and unlock all our features, please create a free account."
           }
         </Alert>
       </Slide>
@@ -59,8 +64,8 @@ const QuickList = () => {
         padding={2}
         spacing={2}
         sx={{
-          justifyContent: 'center',
-          justifyItems: 'center',
+          justifyContent: "center",
+          justifyItems: "center",
         }}
       >
         {itemsArray.length > 0 &&
@@ -86,7 +91,7 @@ const QuickList = () => {
         />
       )}
     </div>
-  )
-}
+  );
+};
 
-export default QuickList
+export default QuickList;

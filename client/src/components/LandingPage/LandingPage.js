@@ -58,7 +58,6 @@ const LandingPage = ({
   // Other locals
   const navigate = useNavigate();
   const location = useLocation();
-  const urlParams = new URLSearchParams(location.search);
 
   // Handlers
   const showAlert = (severity, message) => {
@@ -68,7 +67,8 @@ const LandingPage = ({
 
   const checkItems = async () => {
     const data = {
-      containerId: urlParams.get("containerId"),
+      scope: location?.state?.scope,
+      containerId: location?.state?.containerId,
       listId: activeList?.id,
       itemIds: activeList?.groceryListItems
         .filter((item) => item.checked)
@@ -80,11 +80,14 @@ const LandingPage = ({
   const handleLogout = async () => {
     setLoading(true);
     if (activeList?.groceryListItems.length > 0) {
-      // save checked items
+      // Save checked items
       const checkResponse = await checkItems();
-      if (checkResponse?.status === 403) {
+      if (checkResponse?.status === 200) {
+        // Do nothing, success
+      } else if (checkResponse?.status === 403) {
+        // Unauthorized, check login session
         navigate("/");
-      } else if (checkResponse?.status !== 200) {
+      } else {
         showAlert(
           "error",
           "Apologies. Somehing went wrong on our end. Please refresh the page and try again."
@@ -97,6 +100,7 @@ const LandingPage = ({
     // reset states and logout
     const res = await logout();
     if (res.status === 200) {
+      // Reset states and navigate to login page
       setUser(null);
       setActiveContainer({ collapsedLists: [] });
       setActiveList({ groceryListItems: [] });
@@ -116,14 +120,18 @@ const LandingPage = ({
     let userInfoResponse = { user: user };
     if (!userInfoResponse?.user) {
       userInfoResponse = await checkSession();
-      if (userInfoResponse?.status !== 200) navigate("/");
-      setUser(userInfoResponse?.user);
+      if (userInfoResponse?.status !== 200) {
+        navigate("/");
+        return;
+      } else {
+        setUser(userInfoResponse?.user);
+      }
     }
 
     // Fetch lists from container
     const data = {
       userId: userInfoResponse?.user?.id,
-      containerId: urlParams.get("containerId"),
+      containerId: location?.state?.containerId,
     };
     const res = await getAllLists(data);
     if (res?.status === 200) {
@@ -136,7 +144,7 @@ const LandingPage = ({
     } else if (res?.status === 400) {
       console.log(res);
     } else {
-      showAlert("error", "Apologies, we are trying to fix an error.");
+      showAlert("error", messages.genericError);
     }
     setTimeout(() => setLoading(false), 1200);
   };
@@ -151,7 +159,7 @@ const LandingPage = ({
     ) {
       return colors.shoppingColors.low;
     } else {
-      return "#E1F2F6";
+      return colors.fallbackColors.low;
     }
   };
 
@@ -165,11 +173,11 @@ const LandingPage = ({
     ) {
       return colors.shoppingColors.bold;
     } else {
-      return "#1F2937";
+      return colors.fallbackColors.bold;
     }
   };
 
-  const handleEmptyContainerImg = () => {
+  const handleContainerImg = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
       return grocery;
     }
@@ -200,20 +208,22 @@ const LandingPage = ({
   useEffect(() => {
     // Reset altert mesage
     showAlert("info", "No lists yet to display. Create your first list 🥳");
-    // Fetch only if there lists are not cached
-    if (
-      !activeContainer?.collapsedLists ||
-      activeContainer?.collapsedLists.length === 0
-    )
+    // Fetch only if lists are not cached
+    if (activeContainer?.id !== location?.state?.containerId) {
       getAllList();
-    else console.log("Lists are cached. No need to fetch");
-
+    } else {
+      console.debug("Lists are cached. No need to fetch");
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <>
-      <Grid spacing={1} container sx={{ maxWidth: mobileWidth, alignItems:'center' }}>
+      <Grid
+        spacing={1}
+        container
+        sx={{ maxWidth: mobileWidth, alignItems: "center" }}
+      >
         <Grid item>
           <Paper
             elevation={1}
@@ -235,7 +245,7 @@ const LandingPage = ({
                 height={130}
               />
             )}
-            
+
             {/* User Info Menu Bar */}
             {!loading && (
               <Stack
@@ -323,7 +333,7 @@ const LandingPage = ({
             <Paper
               sx={{
                 display: "flex",
-                width:"100vw",
+                width: "100vw",
                 maxWidth: mobileWidth,
                 borderRadius: 0,
                 backgroundColor: handleDeriveBodyColor(),
@@ -428,20 +438,21 @@ const LandingPage = ({
         {/* ListCard below */}
         <Grid item pb>
           {loading && (
-              <Stack width={'100vw'} direction={"column"} mt={5} >
-                <Skeleton
-                  animation={"wave"}
-                  variant="rectangular"
-                  sx={{ maxWidth: mobileWidth }}
-                  height={150}
-                />
-              </Stack>
+            <Stack width={"100vw"} direction={"column"} mt={5}>
+              <Skeleton
+                animation={"wave"}
+                variant="rectangular"
+                sx={{ maxWidth: mobileWidth }}
+                height={150}
+              />
+            </Stack>
           )}
 
           {!loading &&
             activeContainer?.collapsedLists &&
             handlefilterByScope(activeContainer?.collapsedLists).map((e, i) => (
               <GroceryListCard
+                username={user?.username}
                 activeContainer={activeContainer}
                 setActiveContainer={setActiveContainer}
                 listInfo={e}
@@ -457,7 +468,7 @@ const LandingPage = ({
             </Slide>
             <img
               alt="decorative-background"
-              src={handleEmptyContainerImg()}
+              src={handleContainerImg()}
               loading="lazy"
               height={400}
               width={400}

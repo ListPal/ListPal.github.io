@@ -33,6 +33,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../utils/dialoguesValidation";
 
 function Dialogue({
+  containerId,
   item,
   openDialogue,
   setOpenDialogue,
@@ -50,9 +51,9 @@ function Dialogue({
 
   // Other Locals
   const location = useLocation();
-  const navigate = useNavigate();
   const textFieldRef = useRef(null);
-  const urlParams = new URLSearchParams(location.search);
+  const navigate = useNavigate();
+  
 
   // Handlers
   const handleInputValidation = async (input) => {
@@ -127,7 +128,7 @@ function Dialogue({
       name: name,
       quantity: quantity,
       listId: activeList?.id,
-      containerId: urlParams.get('containerId'),
+      containerId: containerId,
       scope: activeList?.scope,
     };
     const uri =
@@ -175,9 +176,10 @@ function Dialogue({
 
     // Check if whoever's deleting the item has permissions
     if (
-      item?.user?.username !== "unknown" &&
+      activeList?.scope !== groceryListScopes.public &&
       user?.username !== item?.user?.username
     ) {
+      console.log(user?.username)
       showAlert(
         "error",
         "You cannot edit this item because you did not create it."
@@ -190,7 +192,7 @@ function Dialogue({
     let updatedItem = { ...item, name: name };
     const data = {
       ...updatedItem,
-      containerId: urlParams.get("containerId"),
+      containerId: containerId,
       scope: activeList?.scope,
     };
     const uri =
@@ -227,7 +229,7 @@ function Dialogue({
 
     // send DELETE request to server
     const data = {
-      containerId: urlParams.get("containerId"),
+      containerId: containerId,
       listId: activeList?.id,
       scope: activeList?.scope,
       itemId: item?.id,
@@ -235,7 +237,7 @@ function Dialogue({
 
     // Check if whoever's deleting the item has permissions
     if (
-      item?.user?.username !== "unknown" &&
+      activeList?.scope !== groceryListScopes.public &&
       user?.username !== item?.user?.username
     ) {
       showAlert(
@@ -271,13 +273,6 @@ function Dialogue({
   };
 
   const handleDeleteEntireList = async () => {
-    if (activeList?.scope === groceryListScopes.public) {
-      showAlert(
-        "warning",
-        "This is a shared list. If you are the owner, go back and delete there."
-      );
-      return;
-    }
     setLoading(true);
     // Validate input
     const valid = await handleInputValidation(textFieldRef.current.value);
@@ -288,7 +283,7 @@ function Dialogue({
     }
 
     // Validate that user entered acknowledgement
-    if (textFieldRef.current.value !== location.state?.listName) {
+    if (textFieldRef.current.value !== activeList?.listName) {
       showAlert(
         "error",
         "Couldn't delete the list.\nMake sure you enter the name of the list correctly (case sensitive)"
@@ -302,7 +297,7 @@ function Dialogue({
 
     // Fetch the DELETE api on the server and send user, container, list info
     const data = {
-      containerId: activeContainer?.id,
+      containerId: containerId,
       scope: activeList?.scope,
       listId: activeList?.id,
     };
@@ -332,21 +327,32 @@ function Dialogue({
     }
   };
 
-  const handleRedirectToVenmo = () => {
-    setLoading(true);
+  const handleRedirectToApple = () => {
     // Redirect to p2p provider
+    setLoading(true);
+    window.open("wallet://cash");
+    setLoading(false);
+  };
+
+  const handleRedirectToVenmo = () => {
+    // Redirect to p2p provider
+    setLoading(true);
     window.open("venmo://accounts");
     setLoading(false);
   };
 
   const handleRedirectToCashapp = () => {
-    setLoading(true);
     // Redirect to p2p provider
+    setLoading(true);
     window.open("cashme://");
     setLoading(false);
   };
 
-  const actions = [handleRedirectToVenmo, handleRedirectToCashapp];
+  const moneyActions = [
+    handleRedirectToApple,
+    handleRedirectToVenmo,
+    handleRedirectToCashapp,
+  ];
 
   return (
     <>
@@ -445,7 +451,7 @@ function Dialogue({
                       } else if (openDialogue === dialogues.deleteItem) {
                         handleDeleteItem(item);
                       } else if (openDialogue === dialogues.sendMoney) {
-                        actions[i]();
+                        moneyActions[i]();
                       }
                     }}
                     sx={{

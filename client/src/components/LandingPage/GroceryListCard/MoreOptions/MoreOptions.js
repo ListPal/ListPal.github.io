@@ -12,7 +12,7 @@ import { dialogues, groceryListScopes } from "../../../../utils/enum";
 import MoreDialog from "../MoreDialog/MoreDialog";
 import { useNavigate } from "react-router-dom";
 
-const MoreOptions = ({ listInfo, activeContainer, setActiveContainer }) => {
+const MoreOptions = ({ listInfo, activeContainer, setActiveContainer, username }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
   const [alert, _] = useState(false);
@@ -61,6 +61,7 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer }) => {
                   state: {
                     containerId: listInfo?.reference,
                     listId: listInfo?.id,
+                    selfUsername: username,
                   },
                 });
               }}

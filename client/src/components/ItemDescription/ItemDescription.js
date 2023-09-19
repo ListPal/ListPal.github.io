@@ -8,6 +8,7 @@ import {
   //   Button,
   //   TextField,
 } from "@mui/material";
+import { colors } from "../../utils/enum";
 
 const ItemDescription = ({
   borderColor,
@@ -46,8 +47,8 @@ const ItemDescription = ({
             borderRadius: 2,
             width: "85vw",
             padding: 2,
-            borderLeft: `5px solid ${borderColor ? borderColor : "#1F2937"}`,
-            borderRight: `5px solid ${borderColor ? borderColor : "#1F2937"}`,
+            borderLeft: `5px solid ${borderColor ? borderColor : colors.quickListColors.bold}`,
+            borderRight: `5px solid ${borderColor ? borderColor : colors.quickListColors.bold}`,
           }}
         >
           <Stack>

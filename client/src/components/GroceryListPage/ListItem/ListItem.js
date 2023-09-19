@@ -32,6 +32,7 @@ const actions = [
 ];
 
 const ListItem = ({
+  containerId,
   identifier,
   listId,
   item,
@@ -223,6 +224,7 @@ const ListItem = ({
 
       {openDialogue && isActive && (
         <Dialogue
+          containerId={containerId}
           setUser={setUser}
           user={user}
           isPublic={activeList?.scope === groceryListScopes.public}

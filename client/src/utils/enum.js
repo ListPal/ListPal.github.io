@@ -1,7 +1,5 @@
 module.exports.mobileWidth = "480px";
 
-module.exports.PUBLIC_CODE = "leknlkenwknlknklwncfc1edi7e2y97ry48032ujdede";
-
 module.exports.groceryContainerTypes = {
   todo: "TODO",
   whishlist: "WISHLIST",
@@ -42,12 +40,13 @@ module.exports.dialogues = {
 };
 
 module.exports.colors = {
+  fallbackColors: {
+    low: "#e8faff",
+    blod: "#2cc8f7",
+  },
   landingPageColors: {
     low: "#eaf6e4",
-    midLow: "#d7ebce",
-    mid: "#bdd7b0",
     bold: "#7b9370",
-    banana: "#f8e3a1",
   },
   todoColors: {
     low: "#F3F4F6",
@@ -57,6 +56,10 @@ module.exports.colors = {
     low: "#E1F2F6",
     bold: "#007CAD",
   },
+  quickListColors: {
+    low: "#E1F2F6",
+    bold: "#1F2937",
+  }
 };
 
 module.exports.newListFormHelperText = {
@@ -233,8 +236,8 @@ module.exports.dialogueObject = {
 };
 
 // Engines
-const engine = "https://katespracticespace.com";
-// const engine = "http://joses-macbook-pro-3.local:8080";
+// const engine = "https://katespracticespace.com";
+const engine = "http://joses-macbook-pro-3.local:8080";
 
 module.exports.URLS = {
   // Authentication endpoins
@@ -259,6 +262,8 @@ module.exports.URLS = {
   removePeople: `${engine}/server/remove-people-from-list`,
   lookupUser: `${engine}/server/lookup-user`,
   getPeopleFromList: `${engine}/server/get-people-from-list`,
+  resetList: `${engine}/server/reset-list`,
+  getSuggestedPeople: `${engine}/server/fetch-suggested-people`,
 
   // Public endpoints
   createPublicListItemUri: `${engine}/public/shared/create-list-item`,
@@ -266,6 +271,7 @@ module.exports.URLS = {
   updatePublicListItemUri: `${engine}/public/shared/update-list-item`,
   checkPublicListItemUri: `${engine}/public/shared/check-list-items`,
   deletePublicItem: `${engine}/public/shared/delete-list-item`,
+  resetPublicList: `${engine}/server/reset-list`,
 };
 
 // Generalized messages here
@@ -274,6 +280,8 @@ module.exports.messages = {
     "Hmmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities.",
   unauthorizedAccess:
     "Hmmm... It seems like you don't have access to this link. Please make sure that you are accessing a list in which you are added.",
+    genericError: "Apologies. Something went wrong on our end.",
+    noList: "Whoops! This link is no longer active.",
 };
 
 // Enum to display cards in landing page

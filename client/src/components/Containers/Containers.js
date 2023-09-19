@@ -21,8 +21,9 @@ const Containers = ({
 
   const checkItems = async () => {
     const data = {
+      scope: activeList?.scope,
       containerId: activeContainer?.id,
-      listId: activeList[0]?.listId,
+      listId: activeList?.id,
       itemIds: activeList?.groceryListItems
         .filter((item) => item.checked)
         .map((item) => item.id),
@@ -33,11 +34,11 @@ const Containers = ({
 
   const handleLogout = async () => {
     if (activeList) {
-      // save checked items
+      // Save checked items
       await checkItems();
     }
 
-    // reset states and logout
+    // Reset states and logout
     const res = await logout();
     if (res.status === 200) {
       setActiveList({ groceryListItems: [] });
@@ -50,7 +51,6 @@ const Containers = ({
 
   useEffect(() => {
     if (!user) navigate("/");
-    else setActiveContainer({ collapsedLists: [] });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
@@ -123,7 +123,6 @@ const Containers = ({
                 <Container
                   key={i}
                   id={user[containerIds[i]]}
-                  setActiveContainer={setActiveContainer}
                   heading={e}
                   imgSrc={imgSources[i]}
                 />

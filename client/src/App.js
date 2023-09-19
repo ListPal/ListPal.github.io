@@ -12,7 +12,7 @@ import AddPeopleList from "./components/AddPeopleList/AddPeopleList";
 
 function App() {
   const [activeList, setActiveList] = useState({ groceryListItems: [] });
-  const [activeContainer, setActiveContainer] = useState(null);
+  const [activeContainer, setActiveContainer] = useState({ collapsedLists: [] });
   const [user, setUser] = useState(null);
   
   return (

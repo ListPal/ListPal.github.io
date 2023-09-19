@@ -171,7 +171,7 @@ const MoreDialog = ({
 
     // Send to db
     const data = {
-      containerId: urlParams.get("containerId"),
+      containerId: activeContainer?.id,
       scope: listInfo?.scope,
       listId: listInfo?.id,
     };

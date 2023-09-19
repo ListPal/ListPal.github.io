@@ -1,5 +1,4 @@
 import {
-  PUBLIC_CODE,
   groceryContainerTypes,
   groceryListScopes,
   mobileWidth,
@@ -20,7 +19,7 @@ import shoppingWallpaper from "../../../utils/assets/shoppingWallpaper.jpg";
 import todoWallpaper from "../../../utils/assets/todoWallpaper.jpg";
 import christmasWallpaper from "../../../utils/assets/christmasWallpaper.jpg";
 
-const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
+const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContainer }) => {
   // States
   const [alertMessage, setAlertMessage] = useState(null);
   const [severity, setSeverity] = useState("info");
@@ -34,33 +33,34 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
   const handleNavigate = () => {
     if (listInfo?.scope === groceryListScopes.public) {
       const data = {
-        containerId: urlParams.get('containerId'),
+        containerId: location?.state?.containerId,
         listName: listInfo?.listName,
         listId: listInfo?.id,
-        cx: PUBLIC_CODE,
       };
       navigate(
         `/list?containerId=${data.containerId}&listId=${data.listId}&scope=${listInfo?.scope}`,
-        { state: data }
+        { state: null }
       );
     } else if (listInfo?.scope === groceryListScopes.restricted) {
       const data = {
         containerId: listInfo?.reference,
         listName: listInfo?.listName,
         listId: listInfo?.id,
+        scope: listInfo?.scope,
       };
       navigate(
-        `/list?containerId=${data.containerId}&listId=${data.listId}&scope=${listInfo?.scope}`,
+        `/list`,
         { state: data }
       );
-    } else {
+    } else { // private
       const data = {
-        containerId:activeContainer?.id,
+        containerId: activeContainer?.id,
         listName: listInfo?.listName,
         listId: listInfo?.id,
+        scope: listInfo?.scope,
       };
       navigate(
-        `/list?containerId=${data.containerId}&listId=${data.listId}&scope=${listInfo?.scope}`,
+        `/list`,
         { state: data }
       );
     }
@@ -119,13 +119,10 @@ const GroceryListCard = ({ listInfo, activeContainer, setActiveContainer }) => {
       </Slide>
 
       {/* All content */}
-      <Stack
-        p
-        direction={"column"}
-        sx={{ alignItems: "center"}}
-      >
+      <Stack p direction={"column"} sx={{ alignItems: "center" }}>
         <Stack width={"100%"} alignItems={"flex-end"}>
           <MoreOptions
+            username={username}
             listInfo={listInfo}
             activeContainer={activeContainer}
             setActiveContainer={setActiveContainer}

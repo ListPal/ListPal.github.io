@@ -21,27 +21,28 @@ import {
 } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { useLocation, useNavigate } from "react-router-dom";
-import { addPeopleToList } from "../../utils/testApi/testApi";
+import { addPeopleToList, postRequest } from "../../utils/testApi/testApi";
 import { lookupUser } from "../../utils/testApi/testApi";
 import {
   peopleLookupValidationByUsername,
   peopleLookupValidationByPhone,
 } from "../../utils/inputValidation";
+import { URLS } from "../../utils/enum";
 
 const AddPeopleList = () => {
-  const navigate = useNavigate();
-  const textFieldUserRef = useRef();
+  // States
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null);
+  const [textfieldMessage, setTextfieldMessage] = useState(null);
   const [alert, setAlert] = useState(null);
   const [lookupByPhone, setLookupByPhone] = useState(true);
   const [peopleToAdd, setPeopleToAdd] = useState([]);
-  const [recent, setRecent] = useState([]);
+  const [suggested, setSuggested] = useState([]);
+  // Other locals
+  const navigate = useNavigate();
+  const textFieldUserRef = useRef();
   const location = useLocation();
 
-  // TODO:
-  const handleFetchRecent = async () => {};
-
+  // Handlers
   const handleShowAlert = (severity, message) => {
     setAlert({
       severity: severity,
@@ -68,14 +69,15 @@ const AddPeopleList = () => {
   };
 
   const handleLookupUser = async () => {
+    // Prepare to call api
     setLoading(true);
-    setMessage(null);
-
+    setTextfieldMessage(null);
+    // Input validation
     const valid = lookupByPhone
       ? await peopleLookupValidationByPhone(textFieldUserRef.current.value)
       : await peopleLookupValidationByUsername(textFieldUserRef.current.value);
     if (!valid?.validated) {
-      setMessage({
+      setTextfieldMessage({
         severity: "error",
         message: valid?.message,
         error: valid?.error,
@@ -84,21 +86,22 @@ const AddPeopleList = () => {
       return;
     }
 
+    // Call API
     const data = {
+      requesterUsername: location?.state?.selfUsername,
       userIdentifier: textFieldUserRef.current.value.toLowerCase(),
       criteria: lookupByPhone ? "PHONE" : "USERNAME",
     };
-
     const res = await lookupUser(data);
     if (res?.status === 200) {
-      setRecent(handleCreateUserSet([res?.body, ...recent].flat()));
-      setMessage({
+      setSuggested(handleCreateUserSet([res?.body, ...suggested].flat()));
+      setTextfieldMessage({
         severity: "green",
         message: "User found successfully ✓",
         error: null,
       });
     } else if (res?.status === 201) {
-      setMessage({
+      setTextfieldMessage({
         severity: "error",
         message: "User not found by this criteria",
         error: null,
@@ -114,29 +117,65 @@ const AddPeopleList = () => {
   };
 
   const handleAddPeople = async () => {
-    const userNamesToAdd = peopleToAdd.map((e) => e.username);
+    setLoading(true);
+
+    // Extract each username from user objects
+    const usernamesToAdd = peopleToAdd.map((user) => user.username);
+
+    // Call API
     const data = {
-      people: userNamesToAdd,
+      people: usernamesToAdd,
       listId: location.state.listId,
       containerId: location.state.containerId,
     };
-    setLoading(true);
     const res = await addPeopleToList(data);
     if (res?.status === 200) {
-      console.log(res?.body);
       navigate(-1);
     } else if (res?.status === 201) {
-      console.log(res);
       handleShowAlert({ severity: "warning", message: "User not found." });
     } else if (res?.status === 401) {
       console.log(res);
       handleShowAlert({
         severity: "error",
-        message: "Hmm... It seems like you are not authorized to do this.",
+        message:
+          "Hmm... It seems like you are not authorized to do this action.",
       });
     } else if (res?.status === 403) {
       console.log(res);
-      navigate("/login");
+      navigate("/");
+    } else {
+      handleShowAlert({
+        severity: "error",
+        message:
+          "Whoops! Something went wrong on our end. We are working to fix this",
+      });
+      console.log(res);
+    }
+    setLoading(false);
+  };
+
+  const handleFetchSuggested = async () => {
+    setLoading(true)
+    const data = {
+      userIdentifier: location?.state?.selfUsername,
+      criteria: "USERNAME",
+    };
+    const res = await postRequest(URLS.getSuggestedPeople, data);
+    if (res?.status === 200) {
+      console.log(res?.body)
+      setSuggested(res?.body)
+    } else if (res?.status === 201) {
+      console.log(res)
+    } else if (res?.status === 401) {
+      console.log(res);
+      handleShowAlert({
+        severity: "error",
+        message:
+          "Hmm... It seems like you are not authorized to do this action.",
+      });
+    } else if (res?.status === 403) {
+      console.log(res);
+      navigate("/");
     } else {
       handleShowAlert({
         severity: "error",
@@ -150,9 +189,11 @@ const AddPeopleList = () => {
 
   useEffect(() => {
     if (!(location.state?.listId && location.state?.containerId)) {
-      navigate(-1);
+      navigate("/");
     } else {
-      handleFetchRecent();
+      handleFetchSuggested();
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }
   }, []);
   return (
@@ -176,13 +217,16 @@ const AddPeopleList = () => {
             {lookupByPhone && (
               <TextField
                 sx={{}}
-                error={message?.error && true}
+                error={textfieldMessage?.error && true}
                 inputRef={textFieldUserRef}
                 label={"Lookup user by phone"}
                 type="tel"
                 helperText={
-                  <Typography color={message?.severity} variant="helperText">
-                    {message?.message}
+                  <Typography
+                    color={textfieldMessage?.severity}
+                    variant="helperText"
+                  >
+                    {textfieldMessage?.message}
                   </Typography>
                 }
                 inputProps={{
@@ -204,12 +248,15 @@ const AddPeopleList = () => {
             {!lookupByPhone && (
               <TextField
                 type="email"
-                error={message?.error && true}
+                error={textfieldMessage?.error && true}
                 inputRef={textFieldUserRef}
                 label={"Lookup user by email"}
                 helperText={
-                  <Typography color={message?.severity} variant="helperText">
-                    {message?.message}
+                  <Typography
+                    color={textfieldMessage?.severity}
+                    variant="helperText"
+                  >
+                    {textfieldMessage?.message}
                   </Typography>
                 }
                 inputProps={{
@@ -244,7 +291,7 @@ const AddPeopleList = () => {
             maxHeight: "65vh",
           }}
         >
-          {recent.map((user, i) => {
+          {suggested.map((user, i) => {
             const labelId = `checkbox-list-secondary-label-${user}`;
             return (
               <ListItem

@@ -33,7 +33,7 @@ import {
   newListFormHelperText,
   radioGroupHelperTextObject,
 } from "../../../utils/enum";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../utils/dialoguesValidation";
 
 function NewListForm({
@@ -52,8 +52,6 @@ function NewListForm({
 
   // Other locals
   const listNameRef = useRef(null);
-  const location = useLocation();
-  const urlParams = new URLSearchParams(location.search);
   const navigate = useNavigate();
 
   // Handlers
@@ -131,7 +129,7 @@ function NewListForm({
 
     const data = {
       userId: user?.id,
-      containerId: urlParams.get("containerId"),
+      containerId: activeContainer?.id,
       listName: name,
       scope: listScope,
     };

@@ -8,15 +8,7 @@ import {
   groceryContainerTypes,
   messages,
 } from "../../utils/enum";
-import {
-  Typography,
-  Toolbar,
-  Grid,
-  AppBar,
-  Slide,
-  Alert,
-  Skeleton,
-} from "@mui/material";
+import { Typography, Toolbar, Grid, AppBar, Slide, Alert } from "@mui/material";
 import {
   getPublicList,
   postRequest,
@@ -58,9 +50,15 @@ function GroceryListPage({
   // Other globals
   let groupedByCurrentIdx = 0; // global var that keeps the idx count to decide when to display the identifier in the lis item
   const urlParams = new URLSearchParams(location.search);
-  const containerId = urlParams.get("containerId");
-  const listId = urlParams.get("listId");
-  const scope = urlParams.get("scope");
+  const containerId = location?.state
+    ? location?.state?.containerId
+    : urlParams.get("containerId");
+  const listId = location?.state
+    ? location?.state?.listId
+    : urlParams.get("listId");
+  const scope = location?.state
+    ? location?.state?.scope
+    : urlParams.get("scope");
   const navigate = useNavigate();
 
   // Handlers
@@ -103,9 +101,9 @@ function GroceryListPage({
 
   const handleSync = async () => {
     setLoading(true);
-    const res = await handleCheckItems(scope);
+    const res = await handleCheckItems();
     if (res?.status === 200) {
-      handleFetchList(scope);
+      handleFetchList();
     } else if (res?.status === 400) {
       console.log(res);
     } else if (res?.status === 403) {
@@ -203,35 +201,34 @@ function GroceryListPage({
   };
 
   const handleFetchContainer = async (data) => {
-    if (!activeContainer) {
-      console.log("fetching container with container id: " + data.containerId);
-      const containerInfoResponse = await getAllLists(data);
-      if (containerInfoResponse?.status === 200) {
-        setActiveContainer(containerInfoResponse?.body);
-        return containerInfoResponse;
-      } else if (containerInfoResponse?.status === 403) {
-        console.log(containerInfoResponse);
-        navigate("/");
-      } else if (containerInfoResponse?.status === 401) {
-        console.log(containerInfoResponse);
-        navigate(-1);
-      } else {
-        console.log(containerInfoResponse);
-        navigate(-1);
-      }
+    console.log("fetching container with container id: " + data.containerId);
+    const containerInfoResponse = await getAllLists(data);
+    if (containerInfoResponse?.status === 200) {
+      setActiveContainer(containerInfoResponse?.body);
+      return containerInfoResponse;
+    } else if (containerInfoResponse?.status === 403) {
+      console.log(containerInfoResponse);
+      navigate("/");
+    } else if (containerInfoResponse?.status === 401) {
+      console.log(containerInfoResponse);
+      navigate(-1);
+    } else {
+      console.log(containerInfoResponse);
+      navigate(-1);
     }
   };
 
   const handleAtomicUserAndContainerFetch = async () => {
     const user = await handleFetchUserInfo();
-    await handleFetchContainer({
+    const container = await handleFetchContainer({
       userId: user?.user?.id,
       containerId: containerId,
       scope: scope,
     });
+    return user, container;
   };
 
-  const handleFetchList = async (scope) => {
+  const handleFetchList = async () => {
     // Reset states
     setActiveList(null);
     const data = {
@@ -252,7 +249,7 @@ function GroceryListPage({
       setAlertMessage(null);
       const activeListMap = await handleGroupByUsername(
         res?.body?.groceryListItems
-      ); // Map: username => items
+      ); // Map engineering: username => items
       const responseBody = await {
         ...res?.body,
         groceryListItems: Array.from(activeListMap.values()).flat(),
@@ -266,7 +263,11 @@ function GroceryListPage({
       navigate("/");
     } else {
       console.log(res);
-      setAlertMessage("Apologies. Something went wrong on our end.");
+      if (scope === groceryListScopes.public) {
+        setAlertMessage(messages.noList);
+      } else {
+        setAlertMessage(messages.genericError);
+      }
       setTimeout(() => setAlertMessage(null), 3000);
     }
     setLoading(false);
@@ -278,19 +279,19 @@ function GroceryListPage({
       handleAtomicUserAndContainerFetch();
     }
 
-    // Check for cached list only if list is not public
+    // Check for cached list items
     if (activeList?.groceryListItems[0]?.listId === listId) {
-      console.log("no need to fetch items.");
+      console.debug("No need to fetch items.");
       return;
     }
 
     // Mark items checked
     if (activeList?.groceryListItems.length > 0) {
-      handleCheckItems(scope);
+      handleCheckItems();
     }
 
     // Fetch new active list
-    handleFetchList(scope);
+    handleFetchList();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -313,7 +314,7 @@ function GroceryListPage({
       <AppBar
         component="nav"
         sx={{
-          pb:1,
+          pb: 1,
           height: 60,
           width: "100vw",
           maxWidth: mobileWidth,
@@ -327,9 +328,11 @@ function GroceryListPage({
             <ArrowBackIosIcon sx={{ color: "white" }} />
           </IconButton>
 
-          <IconButton size="small" disabled={loading} onClick={handleSync}>
-            <SyncIcon sx={{ color: "white" }} />
-          </IconButton>
+          {scope !== groceryListScopes.private && (
+            <IconButton size="small" disabled={loading} onClick={handleSync}>
+              <SyncIcon sx={{ color: "white" }} />
+            </IconButton>
+          )}
 
           <Typography
             padding={1}
@@ -355,14 +358,15 @@ function GroceryListPage({
             <AddIcon sx={{ color: "white" }} />
           </IconButton>
 
-          <IconButton
-            size="small"
-            disabled={activeList?.scope === groceryListScopes.public}
-            variant="contained"
-            onClick={() => setOpenDialogue(dialogues.deleteList)}
-          >
-            <DeleteIcon sx={{ color: "red" }} />
-          </IconButton>
+          {containerId === activeContainer?.id && (
+            <IconButton
+              size="small"
+              variant="contained"
+              onClick={() => setOpenDialogue(dialogues.deleteList)}
+            >
+              <DeleteIcon sx={{ color: "red" }} />
+            </IconButton>
+          )}
         </Toolbar>
       </AppBar>
 
@@ -397,6 +401,7 @@ function GroceryListPage({
                 user={user}
                 setUser={setUser}
                 key={i + "item"}
+                containerId={containerId}
               />
             </Grid>
           ))}
@@ -404,6 +409,7 @@ function GroceryListPage({
         {(openDialogue === dialogues.addItem ||
           openDialogue === dialogues.deleteList) && (
           <Dialogue
+            containerId={containerId}
             setUser={setUser}
             user={user}
             setOpenDialogue={setOpenDialogue}
