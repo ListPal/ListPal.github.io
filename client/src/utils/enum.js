@@ -37,6 +37,7 @@ module.exports.dialogues = {
   deletePeople: "deletePeople",
   sendMoney: "sendMoney",
   addQuickItem: "addQuickItem",
+  resetList: "resetList",
 };
 
 module.exports.colors = {
@@ -59,7 +60,7 @@ module.exports.colors = {
   quickListColors: {
     low: "#E1F2F6",
     bold: "#1F2937",
-  }
+  },
 };
 
 module.exports.newListFormHelperText = {
@@ -233,11 +234,30 @@ module.exports.dialogueObject = {
       },
     ],
   },
+  resetList: {
+    header: "Reset List",
+    textFields: [
+      {
+        defaultValue: true,
+        hidden: false,
+        text: "Verify the name of the list",
+        helperText: "You agree to reset the list",
+      },
+    ],
+    button: [
+      {
+        textColor: "black",
+        color: "red",
+        text: "Reset All Items",
+        icon: "deleteIcon",
+      },
+    ],
+  },
 };
 
 // Engines
-// const engine = "https://katespracticespace.com";
-const engine = "http://joses-macbook-pro-3.local:8080";
+const engine = "https://katespracticespace.com";
+// const engine = "http://joses-macbook-pro-3.local:8080";
 
 module.exports.URLS = {
   // Authentication endpoins
@@ -264,7 +284,7 @@ module.exports.URLS = {
   getPeopleFromList: `${engine}/server/get-people-from-list`,
   resetList: `${engine}/server/reset-list`,
   getSuggestedPeople: `${engine}/server/fetch-suggested-people`,
-
+  resetList: `${engine}/server/reset-list`,
   // Public endpoints
   createPublicListItemUri: `${engine}/public/shared/create-list-item`,
   getPublicListUri: `${engine}/public/shared/get-list`,
@@ -280,8 +300,8 @@ module.exports.messages = {
     "Hmmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities.",
   unauthorizedAccess:
     "Hmmm... It seems like you don't have access to this link. Please make sure that you are accessing a list in which you are added.",
-    genericError: "Apologies. Something went wrong on our end.",
-    noList: "Whoops! This link is no longer active.",
+  genericError: "Apologies. Something went wrong on our end.",
+  noList: "Whoops! This link is no longer active.",
 };
 
 // Enum to display cards in landing page

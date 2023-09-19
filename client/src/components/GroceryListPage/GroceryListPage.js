@@ -185,7 +185,6 @@ function GroceryListPage({
   const handleFetchUserInfo = async () => {
     // Get user info if the user object is null
     if (!user) {
-      console.log("fetching user");
       const userInfoResponse = await checkSession();
       if (userInfoResponse?.status === 200) {
         setUser(userInfoResponse?.user);
@@ -201,7 +200,7 @@ function GroceryListPage({
   };
 
   const handleFetchContainer = async (data) => {
-    console.log("fetching container with container id: " + data.containerId);
+    console.debug("fetching container with container id: " + data.containerId);
     const containerInfoResponse = await getAllLists(data);
     if (containerInfoResponse?.status === 200) {
       setActiveContainer(containerInfoResponse?.body);
@@ -362,7 +361,7 @@ function GroceryListPage({
             <IconButton
               size="small"
               variant="contained"
-              onClick={() => setOpenDialogue(dialogues.deleteList)}
+              onClick={() => setOpenDialogue(dialogues.resetList)}
             >
               <DeleteIcon sx={{ color: "red" }} />
             </IconButton>
@@ -407,7 +406,7 @@ function GroceryListPage({
           ))}
 
         {(openDialogue === dialogues.addItem ||
-          openDialogue === dialogues.deleteList) && (
+          openDialogue === dialogues.resetList) && (
           <Dialogue
             containerId={containerId}
             setUser={setUser}

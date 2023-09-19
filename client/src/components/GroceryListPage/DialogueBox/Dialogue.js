@@ -28,6 +28,7 @@ import {
   deleteList,
   deleteItem,
   deletePublicItem,
+  deleteRequest,
 } from "../../../utils/testApi/testApi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../utils/dialoguesValidation";
@@ -70,7 +71,7 @@ function Dialogue({
   const deriveDefaultText = () => {
     if (openDialogue === dialogues.addItem) return "";
     if (openDialogue === dialogues.sendMoney) return "";
-    if (openDialogue === dialogues.deleteList) return location.state?.listName;
+    if (openDialogue === dialogues.resetList) return location.state?.listName;
     return item?.name;
   };
 
@@ -272,7 +273,7 @@ function Dialogue({
     }
   };
 
-  const handleDeleteEntireList = async () => {
+  const handleResetList = async () => {
     setLoading(true);
     // Validate input
     const valid = await handleInputValidation(textFieldRef.current.value);
@@ -286,7 +287,7 @@ function Dialogue({
     if (textFieldRef.current.value !== activeList?.listName) {
       showAlert(
         "error",
-        "Couldn't delete the list.\nMake sure you enter the name of the list correctly (case sensitive)"
+        "Couldn't reset the list.\nMake sure you enter the name of the list correctly (case sensitive)"
       );
       setTimeout(() => {
         hideAlert();
@@ -302,17 +303,12 @@ function Dialogue({
       listId: activeList?.id,
     };
 
-    const res = await deleteList(data);
+    const res = await deleteRequest(URLS.resetList, data)
     if (res?.status === 200) {
-      const updatedLists = activeContainer?.collapsedLists.filter(
-        (list) => list.id !== activeList?.id
-      );
-      setActiveContainer((container) => {
-        return { ...container, collapsedLists: updatedLists };
+      setActiveList((activeList) => {
+        return { ...activeList, groceryListItems: [] };
       });
-      setSeverity("info");
-      setAlertMessage("No lists yet to display. Create your first list 🥳");
-      navigate(-1);
+      closeDialogueWithoutDelay()
     } else if (res?.status === 403) {
       navigate("/");
     } else if (res?.status === 401) {
@@ -444,8 +440,8 @@ function Dialogue({
                     onClick={() => {
                       if (openDialogue === dialogues.addItem) {
                         handleAddItem(textFieldRef.current.value);
-                      } else if (openDialogue === dialogues.deleteList) {
-                        handleDeleteEntireList();
+                      } else if (openDialogue === dialogues.resetList) {
+                        handleResetList();
                       } else if (openDialogue === dialogues.editItem) {
                         handleEditItem(textFieldRef.current.value);
                       } else if (openDialogue === dialogues.deleteItem) {

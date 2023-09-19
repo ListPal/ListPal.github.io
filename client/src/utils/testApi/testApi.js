@@ -183,4 +183,4 @@ const deleteRequest = async (url, data) => {
   return responseJson
 }
 
-export {logout, checkSession, deleteItem, deleteList, getAllLists, getPublicList, deletePublicItem, postRequest, lookupUser, addPeopleToList, removePeopleFromList}
+export {logout, checkSession, deleteItem, deleteList, getAllLists, getPublicList, deletePublicItem, postRequest, deleteRequest, lookupUser, addPeopleToList, removePeopleFromList}
