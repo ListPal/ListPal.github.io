@@ -39,6 +39,22 @@ import grocery from "../../utils/assets/grocery.jpg";
 import shop from "../../utils/assets/shop.jpg";
 import todo from "../../utils/assets/todo.jpg";
 
+const meta = {
+  meta: {
+    charSet: "utf-8",
+    name: {
+      themeColor: "#ff5733",
+    },
+    itemProp: {
+      name: "theme-color",
+      content: "green",
+    },
+  },
+  auto: {
+    ograph: true,
+  },
+};
+
 const LandingPage = ({
   activeList,
   setActiveList,
@@ -219,6 +235,7 @@ const LandingPage = ({
 
   return (
     <>
+      <meta name="theme-color" content="white" />
       <Grid
         spacing={1}
         container

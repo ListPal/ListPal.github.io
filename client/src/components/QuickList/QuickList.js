@@ -22,6 +22,7 @@ const QuickList = () => {
         overflowX: "hidden",
       }}
     >
+      <meta name="theme-color" content={colors.quickListColors.bold} />
       <AppBar
         component="nav"
         sx={{

@@ -88,6 +88,7 @@ const Login = ({ setActiveContainer, setUser }) => {
         maxWidth: mobileWidth,
       }}
     >
+      <meta name="theme-color" content="white" />
       <img
         alt="login-decoration"
         src={vector}
@@ -171,10 +172,10 @@ const Login = ({ setActiveContainer, setUser }) => {
             width: "80vw",
             maxWidth: mobileWidth,
             borderRadius:'20px 0px 20px 0px',
-            background: "#1F2937",
+            background: colors.quickListColors.bold,
             "&:hover": {
-              background: "#1F2937",
-              border: `2px solid #1F2937`,
+              background: colors.quickListColors.bold,
+              border: `2px solid ${colors.quickListColors.bold}`,
             },
           }}
           variant="contained"

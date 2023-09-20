@@ -13,7 +13,7 @@ import {
 } from "../../utils/inputValidation";
 import { useState, useRef } from "react";
 import { postRequest, logout } from "../../utils/testApi/testApi";
-import { URLS, mobileWidth } from "../../utils/enum";
+import { URLS, colors, mobileWidth } from "../../utils/enum";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -21,7 +21,8 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 const Register = ({ setUser, setActiveList }) => {
   const [isPasswordVisibile, setIsPasswordVisible] = useState(false);
-  const [isConfirmPasswordVisibile, setIsConfirmPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisibile, setIsConfirmPasswordVisible] =
+    useState(false);
   const [loading, setLoading] = useState(false);
   const [validation, setValidation] = useState({
     validated: true,
@@ -49,7 +50,7 @@ const Register = ({ setUser, setActiveList }) => {
   };
 
   const handleDeriveVisibilityIcon = (visibilityState, setVisibilityState) => {
-    setVisibilityState(!visibilityState)
+    setVisibilityState(!visibilityState);
   };
 
   const handleRegister = async (name, lastName, username, password, phone) => {
@@ -118,6 +119,7 @@ const Register = ({ setUser, setActiveList }) => {
 
   return (
     <>
+      <meta name="theme-color" content={colors.quickListColors.bold} />
       {loading && (
         <>
           <CircularProgress
@@ -246,8 +248,20 @@ const Register = ({ setUser, setActiveList }) => {
             }}
             InputProps={{
               endAdornment: (
-                <IconButton size="small" onClick={() => handleDeriveVisibilityIcon(isPasswordVisibile, setIsPasswordVisible)}>
-                  {isPasswordVisibile ? <VisibilityOffIcon /> : <VisibilityIcon/> }
+                <IconButton
+                  size="small"
+                  onClick={() =>
+                    handleDeriveVisibilityIcon(
+                      isPasswordVisibile,
+                      setIsPasswordVisible
+                    )
+                  }
+                >
+                  {isPasswordVisibile ? (
+                    <VisibilityOffIcon />
+                  ) : (
+                    <VisibilityIcon />
+                  )}
                 </IconButton>
               ),
             }}
@@ -271,8 +285,20 @@ const Register = ({ setUser, setActiveList }) => {
             }}
             InputProps={{
               endAdornment: (
-                <IconButton size="small" onClick={() => handleDeriveVisibilityIcon(isConfirmPasswordVisibile, setIsConfirmPasswordVisible)}>
-                  {isConfirmPasswordVisibile ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                <IconButton
+                  size="small"
+                  onClick={() =>
+                    handleDeriveVisibilityIcon(
+                      isConfirmPasswordVisibile,
+                      setIsConfirmPasswordVisible
+                    )
+                  }
+                >
+                  {isConfirmPasswordVisibile ? (
+                    <VisibilityOffIcon />
+                  ) : (
+                    <VisibilityIcon />
+                  )}
                 </IconButton>
               ),
             }}
@@ -283,9 +309,10 @@ const Register = ({ setUser, setActiveList }) => {
               validation.error === validationErrors.phone_length
             }
             helperText={
-              (validation.error === validationErrors.phone_regex ||
-                validation.error === validationErrors.phone_length) ?
-              validation?.message : 'We will not share your phone number.'
+              validation.error === validationErrors.phone_regex ||
+              validation.error === validationErrors.phone_length
+                ? validation?.message
+                : "We will not share your phone number."
             }
             id="phone-mumber-input"
             label="Phone Number"

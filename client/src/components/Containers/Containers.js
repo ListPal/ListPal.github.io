@@ -55,6 +55,7 @@ const Containers = ({
   }, []);
   return (
     <>
+      <meta name="theme-color" content="white" />
       <Grid
         sx={{
           display: "flex",

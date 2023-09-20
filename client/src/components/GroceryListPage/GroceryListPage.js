@@ -8,7 +8,15 @@ import {
   groceryContainerTypes,
   messages,
 } from "../../utils/enum";
-import { Typography, Toolbar, Grid, AppBar, Slide, Alert } from "@mui/material";
+import {
+  Typography,
+  Toolbar,
+  Grid,
+  AppBar,
+  Slide,
+  Alert,
+  Stack,
+} from "@mui/material";
 import {
   getPublicList,
   postRequest,
@@ -17,20 +25,21 @@ import {
 } from "../../utils/testApi/testApi";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useLocation, useNavigate } from "react-router-dom";
-import DeleteIcon from "@mui/icons-material/Delete";
+import {useLocation, useNavigate } from "react-router-dom";
 import { truncateString } from "../../utils/helper";
 import IconButton from "@mui/material/IconButton";
-import SyncIcon from "@mui/icons-material/Sync";
-import AddIcon from "@mui/icons-material/Add";
+import AutoDeleteOutlinedIcon from '@mui/icons-material/AutoDeleteOutlined';
+
 import Dialogue from "./DialogueBox/Dialogue";
 import { useState, useEffect } from "react";
 import ListItem from "./ListItem/ListItem";
+
 // IMGS
 import groceryWallpaper from "../../utils/assets/card1.jpg";
 import todoWallpaper from "../../utils/assets/todoWallpaperPlus.jpg";
 import shoppingWallpaper from "../../utils/assets/shoppingWallpaperPlus.jpg";
 import christmasWallpaperPlus from "../../utils/assets/christmasWallpaperPlus.jpg";
+import BottomBar from "./BottomBar/BottomBar";
 
 function GroceryListPage({
   activeList,
@@ -47,6 +56,7 @@ function GroceryListPage({
   const [groupedByIdentifier, setGroupedByIdentifier] = useState([]);
   const [loading, setLoading] = useState(false);
   const [listName, setListName] = useState(location.state?.listName);
+  
   // Other globals
   let groupedByCurrentIdx = 0; // global var that keeps the idx count to decide when to display the identifier in the lis item
   const urlParams = new URLSearchParams(location.search);
@@ -122,7 +132,7 @@ function GroceryListPage({
       groupedByIdentifier.indexOf(identifier) === -1 ||
       groupedByIdentifier.indexOf(identifier) === 0
     ) {
-      return handleDeriveThemeColor();
+      return handleDeriveThemeColor().bold;
     }
     return borderColors[groupedByIdentifier.indexOf(identifier)];
   };
@@ -162,24 +172,42 @@ function GroceryListPage({
 
   const handleDeriveThemeColor = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
-      return colors.landingPageColors.bold;
+      return {
+        bold: colors.landingPageColors.bold,
+        low: colors.landingPageColors.low,
+      };
     }
     if (activeContainer?.containerType === groceryContainerTypes.todo) {
-      return colors.todoColors.bold;
+      return {
+        bold: colors.todoColors.bold,
+        low: colors.todoColors.low,
+      };
     }
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
-      return colors.shoppingColors.bold;
+      return {
+        bold: colors.shoppingColors.bold,
+        low: colors.shoppingColors.low,
+      };
     }
     if (containerId.includes(groceryContainerTypes.grocery)) {
-      return colors.landingPageColors.bold;
+      return {
+        bold: colors.landingPageColors.bold,
+        low: colors.landingPageColors.low,
+      };
     }
     if (containerId.includes(groceryContainerTypes.todo)) {
-      return colors.todoColors.bold;
+      return {
+        bold: colors.todoColors.bold,
+        low: colors.todoColors.low,
+      };
     }
     if (containerId.includes(groceryContainerTypes.whishlist)) {
-      return colors.shoppingColors.bold;
+      return {
+        bold: colors.shoppingColors.bold,
+        low: colors.shoppingColors.low,
+      };
     }
-    return "#0D324F";
+    return {bold: "#0D324F", low: "lightgray"};
   };
 
   const handleFetchUserInfo = async () => {
@@ -297,6 +325,7 @@ function GroceryListPage({
 
   return (
     <>
+      <meta name="theme-color" content={handleDeriveThemeColor().bold} />
       {loading && (
         <CircularProgress
           color={"success"}
@@ -313,59 +342,47 @@ function GroceryListPage({
       <AppBar
         component="nav"
         sx={{
-          pb: 1,
-          height: 60,
-          width: "100vw",
-          maxWidth: mobileWidth,
-          background: handleDeriveThemeColor(),
-          alignItems: "space-between",
           left: 0,
+          pb: 1,
+          maxWidth: mobileWidth,
+          background: handleDeriveThemeColor().bold,
         }}
       >
-        <Toolbar>
-          <IconButton size="small" onClick={() => navigate(-1)}>
-            <ArrowBackIosIcon sx={{ color: "white" }} />
-          </IconButton>
-
-          {scope !== groceryListScopes.private && (
-            <IconButton size="small" disabled={loading} onClick={handleSync}>
-              <SyncIcon sx={{ color: "white" }} />
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Stack direction={"row"}>
+            <IconButton size="small" onClick={() => navigate(-1)}>
+              <ArrowBackIosIcon sx={{ color: "white" }} />
             </IconButton>
-          )}
-
-          <Typography
-            padding={1}
-            variant="h5"
-            sx={{ color: "white", flexGrow: 1 }}
-          >
-            {listName && (
-              <Typography fontSize={16} variant="button">
-                {truncateString(listName, 20)}
-              </Typography>
-            )}
-            {!listName && (
-              <Typography fontSize={16} variant="button">
-                UNKNOWN LIST
-              </Typography>
-            )}
-          </Typography>
-
-          <IconButton
-            size="small"
-            onClick={() => setOpenDialogue(dialogues.addItem)}
-          >
-            <AddIcon sx={{ color: "white" }} />
-          </IconButton>
-
-          {containerId === activeContainer?.id && (
-            <IconButton
-              size="small"
-              variant="contained"
-              onClick={() => setOpenDialogue(dialogues.resetList)}
+            <Typography
+              padding={1}
+              variant="h5"
+              sx={{ color: "white", flexGrow: 1 }}
             >
-              <DeleteIcon sx={{ color: "red" }} />
-            </IconButton>
-          )}
+              {listName && (
+                <Typography fontSize={16} variant="button">
+                  {truncateString(listName, 20)}
+                </Typography>
+              )}
+              {!listName && (
+                <Typography fontSize={16} variant="button">
+                  UNKNOWN LIST
+                </Typography>
+              )}
+            </Typography>
+          </Stack>
+          <Stack direction={"row"} justifyContent={"space-around"}>
+            
+            {/* Reset List */}
+            {/* {containerId === activeContainer?.id && scope !== groceryListScopes.public && (
+              <IconButton
+                size="small"
+                variant="contained"
+                onClick={() => setOpenDialogue(dialogues.resetList)}
+              >
+                <AutoDeleteOutlinedIcon sx={{ color: 'white' }} />
+              </IconButton>
+            )} */}
+          </Stack>
         </Toolbar>
       </AppBar>
 
@@ -379,6 +396,7 @@ function GroceryListPage({
           justifyContent: "center",
           justifyItems: "center",
           maxWidth: mobileWidth,
+          pb: "9vh",
         }}
       >
         {!loading &&
@@ -420,6 +438,13 @@ function GroceryListPage({
           />
         )}
       </Grid>
+
+      <BottomBar
+        scope={scope}
+        handleSync={handleSync}
+        setOpenDialogue={setOpenDialogue}
+        handleDeriveThemeColor={handleDeriveThemeColor}
+      />
 
       {/* Alert  messages*/}
       <Slide className="alert-slide" in={alertMessage && true}>

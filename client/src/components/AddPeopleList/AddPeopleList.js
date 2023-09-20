@@ -198,6 +198,7 @@ const AddPeopleList = () => {
   }, []);
   return (
     <Grid container spacing={4} p>
+      <meta name="theme-color" content="white" />
       <Grid item sx={{ width: "100vw" }}>
         <Stack direction={"column"} spacing={1}>
           <Stack direction={"row"} alignItems={"center"}>

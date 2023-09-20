@@ -241,13 +241,13 @@ const dialogueObject = {
         defaultValue: true,
         hidden: false,
         text: "Verify the name of the list",
-        helperText: "You agree to reset the list",
+        helperText: "This will delete all items, but preserve the list",
       },
     ],
     button: [
       {
         textColor: "black",
-        color: "red",
+        color: "#fed59a",
         text: "Reset All Items",
         icon: "deleteIcon",
       },
