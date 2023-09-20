@@ -1,18 +1,18 @@
-module.exports.mobileWidth = "480px";
+const mobileWidth = "480px";
 
-module.exports.groceryContainerTypes = {
+const groceryContainerTypes = {
   todo: "TODO",
   whishlist: "WISHLIST",
   grocery: "GROCERY",
 };
 
-module.exports.groceryListScopes = {
+const groceryListScopes = {
   public: "PUBLIC",
   private: "PRIVATE",
   restricted: "RESTRICTED",
 };
 
-module.exports.borderColors = [
+const borderColors = [
   "#7b9370",
   "#F0B323",
   "#30C8C9",
@@ -25,7 +25,7 @@ module.exports.borderColors = [
   "#FF6969",
 ];
 
-module.exports.dialogues = {
+const dialogues = {
   closed: null,
   addItem: "addItem",
   deleteList: "deleteList",
@@ -40,7 +40,7 @@ module.exports.dialogues = {
   resetList: "resetList",
 };
 
-module.exports.colors = {
+const colors = {
   fallbackColors: {
     low: "#e8faff",
     blod: "#2cc8f7",
@@ -63,19 +63,19 @@ module.exports.colors = {
   },
 };
 
-module.exports.newListFormHelperText = {
+const newListFormHelperText = {
   shopping: "(e.g. Christmas Shopping List, Kate's Birthday)",
   grocery: "(e.g. Walmart List, Thanksgiving Party, Dinner Recipe)",
   todo: "(e.g. Home Remodel Project 🏠, Work to-do List)",
 };
 
-module.exports.radioGroupHelperTextObject = {
+const radioGroupHelperTextObject = {
   private: "PRIVATE",
   public: "PUBLIC",
   restricted: "RESTRICTED",
 };
 
-module.exports.dialogueObject = {
+const dialogueObject = {
   addItem: {
     header: "Add Item",
     textFields: [
@@ -259,7 +259,7 @@ module.exports.dialogueObject = {
 const engine = "https://katespracticespace.com";
 // const engine = "http://joses-macbook-pro-3.local:8080";
 
-module.exports.URLS = {
+const URLS = {
   // Authentication endpoins
   registerUri: `${engine}/api/v1/auth/register`,
   loginUri: `${engine}/api/v1/auth/authenticate`,
@@ -295,7 +295,7 @@ module.exports.URLS = {
 };
 
 // Generalized messages here
-module.exports.messages = {
+const messages = {
   unauthorizedAction:
     "Hmmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities.",
   unauthorizedAccess:
@@ -305,9 +305,11 @@ module.exports.messages = {
 };
 
 // Enum to display cards in landing page
-module.exports.filterCardsBy = {
+const filterCardsBy = {
   all: 0,
   public: 1,
   private: 2,
   restricted: 3,
 };
+
+export {messages, filterCardsBy, URLS, mobileWidth, groceryContainerTypes, groceryListScopes, borderColors, dialogues, colors, newListFormHelperText, radioGroupHelperTextObject, dialogueObject, }
