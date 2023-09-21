@@ -13,7 +13,7 @@ const Container = ({ heading, imgSrc, id }) => {
   const navigate = useNavigate();
 
   const handleClickContainer = () => {
-    navigate(`/container`, { state: { containerId: id } });
+    navigate(`/container`, { state: { containerId: id} });
   };
 
   return (

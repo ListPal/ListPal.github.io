@@ -35,6 +35,7 @@ import {
 } from "../../../utils/enum";
 import { useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../utils/dialoguesValidation";
+import LoadingButton from "@mui/lab/LoadingButton/LoadingButton";
 
 function NewListForm({
   open,
@@ -111,8 +112,9 @@ function NewListForm({
       return colors.todoColors.bold;
     }
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
-      return colors.landingPageColors.bold;
+      return colors.shoppingColors.bold;
     }
+    return colors.fallbackColors.blod
   };
   
   const handleCreateList = async (name) => {
@@ -278,9 +280,11 @@ function NewListForm({
                   </FormHelperText>
                 </RadioGroup>
               </FormControl>
-              <Button
+              <LoadingButton
                 fullWidth
-                disabled={loading}
+                loading={loading}
+                loadingPosition="end"
+                endIcon={<AddIcon />}
                 onClick={() => handleCreateList(listNameRef.current.value)}
                 variant="contained"
                 sx={{
@@ -290,8 +294,7 @@ function NewListForm({
                 }}
               >
                 Create
-                <AddIcon />
-              </Button>
+              </LoadingButton>
             </Stack>
           </Paper>
         </Fade>

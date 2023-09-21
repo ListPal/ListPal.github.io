@@ -16,6 +16,7 @@ import {
   Slide,
   Alert,
   Stack,
+  Box,
 } from "@mui/material";
 import {
   getPublicList,
@@ -25,21 +26,20 @@ import {
 } from "../../utils/testApi/testApi";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import CircularProgress from "@mui/material/CircularProgress";
-import {useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { truncateString } from "../../utils/helper";
 import IconButton from "@mui/material/IconButton";
-import AutoDeleteOutlinedIcon from '@mui/icons-material/AutoDeleteOutlined';
-
 import Dialogue from "./DialogueBox/Dialogue";
 import { useState, useEffect } from "react";
 import ListItem from "./ListItem/ListItem";
 
 // IMGS
-import groceryWallpaper from "../../utils/assets/card1.jpg";
+import groceryWallpaper from "../../utils/assets/groceryWallpaperPlus.jpg";
 import todoWallpaper from "../../utils/assets/todoWallpaperPlus.jpg";
 import shoppingWallpaper from "../../utils/assets/shoppingWallpaperPlus.jpg";
 import christmasWallpaperPlus from "../../utils/assets/christmasWallpaperPlus.jpg";
 import BottomBar from "./BottomBar/BottomBar";
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
 function GroceryListPage({
   activeList,
@@ -56,7 +56,7 @@ function GroceryListPage({
   const [groupedByIdentifier, setGroupedByIdentifier] = useState([]);
   const [loading, setLoading] = useState(false);
   const [listName, setListName] = useState(location.state?.listName);
-  
+
   // Other globals
   let groupedByCurrentIdx = 0; // global var that keeps the idx count to decide when to display the identifier in the lis item
   const urlParams = new URLSearchParams(location.search);
@@ -124,7 +124,7 @@ function GroceryListPage({
       setTimeout(() => setAlertMessage(null), 1000);
       console.log(res);
     }
-    setLoading(false);
+    setTimeout(() => setLoading(false), 900);
   };
 
   const handleBorderColor = (identifier) => {
@@ -207,7 +207,7 @@ function GroceryListPage({
         low: colors.shoppingColors.low,
       };
     }
-    return {bold: "#0D324F", low: "lightgray"};
+    return { bold: "#0D324F", low: "lightgray" };
   };
 
   const handleFetchUserInfo = async () => {
@@ -256,14 +256,13 @@ function GroceryListPage({
   };
 
   const handleFetchList = async () => {
-    // Reset states
+    setLoading(true);
     setActiveList(null);
     const data = {
       containerId: containerId,
       listId: listId,
       scope: scope,
     };
-    setLoading(true);
     const res =
       scope === groceryListScopes.public
         ? await getPublicList(data)
@@ -297,7 +296,7 @@ function GroceryListPage({
       }
       setTimeout(() => setAlertMessage(null), 3000);
     }
-    setLoading(false);
+    setTimeout(() => setLoading(false), 900);
   };
 
   useEffect(() => {
@@ -327,16 +326,19 @@ function GroceryListPage({
     <>
       <meta name="theme-color" content={handleDeriveThemeColor().bold} />
       {loading && (
-        <CircularProgress
-          color={"success"}
-          style={{
+        <Box
+          sx={{
             position: "absolute",
-            top: "50%",
-            left: "50%",
-            zIndex: "10",
-            transform: "translate(-50%, 0)",
+            top: "calc(50% - 10px)",
+            left: "calc(50% - 10px)",
+            zIndex: 10,
           }}
-        />
+        >
+          <CircularProgress sx={{ color: handleDeriveThemeColor().bold, position:'absolute' }} />
+          <IconButton>
+            <CheckCircleRoundedIcon sx={{color: handleDeriveThemeColor().bold}} />
+          </IconButton>
+        </Box>
       )}
 
       <AppBar
@@ -369,19 +371,6 @@ function GroceryListPage({
                 </Typography>
               )}
             </Typography>
-          </Stack>
-          <Stack direction={"row"} justifyContent={"space-around"}>
-            
-            {/* Reset List */}
-            {/* {containerId === activeContainer?.id && scope !== groceryListScopes.public && (
-              <IconButton
-                size="small"
-                variant="contained"
-                onClick={() => setOpenDialogue(dialogues.resetList)}
-              >
-                <AutoDeleteOutlinedIcon sx={{ color: 'white' }} />
-              </IconButton>
-            )} */}
           </Stack>
         </Toolbar>
       </AppBar>
@@ -439,11 +428,13 @@ function GroceryListPage({
         )}
       </Grid>
 
+      {/* Bottom Bar with buttons */}
       <BottomBar
         scope={scope}
         handleSync={handleSync}
         setOpenDialogue={setOpenDialogue}
         handleDeriveThemeColor={handleDeriveThemeColor}
+        isEmptyList={activeList?.groceryListItems.length === 0}
       />
 
       {/* Alert  messages*/}

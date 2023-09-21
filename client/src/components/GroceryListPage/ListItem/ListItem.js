@@ -152,7 +152,7 @@ const ListItem = ({
             }}
           >
             <Stack direction={"row"} sx={{ alignItems: "center" }}>
-              {checked ? (
+              {item?.checked ? (
                 <Button disableRipple onClick={handleCheck}>
                   <CheckCircleIcon
                     fontSize="large"

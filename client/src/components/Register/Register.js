@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 const Register = ({ setUser, setActiveList }) => {
   const [isPasswordVisibile, setIsPasswordVisible] = useState(false);
@@ -173,6 +174,7 @@ const Register = ({ setUser, setActiveList }) => {
           }}
         >
           <TextField
+            autoFocus
             error={validation.error === validationErrors.name}
             helperText={
               validation.error === validationErrors.name && validation?.message
@@ -324,10 +326,12 @@ const Register = ({ setUser, setActiveList }) => {
               maxLength: 10,
             }}
           />
-          <Button
-            disabled={loading}
+          <LoadingButton
+            loading={loading}
+            loadingPosition={'end'}
             sx={{
-              mt: 5,
+              position: 'fixed',
+              bottom: 30,
               borderRadius: "20px 0px 20px 0px",
               height: "50px",
               width: "80vw",
@@ -350,7 +354,7 @@ const Register = ({ setUser, setActiveList }) => {
             }
           >
             Welcome Aboard
-          </Button>
+          </LoadingButton>
         </Stack>
       </Grid>
     </>

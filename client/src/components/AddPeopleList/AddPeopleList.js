@@ -10,7 +10,6 @@ import ListItemButton from "@mui/material/ListItemButton";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Alert,
-  Button,
   Grid,
   IconButton,
   Slide,
@@ -28,6 +27,7 @@ import {
   peopleLookupValidationByPhone,
 } from "../../utils/inputValidation";
 import { URLS } from "../../utils/enum";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 const AddPeopleList = () => {
   // States
@@ -324,8 +324,9 @@ const AddPeopleList = () => {
           })}
         </List>
         {peopleToAdd.length > 0 && (
-          <Button
-            disabled={loading}
+          <LoadingButton
+            loadingPosition={'end'}
+            loading={loading}
             fullWidth
             onClick={handleAddPeople}
             variant={"contained"}
@@ -338,7 +339,7 @@ const AddPeopleList = () => {
             }}
           >
             Add All
-          </Button>
+          </LoadingButton>
         )}
       </Grid>
       <Slide sx={{ position: "fixed", top: 0, left: 0 }} in={alert}>

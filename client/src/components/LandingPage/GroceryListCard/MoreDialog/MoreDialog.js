@@ -22,6 +22,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import LoadingButton from "@mui/lab/LoadingButton/LoadingButton";
 
 import {
   dialogues,
@@ -355,21 +356,28 @@ const MoreDialog = ({
                 )}
               </FormControl>
 
-              {openDialogue === dialogues.deletePeople && <RemovePeople
-                listInfo={listInfo}
-                setLoading={setLoading}
-                peopleToDelete={peopleToDelete}
-                setPeopleToDelete={setPeopleToDelete}
-                activeContainer={activeContainer}
-              />}
+              {openDialogue === dialogues.deletePeople && (
+                <RemovePeople
+                  listInfo={listInfo}
+                  setLoading={setLoading}
+                  peopleToDelete={peopleToDelete}
+                  setPeopleToDelete={setPeopleToDelete}
+                  activeContainer={activeContainer}
+                />
+              )}
 
               {dialogueObject[openDialogue]?.button.map((button, i) => {
                 return (
-                  <Button
+                  <LoadingButton
                     fullWidth
                     key={i}
                     type="submit"
-                    disabled={loading || ((openDialogue === dialogues.deletePeople) && peopleToDelete.length === 0)}
+                    loading={loading}
+                    loadingPosition="end"
+                    disabled={
+                      openDialogue === dialogues.deletePeople &&
+                      peopleToDelete.length === 0
+                    }
                     endIcon={deriveCorrectIcon(button.icon)}
                     onClick={() => {
                       if (openDialogue === dialogues.deleteList) {
@@ -397,7 +405,7 @@ const MoreDialog = ({
                     }}
                   >
                     {button.text}
-                  </Button>
+                  </LoadingButton>
                 );
               })}
             </Stack>

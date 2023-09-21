@@ -14,7 +14,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PublicIcon from "@mui/icons-material/Public";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 // IMGS
-import groceryWallpaper from "../../../utils/assets/card1.jpg";
+import groceryWallpaper from "../../../utils/assets/groceryWallpaperPlus.jpg";
 import shoppingWallpaper from "../../../utils/assets/shoppingWallpaper.jpg";
 import todoWallpaper from "../../../utils/assets/todoWallpaper.jpg";
 import christmasWallpaper from "../../../utils/assets/christmasWallpaper.jpg";

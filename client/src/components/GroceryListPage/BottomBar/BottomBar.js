@@ -17,6 +17,7 @@ const BottomBar = ({
   handleDeriveThemeColor,
   scope,
   handleSync,
+  isEmptyList,
 }) => {
   const [openShareTray, setOpenShareTray] = useState(false);
 
@@ -97,6 +98,7 @@ const BottomBar = ({
           </IconButton>
         ) : (
           <IconButton
+            disabled={isEmptyList}
             sx={{ ml: 5 }}
             size="small"
             variant="contained"

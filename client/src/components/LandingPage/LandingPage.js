@@ -34,7 +34,9 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import Skeleton from "@mui/material/Skeleton";
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 // IMGS
-import foodStrip from "../../utils/assets/foodStrip.jpg";
+import groceryStrip from "../../utils/assets/groceryStrip.jpg";
+import todoStrip from "../../utils/assets/todoStrip.jpg";
+import shoppingStrip from "../../utils/assets/shoppingStrip.jpg";
 import grocery from "../../utils/assets/grocery.jpg";
 import shop from "../../utils/assets/shop.jpg";
 import todo from "../../utils/assets/todo.jpg";
@@ -83,14 +85,28 @@ const LandingPage = ({
 
   const checkItems = async () => {
     const data = {
-      scope: location?.state?.scope,
       containerId: location?.state?.containerId,
+      scope: activeList?.scope,
       listId: activeList?.id,
       itemIds: activeList?.groceryListItems
         .filter((item) => item.checked)
         .map((item) => item.id),
     };
     return await postRequest(URLS.checkListItemUri, data);
+  };
+
+  const handleDeriveStrip = () => {
+    if (activeContainer?.containerType === groceryContainerTypes.grocery) {
+      return groceryStrip;
+    } else if (activeContainer?.containerType === groceryContainerTypes.todo) {
+      return todoStrip;
+    } else if (
+      activeContainer?.containerType === groceryContainerTypes.whishlist
+    ) {
+      return shoppingStrip;
+    } else {
+      return todoStrip;
+    }
   };
 
   const handleLogout = async () => {
@@ -323,10 +339,9 @@ const LandingPage = ({
                 <Stack
                   direction={"column"}
                   sx={{
-                    width: "calc(100vw - 5)",
                     maxWidth: mobileWidth,
-                    height: 50,
-                    backgroundImage: `url(${foodStrip})`,
+                    height: 40,
+                    backgroundImage: `url(${handleDeriveStrip()})`,
                     backgroundSize: "cover",
                   }}
                 />

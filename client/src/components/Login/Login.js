@@ -13,6 +13,7 @@ import { Link, useNavigate } from "react-router-dom";
 import vector from "../../utils/assets/login.jpg";
 import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import { usernamePasswordValidation } from "../../utils/inputValidation";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 const Login = ({ setActiveContainer, setUser }) => {
   const [validation, setValidation] = useState({
@@ -143,8 +144,9 @@ const Login = ({ setActiveContainer, setUser }) => {
           helperText={!validation?.validated && validation?.message}
           sx={{ width: "80vw", maxWidth: mobileWidth }}
         />
-        <Button
-          disabled={loading}
+        <LoadingButton
+          loading={loading}
+          loadingPosition="end"
           variant="contained"
           onClick={() =>
             handleLogin(usernameRef.current.value, passwordRef.current.value)
@@ -161,7 +163,7 @@ const Login = ({ setActiveContainer, setUser }) => {
           }}
         >
           Login
-        </Button>
+        </LoadingButton>
 
         <Button
           disabled={loading}

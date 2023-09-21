@@ -32,6 +32,7 @@ import {
 } from "../../../utils/testApi/testApi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../utils/dialoguesValidation";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 function Dialogue({
   containerId,
@@ -54,7 +55,6 @@ function Dialogue({
   const location = useLocation();
   const textFieldRef = useRef(null);
   const navigate = useNavigate();
-  
 
   // Handlers
   const handleInputValidation = async (input) => {
@@ -180,7 +180,7 @@ function Dialogue({
       activeList?.scope !== groceryListScopes.public &&
       user?.username !== item?.user?.username
     ) {
-      console.log(user?.username)
+      console.log(user?.username);
       showAlert(
         "error",
         "You cannot edit this item because you did not create it."
@@ -303,12 +303,12 @@ function Dialogue({
       listId: activeList?.id,
     };
 
-    const res = await deleteRequest(URLS.resetList, data)
+    const res = await deleteRequest(URLS.resetList, data);
     if (res?.status === 200) {
       setActiveList((activeList) => {
         return { ...activeList, groceryListItems: [] };
       });
-      closeDialogueWithoutDelay()
+      closeDialogueWithoutDelay();
     } else if (res?.status === 403) {
       navigate("/");
     } else if (res?.status === 401) {
@@ -409,14 +409,14 @@ function Dialogue({
                 (textField, i) =>
                   !textField.hidden && (
                     <CssTextField
+                      autoFocus
                       fullWidth
-                      sx={{ maxWidth: "65vw" }}
-                      autoFocus={false}
-                      error={errorMessage && true}
                       required
-                      key={`${textField.text}${i}`}
-                      inputRef={textFieldRef}
+                      sx={{ maxWidth: "65vw" }}
                       id="custom-css-outlined-input"
+                      key={`${textField.text}${i}`}
+                      error={errorMessage && true}
+                      inputRef={textFieldRef}
                       label={textField.text}
                       helperText={
                         errorMessage ? errorMessage : textField.helperText
@@ -424,7 +424,6 @@ function Dialogue({
                       defaultValue={deriveDefaultText()}
                       inputProps={{
                         maxLength: 100,
-                        required: true,
                       }}
                     />
                   )
@@ -432,10 +431,11 @@ function Dialogue({
 
               {dialogueObject[openDialogue]?.button.map((button, i) => {
                 return (
-                  <Button
+                  <LoadingButton
                     key={i}
+                    loading={loading}
+                    loadingPosition="end"
                     fullWidth
-                    disabled={loading}
                     endIcon={deriveCorrectIcon(button.icon)}
                     onClick={() => {
                       if (openDialogue === dialogues.addItem) {
@@ -459,7 +459,7 @@ function Dialogue({
                     }}
                   >
                     {button.text}
-                  </Button>
+                  </LoadingButton>
                 );
               })}
             </Stack>
