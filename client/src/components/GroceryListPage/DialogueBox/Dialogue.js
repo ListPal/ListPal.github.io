@@ -10,7 +10,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, createRef } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -25,7 +25,6 @@ import {
 } from "../../../utils/enum";
 import {
   postRequest,
-  deleteList,
   deleteItem,
   deletePublicItem,
   deleteRequest,
@@ -54,6 +53,7 @@ function Dialogue({
   // Other Locals
   const location = useLocation();
   const textFieldRef = useRef(null);
+
   const navigate = useNavigate();
 
   // Handlers
@@ -350,6 +350,18 @@ function Dialogue({
     handleRedirectToCashapp,
   ];
 
+  const handleFocus = () => {
+    textFieldRef.current.scrollIntoView();
+  };
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0.25 * window.innerHeight - 32,
+      behavior: 'smooth', // for smooth scrolling
+    });
+  }, []);
+
+
   return (
     <>
       <Modal
@@ -404,11 +416,11 @@ function Dialogue({
               <Typography variant="h4">
                 {dialogueObject[openDialogue]?.header}
               </Typography>
-
+              
               {dialogueObject[openDialogue]?.textFields.map(
                 (textField, i) =>
                   !textField.hidden && (
-                    <CssTextField
+                      <CssTextField
                       autoFocus
                       fullWidth
                       required
@@ -417,6 +429,7 @@ function Dialogue({
                       key={`${textField.text}${i}`}
                       error={errorMessage && true}
                       inputRef={textFieldRef}
+                      // onFocus={handleFocus}
                       label={textField.text}
                       helperText={
                         errorMessage ? errorMessage : textField.helperText
