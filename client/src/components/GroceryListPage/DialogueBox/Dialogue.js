@@ -350,18 +350,6 @@ function Dialogue({
     handleRedirectToCashapp,
   ];
 
-  const handleFocus = () => {
-    textFieldRef.current.scrollIntoView();
-  };
-
-  useEffect(() => {
-    window.scrollTo({
-      top: 0.25 * window.innerHeight - 32,
-      behavior: 'smooth', // for smooth scrolling
-    });
-  }, []);
-
-
   return (
     <>
       <Modal
@@ -421,7 +409,6 @@ function Dialogue({
                 (textField, i) =>
                   !textField.hidden && (
                       <CssTextField
-                      autoFocus
                       fullWidth
                       required
                       sx={{ maxWidth: "65vw" }}

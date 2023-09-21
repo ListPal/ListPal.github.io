@@ -39,7 +39,7 @@ import todoWallpaper from "../../utils/assets/todoWallpaperPlus.jpg";
 import shoppingWallpaper from "../../utils/assets/shoppingWallpaperPlus.jpg";
 import christmasWallpaperPlus from "../../utils/assets/christmasWallpaperPlus.jpg";
 import BottomBar from "./BottomBar/BottomBar";
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 
 function GroceryListPage({
   activeList,
@@ -73,6 +73,11 @@ function GroceryListPage({
 
   // Handlers
   const handleGroupByUsername = async (items) => {
+    // Empty items, no need to group by username
+    if (items.length === 0 || !items) {
+      console.debug(items);
+      return;
+    }
     groupedByCurrentIdx = 0; // reset identifier index count
     // Create Map
     const localItemsMap = new Map();
@@ -92,6 +97,20 @@ function GroceryListPage({
   };
 
   const handleCheckItems = async () => {
+    // Handling preconditions
+    if (!(scope && containerId && listId)) {
+      console.debug(
+        "Incomple data. One of `scope` | `containerId` | `listId` is null or undefined."
+      );
+      setAlertMessage(
+        "Apologies. Something went wrong. Try refreshing the page and retry."
+      );
+      return;
+    } else if (activeList?.groceryListItems.length > 0) {
+      console.debug("Empty list. No need to check items");
+      return;
+    }
+
     // TODO: only send if there are modified items
     const data = {
       scope: scope,
@@ -101,34 +120,46 @@ function GroceryListPage({
         .filter((item) => item.checked)
         .map((item) => item.id),
     };
+
+    // Derive public or authenticated uri
     const uri =
       scope === groceryListScopes.public
         ? URLS.checkPublicListItemUri
         : URLS.checkListItemUri;
+
+    // Post data and return the response to the next controller
     const res = await postRequest(uri, data);
     return res;
   };
 
   const handleSync = async () => {
+    // Mark corresponding items as checked
     setLoading(true);
     const res = await handleCheckItems();
     if (res?.status === 200) {
       handleFetchList();
     } else if (res?.status === 400) {
-      console.log(res);
+      console.debug(res);
     } else if (res?.status === 403) {
-      console.log(res);
+      console.debug(res);
       navigate("/");
     } else {
       setAlertMessage("Apologies. Something went wrong on our end.");
       setTimeout(() => setAlertMessage(null), 1000);
-      console.log(res);
+      console.debug(res);
     }
     setTimeout(() => setLoading(false), 900);
   };
 
   const handleBorderColor = (identifier) => {
+    // Handling preconditions
+    if (!identifier) {
+      console.error("No identifier was fed to derive borderColor");
+      return handleDeriveThemeColor().bold;
+    }
+
     if (
+      // the identifier is the first element in groupedByIdentifier or not found at all
       groupedByIdentifier.indexOf(identifier) === -1 ||
       groupedByIdentifier.indexOf(identifier) === 0
     ) {
@@ -138,6 +169,13 @@ function GroceryListPage({
   };
 
   const handleShowIdentifier = (identifier) => {
+    // Handling preconditions
+    if (!identifier) {
+      console.error("No identifier was fed to derive handleShowIdentifier");
+      return handleDeriveThemeColor().bold;
+    }
+
+    // Look for identifier index in the groupedByIdentifier array
     const idx = groupedByIdentifier.indexOf(identifier);
     if (idx === groupedByCurrentIdx) {
       groupedByCurrentIdx++;
@@ -207,7 +245,7 @@ function GroceryListPage({
         low: colors.shoppingColors.low,
       };
     }
-    return { bold: "#0D324F", low: "lightgray" };
+    return { bold: colors.fallbackColors.blod, low: colors.fallbackColors.low };
   };
 
   const handleFetchUserInfo = async () => {
@@ -228,6 +266,12 @@ function GroceryListPage({
   };
 
   const handleFetchContainer = async (data) => {
+    // Handling preconditions
+    if (!data) {
+      console.error("No data was fed to derive handleFetchContainer");
+      return handleDeriveThemeColor().bold;
+    }
+
     console.debug("fetching container with container id: " + data.containerId);
     const containerInfoResponse = await getAllLists(data);
     if (containerInfoResponse?.status === 200) {
@@ -256,6 +300,12 @@ function GroceryListPage({
   };
 
   const handleFetchList = async () => {
+    // Handling preconditions
+    if (!(containerId && listId && scope)) {
+      console.error("Data passed to handleFetchList is null or undefined");
+      return;
+    }
+
     setLoading(true);
     setActiveList(null);
     const data = {
@@ -334,9 +384,13 @@ function GroceryListPage({
             zIndex: 10,
           }}
         >
-          <CircularProgress sx={{ color: handleDeriveThemeColor().bold, position:'absolute' }} />
+          <CircularProgress
+            sx={{ color: handleDeriveThemeColor().bold, position: "absolute" }}
+          />
           <IconButton>
-            <CheckCircleRoundedIcon sx={{color: handleDeriveThemeColor().bold}} />
+            <CheckCircleRoundedIcon
+              sx={{ color: handleDeriveThemeColor().bold }}
+            />
           </IconButton>
         </Box>
       )}
@@ -439,7 +493,7 @@ function GroceryListPage({
 
       {/* Alert  messages*/}
       <Slide className="alert-slide" in={alertMessage && true}>
-        <Alert severity={"error"} sx={{ position: "fixed", width: "96vw" }}>
+        <Alert severity={"error"} sx={{ position: "fixed", width: "96vw", top: '8vh', zIndex: 10 }}>
           {alertMessage}
         </Alert>
       </Slide>
