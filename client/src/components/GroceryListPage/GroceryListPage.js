@@ -1,3 +1,28 @@
+// React imports
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+// Dnd imports
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
+// MUI imports
+import {
+  Typography,
+  Toolbar,
+  AppBar,
+  Slide,
+  Alert,
+  Stack,
+  Box,
+  CircularProgress,
+  List,
+} from "@mui/material";
+
+// MUI Icons
+import IconButton from "@mui/material/IconButton";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+
+// My imports
 import {
   URLS,
   colors,
@@ -9,37 +34,23 @@ import {
   messages,
 } from "../../utils/enum";
 import {
-  Typography,
-  Toolbar,
-  Grid,
-  AppBar,
-  Slide,
-  Alert,
-  Stack,
-  Box,
-} from "@mui/material";
-import {
   getPublicList,
   postRequest,
   checkSession,
   getAllLists,
 } from "../../utils/testApi/testApi";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import CircularProgress from "@mui/material/CircularProgress";
-import { useLocation, useNavigate } from "react-router-dom";
-import { truncateString } from "../../utils/helper";
-import IconButton from "@mui/material/IconButton";
-import Dialogue from "./DialogueBox/Dialogue";
-import { useState, useEffect } from "react";
+import { mergeArrays, truncateString } from "../../utils/helper";
+
+// Component imports
 import ListItem from "./ListItem/ListItem";
+import BottomBar from "./BottomBar/BottomBar";
 
 // IMGS
 import groceryWallpaper from "../../utils/assets/groceryWallpaperPlus.jpg";
 import todoWallpaper from "../../utils/assets/todoWallpaperPlus.jpg";
 import shoppingWallpaper from "../../utils/assets/shoppingWallpaperPlus.jpg";
 import christmasWallpaperPlus from "../../utils/assets/christmasWallpaperPlus.jpg";
-import BottomBar from "./BottomBar/BottomBar";
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import Dialogue from "./Dialogues/Dialogue";
 
 function GroceryListPage({
   activeList,
@@ -48,35 +59,53 @@ function GroceryListPage({
   setActiveContainer,
   user,
   setUser,
+  wasDragged,
+  setWasDragged,
+  wasChecked,
+  setWasChecked,
 }) {
   // States
   const location = useLocation();
-  const [alertMessage, setAlertMessage] = useState(null);
-  const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
-  const [groupedByIdentifier, setGroupedByIdentifier] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [listName, setListName] = useState(location.state?.listName);
+  const [activeItem, setActiveItem] = useState(null);
+  const [alertMessage, setAlertMessage] = useState(null);
+  const [recentlyDeletedItem, setRecentlyDeletedItem] = useState(null);
+  const [groupedByIdentifier, setGroupedByIdentifier] = useState([]);
+  const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
 
   // Other globals
   let groupedByCurrentIdx = 0; // global var that keeps the idx count to decide when to display the identifier in the lis item
   const urlParams = new URLSearchParams(location.search);
-  const containerId = location?.state
-    ? location?.state?.containerId
-    : urlParams.get("containerId");
-  const listId = location?.state
-    ? location?.state?.listId
-    : urlParams.get("listId");
-  const scope = location?.state
-    ? location?.state?.scope
-    : urlParams.get("scope");
+  const state = location?.state || {};
+  const containerId = state.containerId || urlParams.get("containerId");
+  const listId = state.listId || urlParams.get("listId");
+  const scope = state.scope || urlParams.get("scope");
   const navigate = useNavigate();
 
   // Handlers
+  const handleBack = () => {
+    // If private, just push the list
+    if (activeList?.scope === groceryListScopes.private)
+      handlePushList(activeList?.groceryListItems, false, true);
+    navigate(-1);
+  };
+
+  const handleOnDragEnd = (result) => {
+    // Prevents errors for dragging out of bounds
+    if (!result.destination) return;
+
+    const listItems = activeList?.groceryListItems;
+    const [reorderedItem] = listItems.splice(result.source.index, 1);
+    listItems.splice(result.destination.index, 0, reorderedItem);
+    setActiveList({ ...activeList, groceryListItems: listItems });
+    setWasDragged(true);
+  };
+
   const handleGroupByUsername = async (items) => {
-    // Empty items, no need to group by username
+    // Empty items, no need to group
     if (items.length === 0 || !items) {
       console.debug(items);
-      return;
+      return new Map();
     }
     groupedByCurrentIdx = 0; // reset identifier index count
     // Create Map
@@ -84,8 +113,7 @@ function GroceryListPage({
     const peopleSet = new Set();
     // Group items by username
     items.forEach((item) => {
-      let key = item?.user?.username.split("@")[0];
-      if (!key) key = "unknown";
+      const key = item?.user?.username.split("@")[0] || "unknown";
       peopleSet.add(key);
       if (!localItemsMap.has(key)) {
         localItemsMap.set(key, []);
@@ -96,59 +124,44 @@ function GroceryListPage({
     return localItemsMap;
   };
 
-  const handleCheckItems = async () => {
-    // Handling preconditions
-    if (!(scope && containerId && listId)) {
-      console.debug(
-        "Incomple data. One of `scope` | `containerId` | `listId` is null or undefined."
-      );
-      setAlertMessage(
-        "Apologies. Something went wrong. Try refreshing the page and retry."
-      );
-      return;
-    } else if (activeList?.groceryListItems.length > 0) {
-      console.debug("Empty list. No need to check items");
-      return;
+  const handleGroupByCategory = async (items) => {
+    // Empty items, no need to group
+    if (items.length === 0 || !items) {
+      return new Map();
     }
-
-    // TODO: only send if there are modified items
-    const data = {
-      scope: scope,
-      containerId: containerId,
-      listId: listId,
-      itemIds: activeList?.groceryListItems
-        .filter((item) => item.checked)
-        .map((item) => item.id),
-    };
-
-    // Derive public or authenticated uri
-    const uri =
-      scope === groceryListScopes.public
-        ? URLS.checkPublicListItemUri
-        : URLS.checkListItemUri;
-
-    // Post data and return the response to the next controller
-    const res = await postRequest(uri, data);
-    return res;
+    groupedByCurrentIdx = 0; // reset identifier index count
+    // Create Map
+    const localItemsMap = new Map();
+    const categorySet = new Set();
+    // Group items by username
+    items.forEach((item) => {
+      const key = item?.category || "Misc";
+      categorySet.add(key);
+      if (!localItemsMap.has(key)) {
+        localItemsMap.set(key, []);
+      }
+      localItemsMap.get(key).push(item);
+    });
+    setGroupedByIdentifier(Array.from(categorySet.values()).flat());
+    return localItemsMap;
   };
 
-  const handleSync = async () => {
-    // Mark corresponding items as checked
+  const handleSync = async (cache) => {
     setLoading(true);
-    const res = await handleCheckItems();
-    if (res?.status === 200) {
-      handleFetchList();
-    } else if (res?.status === 400) {
-      console.debug(res);
-    } else if (res?.status === 403) {
-      console.debug(res);
-      navigate("/");
-    } else {
-      setAlertMessage("Apologies. Something went wrong on our end.");
-      setTimeout(() => setAlertMessage(null), 1000);
-      console.debug(res);
-    }
-    setTimeout(() => setLoading(false), 900);
+    // Pull
+    const pull = await handlePullList(false);
+    // Merge
+    const mergedArray = await mergeArrays(
+      activeList?.groceryListItems,
+      pull?.groceryListItems
+    );
+    // Push
+    if (mergedArray) await handlePushList(mergedArray, false, false);
+    // Reset relevant states
+    setActiveList({ ...activeList, groceryListItems: mergedArray });
+    setWasDragged(false);
+    setWasChecked(false);
+    setLoading(false);
   };
 
   const handleBorderColor = (identifier) => {
@@ -165,13 +178,14 @@ function GroceryListPage({
     ) {
       return handleDeriveThemeColor().bold;
     }
+
     return borderColors[groupedByIdentifier.indexOf(identifier)];
   };
 
   const handleShowIdentifier = (identifier) => {
     // Handling preconditions
     if (!identifier) {
-      console.error("No identifier was fed to derive handleShowIdentifier");
+      console.debug("No identifier was fed to derive handleShowIdentifier");
       return handleDeriveThemeColor().bold;
     }
 
@@ -185,16 +199,19 @@ function GroceryListPage({
   };
 
   const handleDeriveWallpaper = () => {
-    if (activeContainer?.containerType === groceryContainerTypes.grocery) {
-      return groceryWallpaper;
-    }
-    if (activeContainer?.containerType === groceryContainerTypes.todo) {
-      return todoWallpaper;
-    }
-    if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
-      return activeList?.listName?.toUpperCase().includes("CHRISTMAS")
-        ? christmasWallpaperPlus
-        : shoppingWallpaper;
+    if (activeContainer?.containerType) {
+      if (activeContainer.containerType === groceryContainerTypes.grocery) {
+        return groceryWallpaper;
+      }
+      if (activeContainer.containerType === groceryContainerTypes.todo) {
+        return todoWallpaper;
+      }
+      if (
+        activeContainer.containerType === groceryContainerTypes.whishlist &&
+        activeList?.listName?.toUpperCase().includes("CHRISTMAS")
+      ) {
+        return christmasWallpaperPlus;
+      }
     }
     if (containerId.includes(groceryContainerTypes.grocery)) {
       return groceryWallpaper;
@@ -202,10 +219,7 @@ function GroceryListPage({
     if (containerId.includes(groceryContainerTypes.todo)) {
       return todoWallpaper;
     }
-    if (containerId.includes(groceryContainerTypes.whishlist)) {
-      return shoppingWallpaper;
-    }
-    return todoWallpaper;
+    return shoppingWallpaper;
   };
 
   const handleDeriveThemeColor = () => {
@@ -256,10 +270,10 @@ function GroceryListPage({
         setUser(userInfoResponse?.user);
         return userInfoResponse;
       } else if (userInfoResponse?.status === 403) {
-        console.log(userInfoResponse);
+        console.debug(userInfoResponse);
         navigate("/");
       } else {
-        console.log(userInfoResponse);
+        console.debug(userInfoResponse);
         navigate(-1);
       }
     }
@@ -299,15 +313,16 @@ function GroceryListPage({
     return user, container;
   };
 
-  const handleFetchList = async () => {
+  const handlePullList = async (cache = true, loadingControl = true) => {
     // Handling preconditions
     if (!(containerId && listId && scope)) {
       console.error("Data passed to handleFetchList is null or undefined");
       return;
     }
-
-    setLoading(true);
+    // Reset states
+    if (loadingControl) setLoading(true);
     setActiveList(null);
+    setAlertMessage(null);
     const data = {
       containerId: containerId,
       listId: listId,
@@ -320,25 +335,22 @@ function GroceryListPage({
 
     // Cache it in state
     if (res?.status === 200) {
-      setListName(res?.body.listName);
-      // Group by items by username (Default)
-      setAlertMessage(null);
-      const activeListMap = await handleGroupByUsername(
+      // Group by items by category (Default)
+      const activeListMap = await handleGroupByCategory(
         res?.body?.groceryListItems
-      ); // Map engineering: username => items
+      ); // Map engineering: (username | category) => items
       const responseBody = await {
         ...res?.body,
-        groceryListItems: Array.from(activeListMap.values()).flat(),
+        groceryListItems: [...activeListMap.values()].flat(),
       };
-
-      setActiveList(responseBody);
+      if (cache) setActiveList(responseBody);
     } else if (res?.status === 401) {
       setAlertMessage(messages.unauthorizedAccess);
     } else if (res?.status === 403) {
-      console.log(res);
+      console.debug(res);
       navigate("/");
     } else {
-      console.log(res);
+      console.debug(res);
       if (scope === groceryListScopes.public) {
         setAlertMessage(messages.noList);
       } else {
@@ -346,8 +358,54 @@ function GroceryListPage({
       }
       setTimeout(() => setAlertMessage(null), 3000);
     }
-    setTimeout(() => setLoading(false), 900);
+    if (loadingControl) setTimeout(() => setLoading(false), 900);
+    return res?.body;
   };
+
+  const handlePushList = async (items, cache, loadingControl) => {
+    if (!items || items.length === 0) {
+      console.debug("No items to reorder");
+      return;
+    }
+
+    if (!wasDragged) {
+      console.debug("No need to reorder");
+      return;
+    }
+
+    if (loadingControl) setLoading(true);
+    setAlertMessage(null);
+    const data = {
+      containerId: containerId,
+      listId: activeList?.id,
+      scope: activeList?.scope,
+      items: items,
+    };
+    // Send new order to the server
+    const res = await postRequest(URLS.updateListOrder, data);
+    // Cache list in state
+    if (res?.status === 200) {
+      // Success
+      if (cache) setActiveList(res?.body);
+    } else if (res?.status === 401) {
+      setAlertMessage(messages.unauthorizedAccess);
+      setTimeout(() => setLoading(false), 900);
+    } else if (res?.status === 403) {
+      navigate("/");
+    } else {
+      setAlertMessage(messages.genericError);
+      setTimeout(() => setAlertMessage(null), 3000);
+    }
+    if (loadingControl) setTimeout(() => setLoading(false), 900);
+    return res;
+  };
+
+  const handleRemoveDone = () => {
+    const uncheckedItems = activeList?.groceryListItems.filter(e => !e.checked)
+    const checkedItems = activeList?.groceryListItems.filter(e => e.checked)
+    setActiveList({ ...activeList, groceryListItems: [...uncheckedItems, ...checkedItems]});
+    // setActiveList({ ...activeList, groceryListItems: uncheckedItems});
+  }
 
   useEffect(() => {
     // Fetch user and container if not a public list
@@ -361,13 +419,8 @@ function GroceryListPage({
       return;
     }
 
-    // Mark items checked
-    if (activeList?.groceryListItems.length > 0) {
-      handleCheckItems();
-    }
-
-    // Fetch new active list
-    handleFetchList();
+    // Pull new list
+    handlePullList();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -375,6 +428,30 @@ function GroceryListPage({
   return (
     <>
       <meta name="theme-color" content={handleDeriveThemeColor().bold} />
+
+      {/* Alert messages*/}
+      <Slide className="alert-slide" in={alertMessage && true}>
+        <Alert
+          severity={"error"}
+          sx={{ position: "fixed", width: "96vw", top: "8vh", zIndex: 10 }}
+        >
+          {alertMessage}
+        </Alert>
+      </Slide>
+
+      {/* Dialogue (absolute positioned) */}
+      {openDialogue && (
+        <Dialogue
+          item={activeItem}
+          containerId={containerId}
+          activeList={activeList}
+          setActiveList={setActiveList}
+          openDialogue={openDialogue}
+          setOpenDialogue={setOpenDialogue}
+        />
+      )}
+
+      {/* Loading progress */}
       {loading && (
         <Box
           sx={{
@@ -395,18 +472,19 @@ function GroceryListPage({
         </Box>
       )}
 
+      {/* Top bar with title and back button */}
       <AppBar
         component="nav"
         sx={{
           left: 0,
-          pb: 1,
+          justifyContent: "center",
           maxWidth: mobileWidth,
           background: handleDeriveThemeColor().bold,
         }}
       >
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Toolbar>
           <Stack direction={"row"}>
-            <IconButton size="small" onClick={() => navigate(-1)}>
+            <IconButton size="small" onClick={handleBack}>
               <ArrowBackIosIcon sx={{ color: "white" }} />
             </IconButton>
             <Typography
@@ -414,14 +492,9 @@ function GroceryListPage({
               variant="h5"
               sx={{ color: "white", flexGrow: 1 }}
             >
-              {listName && (
+              {location?.state?.listName && (
                 <Typography fontSize={16} variant="button">
-                  {truncateString(listName, 20)}
-                </Typography>
-              )}
-              {!listName && (
-                <Typography fontSize={16} variant="button">
-                  UNKNOWN LIST
+                  {truncateString(location?.state?.listName, 20)}
                 </Typography>
               )}
             </Typography>
@@ -430,57 +503,53 @@ function GroceryListPage({
       </AppBar>
 
       {/* List items */}
-      <Grid
-        container
-        mt={"8vh"}
-        p={1}
-        spacing={2}
-        sx={{
-          justifyContent: "center",
-          justifyItems: "center",
-          maxWidth: mobileWidth,
-          pb: "9vh",
-        }}
-      >
-        {!loading &&
-          activeList?.groceryListItems.map((e, i) => (
-            <Grid item key={i + "grid"}>
-              <ListItem
-                borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
-                identifier={handleShowIdentifier(
-                  e?.user?.username.split("@")[0]
-                )}
-                setOpenDialogue={setOpenDialogue}
-                setActiveList={setActiveList}
-                openDialogue={openDialogue}
-                activeContainer={activeContainer}
-                setActiveContainer={setActiveContainer}
-                activeList={activeList}
-                listId={listId}
-                item={e}
-                user={user}
-                setUser={setUser}
-                key={i + "item"}
-                containerId={containerId}
-              />
-            </Grid>
-          ))}
-
-        {(openDialogue === dialogues.addItem ||
-          openDialogue === dialogues.resetList) && (
-          <Dialogue
-            containerId={containerId}
-            setUser={setUser}
-            user={user}
-            setOpenDialogue={setOpenDialogue}
-            activeList={activeList}
-            setActiveList={setActiveList}
-            activeContainer={activeContainer}
-            setActiveContainer={setActiveContainer}
-            openDialogue={openDialogue}
-          />
-        )}
-      </Grid>
+      <DragDropContext onDragEnd={handleOnDragEnd}>
+        <Droppable droppableId="list-items">
+          {(provided, snapshot) => (
+            <List
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              mt={"8vh"}
+              sx={{
+                mt: "8vh",
+                justifyContent: "center",
+                justifyItems: "center",
+                maxWidth: mobileWidth,
+                pb: "9vh",
+              }}
+            >
+              {!loading &&
+                activeList?.groceryListItems.map((e, i) => (
+                  <ListItem
+                    borderColor={handleBorderColor(
+                      e?.user?.username.split("@")[0]
+                    )}
+                    // identifier={handleShowIdentifier(e?.category)}
+                    recentlyDeletedItem={recentlyDeletedItem}
+                    setRecentlyDeletedItem={setRecentlyDeletedItem}
+                    setOpenDialogue={setOpenDialogue}
+                    setActiveList={setActiveList}
+                    openDialogue={openDialogue}
+                    activeContainer={activeContainer}
+                    setActiveContainer={setActiveContainer}
+                    activeList={activeList}
+                    listId={listId}
+                    item={e}
+                    setItem={setActiveItem}
+                    user={user}
+                    setUser={setUser}
+                    key={i + "item"}
+                    index={i}
+                    containerId={containerId}
+                    setAlertMessage={setAlertMessage}
+                    setWasChecked={setWasChecked}
+                  />
+                ))}
+              {provided.placeholder}
+            </List>
+          )}
+        </Droppable>
+      </DragDropContext>
 
       {/* Bottom Bar with buttons */}
       <BottomBar
@@ -489,14 +558,8 @@ function GroceryListPage({
         setOpenDialogue={setOpenDialogue}
         handleDeriveThemeColor={handleDeriveThemeColor}
         isEmptyList={activeList?.groceryListItems.length === 0}
+        handleRemoveDone={handleRemoveDone}
       />
-
-      {/* Alert  messages*/}
-      <Slide className="alert-slide" in={alertMessage && true}>
-        <Alert severity={"error"} sx={{ position: "fixed", width: "96vw", top: '8vh', zIndex: 10 }}>
-          {alertMessage}
-        </Alert>
-      </Slide>
 
       {/* Background Wallpaper */}
       <div

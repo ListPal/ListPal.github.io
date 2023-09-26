@@ -232,6 +232,7 @@ const MoreDialog = ({
     if (icon === "lookup") return <SearchIcon />;
     if (icon === "phone") return <LocalPhoneIcon />;
     if (icon === "deletePeople") return <PeopleAltIcon />;
+    return <></>
   };
 
   const showAlert = (severity, msg) => {

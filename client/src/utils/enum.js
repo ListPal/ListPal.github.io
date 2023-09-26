@@ -1,5 +1,9 @@
 const mobileWidth = "480px";
 
+const itemType = {
+  listItem: 'LIST_ITEM'
+}
+
 const groceryContainerTypes = {
   todo: "TODO",
   whishlist: "WISHLIST",
@@ -86,6 +90,14 @@ const dialogueObject = {
         helperText: "Name your grocery list item",
       },
     ],
+    radioButtons: [
+    //   {category: 'Produce'},
+    //   {category: 'Frozen'},
+    //   {category: 'Snacks'},
+    //   {category: 'Beverage'},
+    //   {category: 'Home Care'},
+    //   {category: 'None'},
+    ],
     button: [
       {
         textColor: "black",
@@ -104,6 +116,15 @@ const dialogueObject = {
         text: "Rename item",
         helperText: "Enter a different name for your item",
       },
+    ],
+    radioButtons: [
+      // {category: 'Produce'},
+      // {category: 'Frozen'},
+      // {category: 'Snacks'},
+      // {category: 'Beverage'},
+      // {category: 'Home Care'},
+      // {category: 'Personal Care'},
+      // {category: 'None'},
     ],
     button: [
       {
@@ -125,6 +146,7 @@ const dialogueObject = {
         helperText: "Are you sure you want to delete this item?",
       },
     ],
+    radioButtons: [],
     button: [
       {
         textColor: "black",
@@ -144,6 +166,7 @@ const dialogueObject = {
         helperText: "You agree to delete the list",
       },
     ],
+    radioButtons: [],
     button: [
       {
         textColor: "black",
@@ -163,6 +186,7 @@ const dialogueObject = {
         helperText: null,
       },
     ],
+    radioButtons: [],
     button: [
       {
         textColor: "black",
@@ -182,6 +206,7 @@ const dialogueObject = {
         helperText: "Name your list item",
       },
     ],
+    radioButtons: [],
     button: [
       {
         textColor: "white",
@@ -201,6 +226,7 @@ const dialogueObject = {
         helperText: "",
       },
     ],
+    radioButtons: [],
     button: [
       {
         textColor: "#1F2937",
@@ -225,6 +251,7 @@ const dialogueObject = {
   deletePeople: {
     header: "Remove People",
     textFields: [],
+    radioButtons: [],
     button: [
       {
         textColor: "#1F2937",
@@ -244,6 +271,7 @@ const dialogueObject = {
         helperText: "This will delete all items, but preserve the list",
       },
     ],
+    radioButtons: [],
     button: [
       {
         textColor: "black",
@@ -256,8 +284,8 @@ const dialogueObject = {
 };
 
 // Engines
-const engine = "https://katespracticespace.com";
-// const engine = "http://joses-macbook-pro-3.local:8080";
+// const engine = "https://katespracticespace.com";
+const engine = "http://joses-macbook-pro-3.local:8080";
 
 const URLS = {
   // Authentication endpoins
@@ -282,7 +310,6 @@ const URLS = {
   removePeople: `${engine}/server/remove-people-from-list`,
   lookupUser: `${engine}/server/lookup-user`,
   getPeopleFromList: `${engine}/server/get-people-from-list`,
-  resetList: `${engine}/server/reset-list`,
   getSuggestedPeople: `${engine}/server/fetch-suggested-people`,
   resetList: `${engine}/server/reset-list`,
   // Public endpoints
@@ -292,6 +319,7 @@ const URLS = {
   checkPublicListItemUri: `${engine}/public/shared/check-list-items`,
   deletePublicItem: `${engine}/public/shared/delete-list-item`,
   resetPublicList: `${engine}/server/reset-list`,
+  updateListOrder: `${engine}/server/updated-list-order`,
 };
 
 // Generalized messages here
@@ -312,4 +340,6 @@ const filterCardsBy = {
   restricted: 3,
 };
 
-export {messages, filterCardsBy, URLS, mobileWidth, groceryContainerTypes, groceryListScopes, borderColors, dialogues, colors, newListFormHelperText, radioGroupHelperTextObject, dialogueObject, }
+
+
+export {itemType, messages, filterCardsBy, URLS, mobileWidth, groceryContainerTypes, groceryListScopes, borderColors, dialogues, colors, newListFormHelperText, radioGroupHelperTextObject, dialogueObject, }

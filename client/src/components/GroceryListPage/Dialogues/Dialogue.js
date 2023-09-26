@@ -1,6 +1,5 @@
 import {
   Alert,
-  Button,
   Typography,
   Modal,
   Fade,
@@ -9,8 +8,14 @@ import {
   Paper,
   Stack,
   TextField,
+  RadioGroup,
+  Radio,
+  FormControlLabel,
+  FormControl,
+  FormHelperText,
+  Button,
 } from "@mui/material";
-import { useState, useRef, useEffect, createRef } from "react";
+import { useState, useRef } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -40,15 +45,13 @@ function Dialogue({
   setOpenDialogue,
   activeList,
   setActiveList,
-  activeContainer,
-  setActiveContainer,
-  user,
 }) {
   // States
   const [severity, setSeverity] = useState("info");
   const [alertMessage, setAlertMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [category, setCategory] = useState("None");
 
   // Other Locals
   const location = useLocation();
@@ -57,6 +60,10 @@ function Dialogue({
   const navigate = useNavigate();
 
   // Handlers
+  const handleCategorySelection = (event) => {
+    setCategory(event.target.value);
+  };
+
   const handleInputValidation = async (input) => {
     return dialogueValidation(input);
   };
@@ -66,6 +73,7 @@ function Dialogue({
     if (header === "deleteIcon") return <DeleteIcon />;
     if (header === "editIcon") return <EditIcon />;
     if (header === "appleIcon") return <AppleIcon />;
+    return <></>;
   };
 
   const deriveDefaultText = () => {
@@ -84,13 +92,13 @@ function Dialogue({
     setAlertMessage(null);
   };
 
-  const closeDialogueWithDelay = () => {
+  const closeDialogueWithDelay = (delay = 2000) => {
     setTimeout(() => {
       setOpenDialogue(dialogues.closed);
       hideAlert();
       setLoading(false);
-      setTimeout(() => setLoading(false), 2000);
-    }, 2000);
+      setTimeout(() => setLoading(false), 1000);
+    }, delay);
   };
 
   const closeDialogueWithoutDelay = () => {
@@ -131,6 +139,7 @@ function Dialogue({
       listId: activeList?.id,
       containerId: containerId,
       scope: activeList?.scope,
+      category: category === "None" ? "Misc" : category,
     };
     const uri =
       activeList?.scope === groceryListScopes.public
@@ -141,51 +150,34 @@ function Dialogue({
     if (res?.status === 200) {
       const updatedItems = [...activeList?.groceryListItems, res?.body];
       setActiveList({ ...activeList, groceryListItems: updatedItems });
-      showAlert("success", "item added");
       closeDialogueWithoutDelay();
     } else if (res?.status === 403) {
-      // navigate('/') TODO:
+      navigate("/");
     } else if (res?.status === 401) {
-      showAlert(
-        "warning",
-        "Hmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities."
-      );
+      showAlert("warning", messages.unauthorizedAction);
     } else {
       showAlert("error", "Whoops!. Couldn't add item.");
       closeDialogueWithDelay();
     }
   };
 
-  const handleEditItem = async (name) => {
+  const handleEditItem = async (name, category) => {
     // Ensure reset states
     setLoading(true);
     setErrorMessage(null);
 
     // Didn't change anything
-    if (name.toUpperCase() === item.name.toUpperCase()) {
+    if (name.toUpperCase() === item?.name.toUpperCase() && category === item?.category) {
       closeDialogueWithoutDelay();
       setLoading(false);
       return;
     }
+
     // Validate input
     const valid = await handleInputValidation(name);
     if (!valid?.validated) {
       setErrorMessage(valid?.message);
       setLoading(false);
-      return;
-    }
-
-    // Check if whoever's deleting the item has permissions
-    if (
-      activeList?.scope !== groceryListScopes.public &&
-      user?.username !== item?.user?.username
-    ) {
-      console.log(user?.username);
-      showAlert(
-        "error",
-        "You cannot edit this item because you did not create it."
-      );
-      closeDialogueWithDelay();
       return;
     }
 
@@ -195,6 +187,7 @@ function Dialogue({
       ...updatedItem,
       containerId: containerId,
       scope: activeList?.scope,
+      category: category === "None" ? "Misc" : category,
     };
     const uri =
       activeList?.scope === groceryListScopes.public
@@ -214,95 +207,20 @@ function Dialogue({
     } else if (res?.status === 403) {
       // navigate('/') TODO:
     } else if (res?.status === 401) {
-      showAlert(
-        "warning",
-        "Hmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities."
-      );
+      showAlert("warning", messages.unauthorizedAction);
     } else {
-      showAlert("error", "Something went wrong. Couldn't update the item.");
-      closeDialogueWithDelay();
-    }
-  };
-
-  const handleDeleteItem = async (item) => {
-    setLoading(true);
-    let { id, name } = item;
-
-    // send DELETE request to server
-    const data = {
-      containerId: containerId,
-      listId: activeList?.id,
-      scope: activeList?.scope,
-      itemId: item?.id,
-    };
-
-    // Check if whoever's deleting the item has permissions
-    if (
-      activeList?.scope !== groceryListScopes.public &&
-      user?.username !== item?.user?.username
-    ) {
-      showAlert(
-        "error",
-        "You cannot delete this item because you did not create it."
-      );
-      closeDialogueWithDelay();
-      return;
-    }
-
-    const res =
-      activeList?.scope === groceryListScopes.public
-        ? await deletePublicItem(data)
-        : await deleteItem(data);
-    if (res?.status === 200) {
-      // update items state
-      const previousItems = activeList?.groceryListItems.filter(
-        (e) => !(e.id === id && e.name === name)
-      );
-      setActiveList({ ...activeList, groceryListItems: previousItems });
-      closeDialogueWithoutDelay();
-    } else if (res?.status === 403) {
-      navigate("/");
-    } else if (res?.status === 401) {
-      showAlert(
-        "warning",
-        "Hmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities."
-      );
-    } else {
-      showAlert("error", "Apologies. Something went wrong on our end.");
+      showAlert("error", messages.genericError);
       closeDialogueWithDelay();
     }
   };
 
   const handleResetList = async () => {
     setLoading(true);
-    // Validate input
-    const valid = await handleInputValidation(textFieldRef.current.value);
-    if (!valid?.validated) {
-      setErrorMessage(valid?.message);
-      setLoading(false);
-      return;
-    }
-
-    // Validate that user entered acknowledgement
-    if (textFieldRef.current.value !== activeList?.listName) {
-      showAlert(
-        "error",
-        "Couldn't reset the list.\nMake sure you enter the name of the list correctly (case sensitive)"
-      );
-      setTimeout(() => {
-        hideAlert();
-        setLoading(false);
-      }, 3000);
-      return;
-    }
-
-    // Fetch the DELETE api on the server and send user, container, list info
     const data = {
       containerId: containerId,
       scope: activeList?.scope,
       listId: activeList?.id,
     };
-
     const res = await deleteRequest(URLS.resetList, data);
     if (res?.status === 200) {
       setActiveList((activeList) => {
@@ -315,10 +233,7 @@ function Dialogue({
       showAlert("warning", messages.unauthorizedAction);
     } else {
       console.log(res);
-      showAlert(
-        "error",
-        "Something went wrong on our end. Couldn't delete the list."
-      );
+      showAlert("error", messages.genericError);
       closeDialogueWithDelay();
     }
   };
@@ -368,15 +283,19 @@ function Dialogue({
         <Fade in={openDialogue !== dialogues.closed}>
           <Paper
             sx={{
+              padding:1,
+              paddingLeft: 1,
+              paddingRight: 1,
               display: "flex",
               justifyContent: "center",
+              alignItems: "center",
               direction: "column",
               position: "absolute",
               top: "25vh",
               left: "50vw",
               transform: "translate(-50%)",
               borderRadius: 5,
-              width: 330,
+              width: 300,
               height: 300,
             }}
           >
@@ -404,30 +323,54 @@ function Dialogue({
               <Typography variant="h4">
                 {dialogueObject[openDialogue]?.header}
               </Typography>
-              
-              {dialogueObject[openDialogue]?.textFields.map(
-                (textField, i) =>
-                  !textField.hidden && (
+
+              <FormControl>
+                {dialogueObject[openDialogue]?.textFields.map(
+                  (textField, i) =>
+                    !textField.hidden && (
                       <CssTextField
-                      fullWidth
-                      required
-                      sx={{ maxWidth: "65vw" }}
-                      id="custom-css-outlined-input"
-                      key={`${textField.text}${i}`}
-                      error={errorMessage && true}
-                      inputRef={textFieldRef}
-                      // onFocus={handleFocus}
-                      label={textField.text}
-                      helperText={
-                        errorMessage ? errorMessage : textField.helperText
-                      }
-                      defaultValue={deriveDefaultText()}
-                      inputProps={{
-                        maxLength: 100,
-                      }}
-                    />
-                  )
-              )}
+                        fullWidth
+                        required
+                        id="custom-css-outlined-input"
+                        key={`${textField.text}${i}`}
+                        error={errorMessage && true}
+                        inputRef={textFieldRef}
+                        label={textField.text}
+                        helperText={
+                          errorMessage ? errorMessage : textField.helperText
+                        }
+                        defaultValue={deriveDefaultText()}
+                        inputProps={{
+                          maxLength: 100,
+                        }}
+                      />
+                    )
+                )}
+
+                {dialogueObject[openDialogue]?.radioButtons.length > 0 && (
+                  <RadioGroup
+                    row
+                    sx={{ justifyContent: 'flex-start', width:'100%' }}
+                    defaultValue="None"
+                    onChange={handleCategorySelection}
+                  >
+                    {dialogueObject[openDialogue]?.radioButtons.map(
+                      (radioButton, i) => (
+                        <FormControlLabel
+                          key={i}
+                          value={radioButton.category}
+                          control={<Radio />}
+                          label={
+                            <Typography >
+                              {radioButton.category}
+                            </Typography>
+                          }
+                        />
+                      )
+                    )}
+                  </RadioGroup>
+                )}
+              </FormControl>
 
               {dialogueObject[openDialogue]?.button.map((button, i) => {
                 return (
@@ -443,9 +386,7 @@ function Dialogue({
                       } else if (openDialogue === dialogues.resetList) {
                         handleResetList();
                       } else if (openDialogue === dialogues.editItem) {
-                        handleEditItem(textFieldRef.current.value);
-                      } else if (openDialogue === dialogues.deleteItem) {
-                        handleDeleteItem(item);
+                        handleEditItem(textFieldRef.current.value, category);
                       } else if (openDialogue === dialogues.sendMoney) {
                         moneyActions[i]();
                       }

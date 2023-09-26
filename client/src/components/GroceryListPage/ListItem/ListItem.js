@@ -3,10 +3,10 @@ import {
   colors,
   dialogues,
   groceryListScopes,
+  messages,
 } from "../../../utils/enum";
 import { useState } from "react";
 import ItemDescription from "../../ItemDescription/ItemDescription";
-import Dialogue from "../DialogueBox/Dialogue";
 import EditIcon from "@mui/icons-material/Edit";
 import PaidIcon from "@mui/icons-material/Paid";
 import CloseIcon from "@mui/icons-material/Close";
@@ -23,33 +23,36 @@ import {
   Paper,
   Stack,
   SpeedDial,
+  ListItemButton,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { deleteItem, deletePublicItem } from "../../../utils/testApi/testApi";
+import { Draggable } from "react-beautiful-dnd";
 
 const actions = [
-  { icon: <DeleteIcon sx={{ color: "red" }} />, name: "Copy" },
-  { icon: <EditIcon sx={{ color: "black" }} />, name: "Save" },
-  { icon: <PaidIcon sx={{ color: "black" }} />, name: "Print" },
+  { icon: <DeleteIcon sx={{ color: "red" }} />, name: "Delete item" },
+  { icon: <EditIcon sx={{ color: "black" }} />, name: "Edit item" },
+  // { icon: <PaidIcon sx={{ color: "black" }} />, name: "Send/Request" },
 ];
 
 const ListItem = ({
-  containerId,
   identifier,
-  listId,
   item,
+  setItem,
   activeList,
   setActiveList,
-  openDialogue,
   setOpenDialogue,
-  activeContainer,
-  setActiveContainer,
   borderColor,
-  user,
-  setUser,
+  setAlertMessage,
+  setWasChecked,
+  // Drag and drop props start here
+  index,
 }) => {
   // States
-  const [openItemDescrition, setOpenItemDescription] = useState(false);
-  const [checked, setChecked] = useState(item?.checked);
   const [isActive, setIsActive] = useState(false);
+  const [checked, setChecked] = useState(item?.checked);
+  const [openItemDescrition, setOpenItemDescription] = useState(false);
+  const navigate = useNavigate();
 
   // Handlers
   const handleOpenItemDescription = () => {
@@ -85,6 +88,7 @@ const ListItem = ({
 
     // Update states
     setChecked(!checked);
+    setWasChecked(true)
     setActiveList({
       ...activeList,
       groceryListItems: checkedItems,
@@ -93,26 +97,53 @@ const ListItem = ({
 
   const openEditItemDialogue = () => {
     setOpenDialogue(dialogues.editItem);
-  };
-
-  const openDeleteItemDialogue = () => {
-    setOpenDialogue(dialogues.deleteItem);
+    setItem(item);
   };
 
   const openSendMoneyDialogue = () => {
     setOpenDialogue(dialogues.sendMoney);
+    setItem(item);
+  };
+
+  const handleDeleteItem = async () => {
+    // Construct data to be sent
+    const data = {
+      containerId: activeList?.containerId,
+      listId: activeList?.id,
+      scope: activeList?.scope,
+      itemId: item?.id,
+    };
+
+    // Send DELETE request to server
+    const res =
+      activeList?.scope === groceryListScopes.public
+        ? await deletePublicItem(data)
+        : await deleteItem(data);
+    if (res?.status === 200) {
+      // Update items state
+      const previousItems = activeList?.groceryListItems.filter(
+        (e) => !(e.id === item?.id)
+      );
+      setActiveList({ ...activeList, groceryListItems: previousItems });
+    } else if (res?.status === 403) {
+      navigate("/");
+    } else if (res?.status === 401) {
+      setAlertMessage(messages.unauthorizedAccess);
+    } else {
+      setAlertMessage(messages.genericError);
+    }
   };
 
   const onClicks = [
-    openDeleteItemDialogue,
+    handleDeleteItem,
     openEditItemDialogue,
     openSendMoneyDialogue,
   ];
 
   return (
     <>
-      <Grid
-        item
+      <ListItemButton
+        disableRipple={true}
         sx={{ maxWidth: `calc(${mobileWidth} - 20px`, positon: "relative" }}
       >
         {identifier && (
@@ -127,91 +158,89 @@ const ListItem = ({
               pl: 1,
             }}
           >
-            {`@${identifier}`}
+            {`${identifier === "Misc" ? "Other" : identifier}`}
           </Typography>
         )}
-
-        <Paper
-          elevation={3}
-          sx={{
-            maxWidth: mobileWidth,
-            width: "95vw",
-            height: 80,
-            borderLeft: `5px solid ${
-              borderColor ? borderColor : colors.landingPageColors.bold
-            }`,
-          }}
-        >
-          <Stack
-            paddingRight={1}
-            direction={"row"}
-            sx={{
-              height: "100%",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Stack direction={"row"} sx={{ alignItems: "center" }}>
-              {item?.checked ? (
-                <Button disableRipple onClick={handleCheck}>
-                  <CheckCircleIcon
-                    fontSize="large"
-                    sx={{
-                      color: borderColor
-                        ? borderColor
-                        : colors.landingPageColors.bold,
-                    }}
-                  />
-                </Button>
-              ) : (
-                <Button disableRipple onClick={handleCheck}>
-                  <RadioButtonUncheckedIcon
-                    fontSize="large"
-                    sx={{
-                      color: borderColor
-                        ? borderColor
-                        : colors.landingPageColors.bold,
-                    }}
-                  />
-                </Button>
-              )}
-              <Typography
-                onClick={handleOpenItemDescription}
-                variant={"button"}
-              >
-                {item?.name && truncateString(item?.name, 30)}
-                {item?.quantity > 1 && ` (${item?.quantity})`}
-              </Typography>
-            </Stack>
-
-            <SpeedDial
-              ariaLabel="SpeedDial"
-              direction={"left"}
-              icon={handleDeriveOpenOrCloseIcon()}
-              open={isActive}
+        <Draggable draggableId={`${index}`} index={index}>
+          {(provided) => (
+            <Paper
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+              elevation={3}
               sx={{
-                display: "flex",
-                height: 35,
-                width: 35,
-                position: "relative",
-                right: 0,
-                top: 0,
-                zIndex:1
+                maxWidth: mobileWidth,
+                width: "100%",
+                height: 80,
+                borderLeft: `5px solid ${
+                  borderColor ? borderColor : colors.landingPageColors.bold
+                }`,
               }}
             >
-              {actions.map((action, i) => (
-                <SpeedDialAction
-                  sx={{ color: "black", position: "relative", right: 18 }}
-                  key={action.name}
-                  icon={action.icon}
-                  tooltipTitle={action.name}
-                  onClick={onClicks[i]}
-                />
-              ))}
-            </SpeedDial>
-          </Stack>
-        </Paper>
-      </Grid>
+              <Stack
+                paddingRight={1}
+                direction={"row"}
+                sx={{
+                  height: "100%",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Stack direction={"row"} sx={{ alignItems: "center" }}>
+                  {item?.checked ? (
+                    <Button disableRipple onClick={handleCheck}>
+                      <CheckCircleIcon
+                        fontSize="large"
+                        sx={{
+                          color: borderColor
+                            ? borderColor
+                            : colors.landingPageColors.bold,
+                        }}
+                      />
+                    </Button>
+                  ) : (
+                    <Button disableRipple onClick={handleCheck}>
+                      <RadioButtonUncheckedIcon
+                        fontSize="large"
+                        sx={{
+                          color: borderColor
+                            ? borderColor
+                            : colors.landingPageColors.bold,
+                        }}
+                      />
+                    </Button>
+                  )}
+                  <Typography
+                    onClick={handleOpenItemDescription}
+                    variant={"button"}
+                  >
+                    {item?.name && truncateString(item?.name, 30)}
+                    {item?.quantity > 1 && ` (${item?.quantity})`}
+                  </Typography>
+                </Stack>
+
+                <SpeedDial
+                  ariaLabel="SpeedDial"
+                  direction={"left"}
+                  icon={handleDeriveOpenOrCloseIcon()}
+                  open={isActive}
+                  sx={{ height: 35, width: 35 }}
+                >
+                  {actions.map((action, i) => (
+                    <SpeedDialAction
+                      sx={{ position: "relative", right: 18 }}
+                      key={action.name}
+                      icon={action.icon}
+                      tooltipTitle={action.name}
+                      onClick={onClicks[i]}
+                    />
+                  ))}
+                </SpeedDial>
+              </Stack>
+            </Paper>
+          )}
+        </Draggable>
+      </ListItemButton>
 
       {openItemDescrition && isActive && (
         <ItemDescription
@@ -220,23 +249,6 @@ const ListItem = ({
           openItemDescription={openItemDescrition}
           setOpenItemDescription={setOpenItemDescription}
           borderColor={borderColor}
-        />
-      )}
-
-      {openDialogue && isActive && (
-        <Dialogue
-          containerId={containerId}
-          setUser={setUser}
-          user={user}
-          isPublic={activeList?.scope === groceryListScopes.public}
-          item={item}
-          openDialogue={openDialogue}
-          setOpenDialogue={setOpenDialogue}
-          activeList={activeList}
-          setActiveList={setActiveList}
-          listId={listId}
-          activeContainer={activeContainer}
-          setActiveContainer={setActiveContainer}
         />
       )}
     </>

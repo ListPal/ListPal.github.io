@@ -111,28 +111,9 @@ const LandingPage = ({
 
   const handleLogout = async () => {
     setLoading(true);
-    if (activeList?.groceryListItems.length > 0) {
-      // Save checked items
-      const checkResponse = await checkItems();
-      if (checkResponse?.status === 200) {
-        // Do nothing, success
-      } else if (checkResponse?.status === 403) {
-        // Unauthorized, check login session
-        navigate("/");
-      } else {
-        showAlert(
-          "error",
-          "Apologies. Somehing went wrong on our end. Please refresh the page and try again."
-        );
-        setLoading(false);
-        return;
-      }
-    }
-
-    // reset states and logout
+    // Reset states and logout
     const res = await logout();
     if (res.status === 200) {
-      // Reset states and navigate to login page
       setUser(null);
       setActiveContainer({ collapsedLists: [] });
       setActiveList({ groceryListItems: [] });
@@ -140,7 +121,7 @@ const LandingPage = ({
     } else {
       showAlert(
         "error",
-        "Apologies. Failed log you out. Please refresh the page and try again."
+        "Failed log you out. Please refresh the page and try again."
       );
     }
     setLoading(false);

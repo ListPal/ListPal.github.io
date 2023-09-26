@@ -10,14 +10,18 @@ import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import MapsUgcIcon from "@mui/icons-material/MapsUgc";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import AutoDeleteOutlinedIcon from "@mui/icons-material/AutoDeleteOutlined";
+import RemoveDoneIcon from "@mui/icons-material/RemoveDone";
+import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
 import { List, ListItemButton, ListItemAvatar } from "@mui/material";
 import { Link } from "react-router-dom";
+
 const BottomBar = ({
   setOpenDialogue,
   handleDeriveThemeColor,
   scope,
   handleSync,
   isEmptyList,
+  handleRemoveDone
 }) => {
   const [openShareTray, setOpenShareTray] = useState(false);
 
@@ -54,9 +58,22 @@ const BottomBar = ({
           height: "6vh",
         }}
       >
+
         {/* Sync List */}
-        <IconButton sx={{ mr: 5 }} onClick={handleSync}>
+        <IconButton
+          disabled={scope === groceryListScopes.private}
+          sx={{ mr: 2.5 }}
+          onClick={() => handleSync(true)}
+        >
           <SyncIcon sx={{ color: handleDeriveThemeColor().bold }} />
+        </IconButton>
+        
+        {/* Send/Receive $*/}
+        <IconButton
+          sx={{ mr: 2.5 }}
+          onClick={() => setOpenDialogue(dialogues.sendMoney)}
+        >
+          <AttachMoneyOutlinedIcon sx={{ color: handleDeriveThemeColor().bold }} />
         </IconButton>
 
         {/* Share List */}
@@ -88,18 +105,26 @@ const BottomBar = ({
           </Fab>
         </div>
 
+        {/*  Move checked */}
+        <IconButton
+          sx={{ ml: 2.5 }}
+          onClick={handleRemoveDone}
+        >
+          <RemoveDoneIcon sx={{ color: handleDeriveThemeColor().bold }} />
+        </IconButton>
+
         {/* Share List */}
         {scope === groceryListScopes.public ? (
-          <IconButton sx={{ ml: 5 }}>
-            <IosShareIcon
-              sx={{ color: handleDeriveThemeColor().bold }}
-              onClick={() => setOpenShareTray(!openShareTray)}
-            />
+          <IconButton
+            sx={{ ml: 2.5 }}
+            onClick={() => setOpenShareTray(!openShareTray)}
+          >
+            <IosShareIcon sx={{ color: handleDeriveThemeColor().bold }} />
           </IconButton>
         ) : (
           <IconButton
             disabled={isEmptyList}
-            sx={{ ml: 5 }}
+            sx={{ ml: 2.5 }}
             size="small"
             variant="contained"
             onClick={() => setOpenDialogue(dialogues.resetList)}

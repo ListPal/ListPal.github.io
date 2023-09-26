@@ -146,6 +146,7 @@ const Login = ({ setActiveContainer, setUser }) => {
         />
         <LoadingButton
           loading={loading}
+          endIcon={<></>}
           loadingPosition="end"
           variant="contained"
           onClick={() =>

@@ -325,6 +325,7 @@ const AddPeopleList = () => {
         </List>
         {peopleToAdd.length > 0 && (
           <LoadingButton
+            endIcon={<></>}
             loadingPosition={'end'}
             loading={loading}
             fullWidth

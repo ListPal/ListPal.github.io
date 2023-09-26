@@ -10,11 +10,17 @@ import QuickList from "./components/QuickList/QuickList";
 import Containers from "./components/Containers/Containers";
 import AddPeopleList from "./components/AddPeopleList/AddPeopleList";
 
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
 function App() {
+  const [wasDragged, setWasDragged] = useState(false);
+  const [wasChecked, setWasChecked] = useState(false);
   const [activeList, setActiveList] = useState({ groceryListItems: [] });
-  const [activeContainer, setActiveContainer] = useState({ collapsedLists: [] });
+  const [activeContainer, setActiveContainer] = useState({
+    collapsedLists: [],
+  });
   const [user, setUser] = useState(null);
-  
+
   return (
     <div className="App">
       <HashRouter>
@@ -81,6 +87,10 @@ function App() {
                 setUser={setUser}
                 activeList={activeList}
                 setActiveList={setActiveList}
+                wasChecked={wasChecked}
+                setWasChecked={setWasChecked}
+                wasDragged={wasDragged}
+                setWasDragged={setWasDragged}
               />
             }
           />

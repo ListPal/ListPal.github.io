@@ -328,6 +328,7 @@ const Register = ({ setUser, setActiveList }) => {
           />
           <LoadingButton
             loading={loading}
+            endIcon={<></>}
             loadingPosition={'end'}
             sx={{
               position: 'fixed',
