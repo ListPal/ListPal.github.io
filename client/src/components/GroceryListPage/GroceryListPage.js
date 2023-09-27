@@ -153,9 +153,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
     const pull = await handlePullList(false, false);
     // Merge (current merge resolution is: "keep theirs")
     const mergedArray = await mergeArrays(activeList?.groceryListItems, pull?.groceryListItems);
-    // Push
-    // if (mergedArray) await handlePushList(mergedArray, false, false);
-    // Cache response if necesary
+    // Cache
     if (cache === true) setActiveList({ ...activeList, groceryListItems: mergedArray });
     // Reset relevant states
     setLoading(false);
@@ -455,7 +453,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
             </IconButton>
             <Typography padding={1} variant="h5" sx={{ color: "white", flexGrow: 1 }}>
               <Typography fontSize={16} variant="button">
-                {truncateString(listName, 20)}
+                {listName}
               </Typography>
             </Typography>
             {scope === groceryListScopes.public && <PublicIcon />}
@@ -470,14 +468,12 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
             <List
               {...provided.droppableProps}
               ref={provided.innerRef}
-              mt={"8vh"}
               sx={{
                 mt: "8vh",
-                minHeight: "80vh",
                 justifyContent: "center",
                 justifyItems: "center",
                 maxWidth: mobileWidth,
-                pb: "9vh",
+                pb: "10vh",
               }}
             >
               {!loading &&

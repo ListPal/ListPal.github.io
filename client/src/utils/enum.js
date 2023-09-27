@@ -68,9 +68,9 @@ const colors = {
 };
 
 const newListFormHelperText = {
-  shopping: "(e.g. Christmas Shopping List, Kate's Birthday)",
-  grocery: "(e.g. Walmart List, Thanksgiving Party, Dinner Recipe)",
-  todo: "(e.g. Home Remodel Project 🏠, Work to-do List)",
+  shopping: "Good list names are short (e.g. Kate's Birthday, Shared Christmas List)",
+  grocery: "Good list names are short (e.g. Walmart List, Thanksgiving Party, Dinner Recipe)",
+  todo: "Good list names are short (e.g.  Work to-do List, Home Remodel Project 🏠)",
 };
 
 const radioGroupHelperTextObject = {

@@ -28,7 +28,7 @@ const ListItem = ({ identifier, item, setItem, activeList, setActiveList, setOpe
 
   // Handlers
   const handleOpenItemDescription = () => {
-    if (item?.name.length > 30) {
+    if (item?.name.length > 24) {
       setOpenItemDescription(true);
       setIsActive(true);
     }
