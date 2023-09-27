@@ -13,6 +13,7 @@ import groceryWallpaper from "../../../utils/assets/groceryWallpaper.jpg";
 import shoppingWallpaper from "../../../utils/assets/shoppingWallpaper.jpg";
 import todoWallpaper from "../../../utils/assets/todoWallpaper.jpg";
 import christmasWallpaper from "../../../utils/assets/christmasWallpaper.jpg";
+import thanksGivingWallpaper from "../../../utils/assets/thanksGivingWallpaper.jpg";
 import { Draggable } from "react-beautiful-dnd";
 
 const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContainer, index }) => {
@@ -70,7 +71,7 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
 
   const handleDeriveWallpaper = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
-      return groceryWallpaper;
+      return listInfo?.listName.toUpperCase().includes("THANK") ? thanksGivingWallpaper : groceryWallpaper;
     }
     if (activeContainer?.containerType === groceryContainerTypes.todo) {
       return todoWallpaper;

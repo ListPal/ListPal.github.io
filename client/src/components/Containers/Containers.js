@@ -3,49 +3,26 @@ import { Grid, Button, Stack, Typography, Avatar } from "@mui/material";
 import Container from "./Container/Container";
 import { truncateString } from "../../utils/helper";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { URLS, mobileWidth } from "../../utils/enum";
-import { postRequest, logout } from "../../utils/testApi/testApi";
+import { mobileWidth } from "../../utils/enum";
+import { logout } from "../../utils/testApi/testApi";
 import { useNavigate } from "react-router-dom";
 import grocery from "../../utils/assets/grocery.jpg";
 import shop from "../../utils/assets/shop.jpg";
 import todo from "../../utils/assets/todo.jpg";
 
-const Containers = ({
-  user,
-  activeList,
-  setActiveList,
-  activeContainer,
-  setActiveContainer,
-}) => {
+const Containers = ({ setUser, user, activeList, setActiveList, activeContainer, setActiveContainer }) => {
   const navigate = useNavigate();
 
-  const checkItems = async () => {
-    const data = {
-      scope: activeList?.scope,
-      containerId: activeContainer?.id,
-      listId: activeList?.id,
-      itemIds: activeList?.groceryListItems
-        .filter((item) => item.checked)
-        .map((item) => item.id),
-    };
-    const res = await postRequest(URLS.checkListItemUri, data);
-    console.debug("Attempt to save checks: " + res);
-  };
-
   const handleLogout = async () => {
-    if (activeList) {
-      // Save checked items
-      await checkItems();
-    }
-
     // Reset states and logout
     const res = await logout();
     if (res.status === 200) {
-      setActiveList({ groceryListItems: [] });
+      setUser(null);
       setActiveContainer({ collapsedLists: [] });
+      setActiveList({ groceryListItems: [] });
       navigate("/");
     } else {
-      console.log("Error logging out: " + res?.status);
+      console.debug("Failed log you out. Please refresh the page and try again.");
     }
   };
 
@@ -88,11 +65,7 @@ const Containers = ({
                 color: "white",
               }}
             >
-              <Avatar
-                sx={{ width: 56, height: 56 }}
-                alt={user?.name}
-                src="[enter path here]"
-              />
+              <Avatar sx={{ width: 56, height: 56 }} alt={user?.name} src="[enter path here]" />
               <span style={{ width: "10px" }} />
               {user?.name ? truncateString(user.name) : "Unknown"}
             </Typography>
@@ -120,14 +93,7 @@ const Containers = ({
         <Grid item>
           {user &&
             ["Shopping Lists", "Grocery Lists", "To-do Lists"].map((e, i) => {
-              return (
-                <Container
-                  key={i}
-                  id={user[containerIds[i]]}
-                  heading={e}
-                  imgSrc={imgSources[i]}
-                />
-              );
+              return <Container key={i} id={user[containerIds[i]]} heading={e} imgSrc={imgSources[i]} />;
             })}
         </Grid>
       </Grid>
@@ -136,9 +102,5 @@ const Containers = ({
 };
 
 const imgSources = [shop, grocery, todo];
-const containerIds = [
-  "wishlistContainerId",
-  "groceryContainerId",
-  "todoContainerId",
-];
+const containerIds = ["wishlistContainerId", "groceryContainerId", "todoContainerId"];
 export default Containers;
