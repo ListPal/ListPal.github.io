@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.2abbe235.css",
-    "main.js": "/static/js/main.3ed7b55b.js",
+    "main.js": "/static/js/main.45fe8e08.js",
     "static/js/787.28cb0dcd.chunk.js": "/static/js/787.28cb0dcd.chunk.js",
     "static/media/shoppingWallpaper.jpg": "/static/media/shoppingWallpaper.d99614fb82d22ac818a5.jpg",
     "static/media/christmasWallpaperPlus.jpg": "/static/media/christmasWallpaperPlus.6e8b4f76c9ba0c89627a.jpg",
@@ -9,6 +9,7 @@
     "static/media/groceryWallpaperPlus.jpg": "/static/media/groceryWallpaperPlus.ef7edecd56e5ba8aacc3.jpg",
     "static/media/shoppingStrip.jpg": "/static/media/shoppingStrip.6152731151f1aafe6972.jpg",
     "static/media/shoppingWallpaperPlus.jpg": "/static/media/shoppingWallpaperPlus.14408a6f58efa0c2a448.jpg",
+    "static/media/thanksGivingWallpaper.jpg": "/static/media/thanksGivingWallpaper.b44252b1f1f37346598e.jpg",
     "static/media/todo.jpg": "/static/media/todo.60d281087fdee94cf260.jpg",
     "static/media/todoWallpaper.jpg": "/static/media/todoWallpaper.e8651e5437c4b31d24d4.jpg",
     "static/media/christmasWallpaper.jpg": "/static/media/christmasWallpaper.274aaf9ee13e5e17078e.jpg",
@@ -20,11 +21,11 @@
     "static/media/todoStrip.jpg": "/static/media/todoStrip.f15263b4997b4e4b26a9.jpg",
     "index.html": "/index.html",
     "main.2abbe235.css.map": "/static/css/main.2abbe235.css.map",
-    "main.3ed7b55b.js.map": "/static/js/main.3ed7b55b.js.map",
+    "main.45fe8e08.js.map": "/static/js/main.45fe8e08.js.map",
     "787.28cb0dcd.chunk.js.map": "/static/js/787.28cb0dcd.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.2abbe235.css",
-    "static/js/main.3ed7b55b.js"
+    "static/js/main.45fe8e08.js"
   ]
 }
