@@ -68,7 +68,7 @@ const LandingPage = ({ activeList, setActiveList, user, setUser, activeContainer
         navigate(-1);
       }
     } else {
-      navigate(-1)
+      navigate(-1);
     }
   };
 
@@ -405,7 +405,7 @@ const LandingPage = ({ activeList, setActiveList, user, setUser, activeContainer
         <DragDropContext onDragEnd={handleOnDragEnd}>
           <Droppable droppableId="list-items">
             {(provided, snapshot) => (
-              <List sx={{ pb: 2 }} {...provided.droppableProps} ref={provided.innerRef}>
+              <List sx={{ pb: 2, maxWidth: mobileWidth }} {...provided.droppableProps} ref={provided.innerRef}>
                 {loading && (
                   <Stack width={"100vw"} direction={"column"} mt={5}>
                     <Skeleton animation={"wave"} variant="rectangular" sx={{ maxWidth: mobileWidth }} height={150} />

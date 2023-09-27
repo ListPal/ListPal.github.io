@@ -13,8 +13,6 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import PublicIcon from "@mui/icons-material/Public";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import KeyIcon from "@mui/icons-material/Key";
 
 // My imports
 import { URLS, colors, dialogues, borderColors, groceryListScopes, mobileWidth, groceryContainerTypes, messages } from "../../utils/enum";

@@ -9,7 +9,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PublicIcon from "@mui/icons-material/Public";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 // IMGS
-import groceryWallpaper from "../../../utils/assets/groceryWallpaperPlus.jpg";
+import groceryWallpaper from "../../../utils/assets/groceryWallpaper.jpg";
 import shoppingWallpaper from "../../../utils/assets/shoppingWallpaper.jpg";
 import todoWallpaper from "../../../utils/assets/todoWallpaper.jpg";
 import christmasWallpaper from "../../../utils/assets/christmasWallpaper.jpg";
@@ -83,7 +83,7 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
   return (
     <Draggable draggableId={`${index}`} index={index}>
       {(provided) => (
-        <ListItemButton disableRipple>
+        <ListItemButton disableRipple >
           <Paper
             ref={provided.innerRef}
             {...provided.draggableProps}
@@ -92,7 +92,7 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
             sx={{
               maxWidth: mobileWidth,
               borderRadius: 0,
-              width: "100vmin",
+              width: "96vw",
             }}
           >
             <Slide
@@ -128,7 +128,6 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
                   borderRadius: "5px",
                   justifyContent: "center",
                   alignItems: "center",
-                  border: "0.8px solid lightgrey",
                 }}
               >
                 <Typography
