@@ -19,18 +19,7 @@ const actions = [
   { icon: <EditIcon sx={{ color: "black" }} />, name: "Edit item" },
 ];
 
-const ListItem = ({
-  identifier,
-  item,
-  setItem,
-  activeList,
-  setActiveList,
-  setOpenDialogue,
-  borderColor,
-  setAlertMessage,
-  showDone = true,
-  index,
-}) => {
+const ListItem = ({ identifier, item, setItem, activeList, setActiveList, setOpenDialogue, borderColor, setAlertMessage, showDone = true, index, modifiedIds, setModifiedIds }) => {
   // States
   const [isActive, setIsActive] = useState(false);
   const [checked, setChecked] = useState(false);
@@ -53,22 +42,25 @@ const ListItem = ({
     }
   };
 
-  const handleCheck = (refactor = false) => {
+  const handleCheck = () => {
     // Mark items checked/unchecked
     let listItems = activeList?.groceryListItems || [];
     const updatedItems = listItems.map((e) => (e.id === item?.id ? { ...e, checked: !e.checked } : e));
+    
+    // Do not sperate checked/unchcked items
+    listItems = updatedItems;
 
-    if (!refactor) {
-      // Sperate checked/unchcked items
-      const uncheckedItems = updatedItems.filter((e) => !e.checked);
-      const checkedItems = updatedItems.filter((e) => e.checked);
-      listItems = [...uncheckedItems, ...checkedItems];
+    // Toggle modified state
+    const updatedModifiedIdSet = modifiedIds;
+    if (updatedModifiedIdSet.has(item?.id)) {
+      updatedModifiedIdSet.delete(item?.id);
     } else {
-      // Do not sperate checked/unchcked items
-      listItems = updatedItems;
+      updatedModifiedIdSet.add(item?.id);
     }
+    
     // Update states
     setChecked(!checked);
+    setModifiedIds(updatedModifiedIdSet);
     setActiveList({
       ...activeList,
       groceryListItems: listItems,

@@ -39,10 +39,11 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
   const [loading, setLoading] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const [alertMessage, setAlertMessage] = useState(null);
-  const [recentlyDeletedItem, setRecentlyDeletedItem] = useState(null);
   const [groupedByIdentifier, setGroupedByIdentifier] = useState([]);
   const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
   const [showDone, setShowDone] = useState(true);
+  const [modifiedIds, setModifiedIds] = useState(new Set())
+  // TODO: const [recentlyDeleted, setRecentlyDeleted] = useState(null); 
 
   // Other globals
   let groupedByCurrentIdx = 0; // global var that keeps the idx count to decide when to display the identifier in the lis item
@@ -56,6 +57,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
 
   // Handlers
   const handleCheckItems = async () => {
+    console.log('Triggered handleCheckedItems')
     // Handling preconditions
     if (!(scope && containerId && listId)) {
       console.debug("Incomple data. One of `scope` | `containerId` | `listId` is null or undefined.");
@@ -64,14 +66,16 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
     } else if (activeList?.groceryListItems.length === 0) {
       console.debug("Empty list. No need to check items");
       return;
+    } else if (modifiedIds.size === 0) {
+      console.debug("No modified ids found");
+      return;
     }
 
-    // TODO: only send if there are modified items
     const data = {
       scope: activeList?.scope,
       containerId: activeList?.containerId,
       listId: activeList?.id,
-      itemIds: activeList?.groceryListItems.filter((item) => item.checked).map((item) => item.id),
+      itemIds: [...modifiedIds],
     };
 
     // Derive public or authenticated uri
@@ -83,6 +87,9 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
   };
 
   const handleBack = () => {
+    if (modifiedIds.size > 0) {
+      handleCheckItems()
+    }
     navigate(-1);
   };
 
@@ -395,9 +402,6 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
       return;
     }
 
-    // Sync previous list and discard
-    if (activeList?.groceryListItems.length > 0) handleCheckItems();
-
     // Pull new list
     handlePullList();
 
@@ -481,8 +485,6 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
                   <ListItem
                     borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
                     identifier={handleShowIdentifier(e?.user?.username.split("@")[0])}
-                    recentlyDeletedItem={recentlyDeletedItem}
-                    setRecentlyDeletedItem={setRecentlyDeletedItem}
                     setOpenDialogue={setOpenDialogue}
                     setActiveList={setActiveList}
                     openDialogue={openDialogue}
@@ -499,6 +501,10 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
                     containerId={containerId}
                     setAlertMessage={setAlertMessage}
                     showDone={showDone}
+                    modifiedIds={modifiedIds}
+                    setModifiedIds={setModifiedIds}
+                    // recentlyDeleted={recentlyDeleted}
+                    // setRecentlyDeleted={setRecentlyDeleted}
                   />
                 ))}
               {provided.placeholder}
