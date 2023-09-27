@@ -1,8 +1,8 @@
 const mobileWidth = "480px";
 
 const itemType = {
-  listItem: 'LIST_ITEM'
-}
+  listItem: "LIST_ITEM",
+};
 
 const groceryContainerTypes = {
   todo: "TODO",
@@ -91,12 +91,12 @@ const dialogueObject = {
       },
     ],
     radioButtons: [
-    //   {category: 'Produce'},
-    //   {category: 'Frozen'},
-    //   {category: 'Snacks'},
-    //   {category: 'Beverage'},
-    //   {category: 'Home Care'},
-    //   {category: 'None'},
+      //   {category: 'Produce'},
+      //   {category: 'Frozen'},
+      //   {category: 'Snacks'},
+      //   {category: 'Beverage'},
+      //   {category: 'Home Care'},
+      //   {category: 'None'},
     ],
     button: [
       {
@@ -284,8 +284,8 @@ const dialogueObject = {
 };
 
 // Engines
-// const engine = "https://katespracticespace.com";
-const engine = "http://joses-macbook-pro-3.local:8080";
+const engine = "https://katespracticespace.com";
+// const engine = "http://joses-macbook-pro-3.local:8080";
 
 const URLS = {
   // Authentication endpoins
@@ -304,7 +304,7 @@ const URLS = {
   getListUri: `${engine}/server/get-list`,
   createListItemUri: `${engine}/server/create-list-item`,
   updateListItemUri: `${engine}/server/update-list-item`,
-  checkListItemUri: `${engine}/server/check-list-items`,
+  checkListItemsUri: `${engine}/server/check-list-items`,
   deleteItem: `${engine}/server/delete-list-item`,
   addPeople: `${engine}/server/add-people`,
   removePeople: `${engine}/server/remove-people-from-list`,
@@ -312,14 +312,16 @@ const URLS = {
   getPeopleFromList: `${engine}/server/get-people-from-list`,
   getSuggestedPeople: `${engine}/server/fetch-suggested-people`,
   resetList: `${engine}/server/reset-list`,
+  
   // Public endpoints
   createPublicListItemUri: `${engine}/public/shared/create-list-item`,
   getPublicListUri: `${engine}/public/shared/get-list`,
   updatePublicListItemUri: `${engine}/public/shared/update-list-item`,
-  checkPublicListItemUri: `${engine}/public/shared/check-list-items`,
+  checkPublicListItemsUri: `${engine}/public/shared/check-list-items`,
   deletePublicItem: `${engine}/public/shared/delete-list-item`,
   resetPublicList: `${engine}/server/reset-list`,
   updateListOrder: `${engine}/server/updated-list-order`,
+  refactorCollapsedLists: `${engine}/server/update-collapsed-list-order`,
 };
 
 // Generalized messages here
@@ -340,6 +342,18 @@ const filterCardsBy = {
   restricted: 3,
 };
 
-
-
-export {itemType, messages, filterCardsBy, URLS, mobileWidth, groceryContainerTypes, groceryListScopes, borderColors, dialogues, colors, newListFormHelperText, radioGroupHelperTextObject, dialogueObject, }
+export {
+  itemType,
+  messages,
+  filterCardsBy,
+  URLS,
+  mobileWidth,
+  groceryContainerTypes,
+  groceryListScopes,
+  borderColors,
+  dialogues,
+  colors,
+  newListFormHelperText,
+  radioGroupHelperTextObject,
+  dialogueObject,
+};

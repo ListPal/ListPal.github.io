@@ -5,8 +5,6 @@ import {
   Backdrop,
   Paper,
   Stack,
-  //   Button,
-  //   TextField,
 } from "@mui/material";
 import { colors } from "../../utils/enum";
 
@@ -46,13 +44,14 @@ const ItemDescription = ({
             transform: "translate(-50%)",
             borderRadius: 2,
             width: "85vw",
+            minHeight: 60,
             padding: 2,
             borderLeft: `5px solid ${borderColor ? borderColor : colors.quickListColors.bold}`,
             borderRight: `5px solid ${borderColor ? borderColor : colors.quickListColors.bold}`,
           }}
         >
           <Stack>
-            <Typography align="left" variant="button">
+            <Typography align="left" variant="button" overflow={'auto'} width={'85vw'}>
               {item?.name}
             </Typography>
           </Stack>

@@ -19,7 +19,7 @@ const mergeArrays = async (a, b) => {
   if (b.length === 0) {
     return [];
   }
-
+  const bMap = new Map(b.map(obj => [obj.id, obj]))
   const bIds = new Set(b.map((obj) => obj.id));
   const aIds = new Set(a.map((obj) => obj.id));
   const mergedArray = [];
@@ -27,7 +27,7 @@ const mergeArrays = async (a, b) => {
   // Filter and add elements from a that are in b in their original order
   for (const obj of a) {
     if (bIds.has(obj.id)) {
-      mergedArray.push(obj);
+      mergedArray.push(bMap.get(obj.id)); // Keep theirs for merge resolution
     }
   }
 

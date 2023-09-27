@@ -21,6 +21,7 @@
     "react-dnd-touch-backend": "^16.0.1",
     "react-document-meta": "^3.0.0-beta.2",
     "react-dom": "^18.2.0",
+    "react-pull-to-refresh": "^2.0.1",
     "react-router-dom": "^6.13.0",
     "react-scripts": "5.0.1",
     "sass": "^1.60.0",
@@ -53,6 +54,7 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^6.0.0"
+    "gh-pages": "^6.0.0",
+    "pulltorefreshjs": "^0.1.22"
   }
 }

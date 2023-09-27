@@ -11,7 +11,8 @@ import MapsUgcIcon from "@mui/icons-material/MapsUgc";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import AutoDeleteOutlinedIcon from "@mui/icons-material/AutoDeleteOutlined";
 import RemoveDoneIcon from "@mui/icons-material/RemoveDone";
-import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
+import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
 import { List, ListItemButton, ListItemAvatar } from "@mui/material";
 import { Link } from "react-router-dom";
 
@@ -21,15 +22,17 @@ const BottomBar = ({
   scope,
   handleSync,
   isEmptyList,
-  handleRemoveDone
+  showDone,
+  setShowDone,
 }) => {
   const [openShareTray, setOpenShareTray] = useState(false);
 
   // Handlers
   const handleSareWhatsappLink = () => {
-    return `https://wa.me?text=${
-      window.location.origin
-    }/%23${window.location.hash.split("#")[1].split("&").join("%26")}`;
+    return `https://wa.me?text=${window.location.origin}/%23${window.location.hash
+      .split("#")[1]
+      .split("&")
+      .join("%26")}`;
   };
 
   const handleMessageLink = () => {
@@ -58,7 +61,6 @@ const BottomBar = ({
           height: "6vh",
         }}
       >
-
         {/* Sync List */}
         <IconButton
           disabled={scope === groceryListScopes.private}
@@ -67,12 +69,9 @@ const BottomBar = ({
         >
           <SyncIcon sx={{ color: handleDeriveThemeColor().bold }} />
         </IconButton>
-        
+
         {/* Send/Receive $*/}
-        <IconButton
-          sx={{ mr: 2.5 }}
-          onClick={() => setOpenDialogue(dialogues.sendMoney)}
-        >
+        <IconButton sx={{ mr: 2.5 }} onClick={() => setOpenDialogue(dialogues.sendMoney)}>
           <AttachMoneyOutlinedIcon sx={{ color: handleDeriveThemeColor().bold }} />
         </IconButton>
 
@@ -106,19 +105,14 @@ const BottomBar = ({
         </div>
 
         {/*  Move checked */}
-        <IconButton
-          sx={{ ml: 2.5 }}
-          onClick={handleRemoveDone}
-        >
-          <RemoveDoneIcon sx={{ color: handleDeriveThemeColor().bold }} />
+        <IconButton sx={{ ml: 2.5 }} onClick={() => setShowDone(!showDone)}>
+          {showDone && <RemoveDoneIcon sx={{ color: handleDeriveThemeColor().bold }} />}
+          {!showDone && <DoneAllIcon sx={{ color: handleDeriveThemeColor().bold }} />}
         </IconButton>
 
         {/* Share List */}
         {scope === groceryListScopes.public ? (
-          <IconButton
-            sx={{ ml: 2.5 }}
-            onClick={() => setOpenShareTray(!openShareTray)}
-          >
+          <IconButton sx={{ ml: 2.5 }} onClick={() => setOpenShareTray(!openShareTray)}>
             <IosShareIcon sx={{ color: handleDeriveThemeColor().bold }} />
           </IconButton>
         ) : (
@@ -129,9 +123,7 @@ const BottomBar = ({
             variant="contained"
             onClick={() => setOpenDialogue(dialogues.resetList)}
           >
-            <AutoDeleteOutlinedIcon
-              sx={{ color: handleDeriveThemeColor().bold }}
-            />
+            <AutoDeleteOutlinedIcon sx={{ color: handleDeriveThemeColor().bold }} />
           </IconButton>
         )}
       </Stack>
@@ -145,10 +137,7 @@ const BottomBar = ({
           onClose={() => setOpenShareTray(false)}
         >
           <List sx={{ height: "15vh" }}>
-            <Link
-              to={handleSareWhatsappLink()}
-              style={{ textDecoration: "none", color: "black" }}
-            >
+            <Link to={handleSareWhatsappLink()} style={{ textDecoration: "none", color: "black" }}>
               <ListItemButton>
                 <ListItemAvatar>
                   <WhatsAppIcon color="success" />
@@ -157,10 +146,7 @@ const BottomBar = ({
               </ListItemButton>
             </Link>
 
-            <Link
-              to={handleMessageLink()}
-              style={{ textDecoration: "none", color: "black" }}
-            >
+            <Link to={handleMessageLink()} style={{ textDecoration: "none", color: "black" }}>
               <ListItemButton>
                 <ListItemAvatar>
                   <MapsUgcIcon />

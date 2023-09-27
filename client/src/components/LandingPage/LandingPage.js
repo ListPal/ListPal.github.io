@@ -1,19 +1,7 @@
-import { Button, Alert, Typography, Slide, IconButton } from "@mui/material";
+import { Button, Alert, Typography, Slide, IconButton, List } from "@mui/material";
 import { useState, useEffect } from "react";
-import {
-  getAllLists,
-  logout,
-  postRequest,
-  checkSession,
-} from "../../utils/testApi/testApi";
-import {
-  colors,
-  filterCardsBy,
-  groceryContainerTypes,
-  groceryListScopes,
-  messages,
-  URLS,
-} from "../../utils/enum";
+import { getAllLists, logout, postRequest, checkSession } from "../../utils/testApi/testApi";
+import { colors, filterCardsBy, groceryContainerTypes, groceryListScopes, messages, URLS } from "../../utils/enum";
 import "./LandingPage.scss";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
@@ -40,44 +28,50 @@ import shoppingStrip from "../../utils/assets/shoppingStrip.jpg";
 import grocery from "../../utils/assets/grocery.jpg";
 import shop from "../../utils/assets/shop.jpg";
 import todo from "../../utils/assets/todo.jpg";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import PullToRefresh from "pulltorefreshjs";
 
-const meta = {
-  meta: {
-    charSet: "utf-8",
-    name: {
-      themeColor: "#ff5733",
-    },
-    itemProp: {
-      name: "theme-color",
-      content: "green",
-    },
-  },
-  auto: {
-    ograph: true,
-  },
-};
-
-const LandingPage = ({
-  activeList,
-  setActiveList,
-  user,
-  setUser,
-  activeContainer,
-  setActiveContainer,
-}) => {
+const LandingPage = ({ activeList, setActiveList, user, setUser, activeContainer, setActiveContainer }) => {
   // States
   const [filter, setFilter] = useState(filterCardsBy.all);
-  const [alertMessage, setAlertMessage] = useState(
-    "No lists yet to display. Create your first list 🥳"
-  );
+  const [alertMessage, setAlertMessage] = useState("No lists yet to display. Create your first list 🥳");
   const [severity, setSeverity] = useState("info");
   const [newListFormOpen, setNewListFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [wasRefactored, setWasRefactored] = useState(false);
+
   // Other locals
   const navigate = useNavigate();
   const location = useLocation();
 
   // Handlers
+  const handleBack = async () => {
+    if (wasRefactored) {
+      // Set the new order
+      const collapsedLists = activeContainer?.collapsedLists.map((e, i) => {
+        return { ...e, order: i };
+      });
+      const data = { containerId: activeContainer?.id, collapsedLists: collapsedLists };
+      const res = await postRequest(URLS.refactorCollapsedLists, data);
+      if (res?.status === 200) {
+        setWasRefactored(false);
+        navigate(-1);
+      } else if (res?.status === 401) {
+        setWasRefactored(false);
+        navigate("/");
+      } else if (res?.status === 403) {
+        setWasRefactored(false);
+        navigate("/");
+      } else {
+        setWasRefactored(false);
+        console.debug(res);
+        navigate(-1);
+      }
+    } else {
+      navigate(-1)
+    }
+  };
+
   const showAlert = (severity, message) => {
     setAlertMessage(message);
     setSeverity(severity);
@@ -88,9 +82,7 @@ const LandingPage = ({
       containerId: location?.state?.containerId,
       scope: activeList?.scope,
       listId: activeList?.id,
-      itemIds: activeList?.groceryListItems
-        .filter((item) => item.checked)
-        .map((item) => item.id),
+      itemIds: activeList?.groceryListItems.filter((item) => item.checked).map((item) => item.id),
     };
     return await postRequest(URLS.checkListItemUri, data);
   };
@@ -100,9 +92,7 @@ const LandingPage = ({
       return groceryStrip;
     } else if (activeContainer?.containerType === groceryContainerTypes.todo) {
       return todoStrip;
-    } else if (
-      activeContainer?.containerType === groceryContainerTypes.whishlist
-    ) {
+    } else if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
       return shoppingStrip;
     } else {
       return todoStrip;
@@ -119,15 +109,12 @@ const LandingPage = ({
       setActiveList({ groceryListItems: [] });
       navigate("/");
     } else {
-      showAlert(
-        "error",
-        "Failed log you out. Please refresh the page and try again."
-      );
+      showAlert("error", "Failed log you out. Please refresh the page and try again.");
     }
     setLoading(false);
   };
 
-  const getAllList = async () => {
+  const pullLists = async () => {
     setLoading(true);
     // Get user info if the user object is null
     let userInfoResponse = { user: user };
@@ -167,9 +154,7 @@ const LandingPage = ({
       return colors.landingPageColors.low;
     } else if (activeContainer?.containerType === groceryContainerTypes.todo) {
       return colors.todoColors.low;
-    } else if (
-      activeContainer?.containerType === groceryContainerTypes.whishlist
-    ) {
+    } else if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
       return colors.shoppingColors.low;
     } else {
       return colors.fallbackColors.low;
@@ -181,9 +166,7 @@ const LandingPage = ({
       return colors.landingPageColors.bold;
     } else if (activeContainer?.containerType === groceryContainerTypes.todo) {
       return colors.todoColors.bold;
-    } else if (
-      activeContainer?.containerType === groceryContainerTypes.whishlist
-    ) {
+    } else if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
       return colors.shoppingColors.bold;
     } else {
       return colors.fallbackColors.bold;
@@ -203,7 +186,7 @@ const LandingPage = ({
     return grocery; // TODO: error image
   };
 
-  const handlefilterByScope = (lists) => {
+  const handlefilterListByScope = (lists) => {
     if (filter === filterCardsBy.all) {
       return lists;
     }
@@ -218,12 +201,30 @@ const LandingPage = ({
     }
   };
 
+  const handleOnDragEnd = (result) => {
+    // Prevents errors for dragging out of bounds
+    if (!result.destination) return;
+
+    const collapsedLists = activeContainer?.collapsedLists;
+    const [reorderedItem] = collapsedLists.splice(result.source.index, 1);
+    collapsedLists.splice(result.destination.index, 0, reorderedItem);
+    setActiveContainer({ ...activeContainer, collapsedList: collapsedLists });
+    setWasRefactored(true);
+  };
+
   useEffect(() => {
+    // Initialize pull to refresh component
+    PullToRefresh.init({
+      mainElement: "body",
+      onRefresh() {
+        window.location.reload();
+      },
+    });
     // Reset altert mesage
-    showAlert("info", "No lists yet to display. Create your first list 🥳");
+    setAlertMessage("No lists yet to display. Create your first list 🥳");
     // Fetch only if lists are not cached
     if (activeContainer?.id !== location?.state?.containerId) {
-      getAllList();
+      pullLists();
     } else {
       console.debug("Lists are cached. No need to fetch");
     }
@@ -233,11 +234,7 @@ const LandingPage = ({
   return (
     <>
       <meta name="theme-color" content="white" />
-      <Grid
-        spacing={1}
-        container
-        sx={{ maxWidth: mobileWidth, alignItems: "center" }}
-      >
+      <Grid spacing={1} container sx={{ maxWidth: mobileWidth, alignItems: "center" }}>
         <Grid item>
           <Paper
             elevation={1}
@@ -251,22 +248,11 @@ const LandingPage = ({
               alignItems: "center",
             }}
           >
-            {loading && (
-              <Skeleton
-                animation="wave"
-                sx={{ borderRadius: 5, maxWidth: `calc(0.9 * ${mobileWidth})` }}
-                width={"90vw"}
-                height={130}
-              />
-            )}
+            {loading && <Skeleton animation="wave" sx={{ borderRadius: 5, maxWidth: `calc(0.9 * ${mobileWidth})` }} width={"90vw"} height={130} />}
 
             {/* User Info Menu Bar */}
             {!loading && (
-              <Stack
-                direction="column"
-                padding={1}
-                sx={{ height: "100%", justifyContent: "space-between" }}
-              >
+              <Stack direction="column" padding={1} sx={{ height: "100%", justifyContent: "space-between" }}>
                 <Stack
                   direction={"row"}
                   padding={1}
@@ -288,18 +274,10 @@ const LandingPage = ({
                       alignItems: "center",
                     }}
                   >
-                    <IconButton
-                      size={"small"}
-                      disableRipple
-                      onClick={() => navigate(-1)}
-                    >
+                    <IconButton size={"small"} disableRipple onClick={handleBack}>
                       <ArrowBackIosIcon />
                     </IconButton>
-                    <Avatar
-                      sx={{ width: 56, height: 56 }}
-                      alt={user?.name}
-                      src="[enter path here]"
-                    />
+                    <Avatar sx={{ width: 56, height: 56 }} alt={user?.name} src="[enter path here]" />
                     <span style={{ width: "10px" }} />
                     {user?.name && truncateString(user?.name)}
                   </Typography>
@@ -333,15 +311,7 @@ const LandingPage = ({
 
         {/* Create List Menu */}
         <Grid item>
-          {loading && (
-            <Skeleton
-              animation="wave"
-              variant="rectangular"
-              height={"35vmin"}
-              width={"100vmin"}
-              sx={{ maxWidth: mobileWidth }}
-            />
-          )}
+          {loading && <Skeleton animation="wave" variant="rectangular" height={"35vmin"} width={"100vmin"} sx={{ maxWidth: mobileWidth }} />}
           {!loading && (
             <Paper
               sx={{
@@ -365,9 +335,7 @@ const LandingPage = ({
                     color: "white",
                   }}
                 >
-                  <Typography sx={{ color: "white" }}>
-                    Create New List
-                  </Typography>
+                  <Typography sx={{ color: "white" }}>Create New List</Typography>
                   <AddIcon fontSize="large" sx={{ color: "white" }} />
                 </Button>
               </Stack>
@@ -383,12 +351,8 @@ const LandingPage = ({
                 <IconButton
                   onClick={() => setFilter(filterCardsBy.public)}
                   sx={{
-                    color:
-                      filter === filterCardsBy.public &&
-                      handleDeriveBodyColor(),
-                    background:
-                      filter === filterCardsBy.public &&
-                      handleDeriveHeadingColor(),
+                    color: filter === filterCardsBy.public && handleDeriveBodyColor(),
+                    background: filter === filterCardsBy.public && handleDeriveHeadingColor(),
                     "&:hover": {
                       background: handleDeriveHeadingColor(),
                     },
@@ -399,11 +363,8 @@ const LandingPage = ({
                 <IconButton
                   onClick={() => setFilter(filterCardsBy.all)}
                   sx={{
-                    color:
-                      filter === filterCardsBy.all && handleDeriveBodyColor(),
-                    background:
-                      filter === filterCardsBy.all &&
-                      handleDeriveHeadingColor(),
+                    color: filter === filterCardsBy.all && handleDeriveBodyColor(),
+                    background: filter === filterCardsBy.all && handleDeriveHeadingColor(),
                     "&:hover": {
                       background: handleDeriveHeadingColor(),
                     },
@@ -414,12 +375,8 @@ const LandingPage = ({
                 <IconButton
                   onClick={() => setFilter(filterCardsBy.private)}
                   sx={{
-                    color:
-                      filter === filterCardsBy.private &&
-                      handleDeriveBodyColor(),
-                    background:
-                      filter === filterCardsBy.private &&
-                      handleDeriveHeadingColor(),
+                    color: filter === filterCardsBy.private && handleDeriveBodyColor(),
+                    background: filter === filterCardsBy.private && handleDeriveHeadingColor(),
                     "&:hover": {
                       background: handleDeriveHeadingColor(),
                     },
@@ -430,12 +387,8 @@ const LandingPage = ({
                 <IconButton
                   onClick={() => setFilter(filterCardsBy.restricted)}
                   sx={{
-                    color:
-                      filter === filterCardsBy.restricted &&
-                      handleDeriveBodyColor(),
-                    background:
-                      filter === filterCardsBy.restricted &&
-                      handleDeriveHeadingColor(),
+                    color: filter === filterCardsBy.restricted && handleDeriveBodyColor(),
+                    background: filter === filterCardsBy.restricted && handleDeriveHeadingColor(),
                     "&:hover": {
                       background: handleDeriveHeadingColor(),
                     },
@@ -449,54 +402,38 @@ const LandingPage = ({
         </Grid>
 
         {/* ListCard below */}
-        <Grid item pb>
-          {loading && (
-            <Stack width={"100vw"} direction={"column"} mt={5}>
-              <Skeleton
-                animation={"wave"}
-                variant="rectangular"
-                sx={{ maxWidth: mobileWidth }}
-                height={150}
-              />
-            </Stack>
-          )}
+        <DragDropContext onDragEnd={handleOnDragEnd}>
+          <Droppable droppableId="list-items">
+            {(provided, snapshot) => (
+              <List sx={{ pb: 2 }} {...provided.droppableProps} ref={provided.innerRef}>
+                {loading && (
+                  <Stack width={"100vw"} direction={"column"} mt={5}>
+                    <Skeleton animation={"wave"} variant="rectangular" sx={{ maxWidth: mobileWidth }} height={150} />
+                  </Stack>
+                )}
 
-          {!loading &&
-            activeContainer?.collapsedLists &&
-            handlefilterByScope(activeContainer?.collapsedLists).map((e, i) => (
-              <GroceryListCard
-                username={user?.username}
-                activeContainer={activeContainer}
-                setActiveContainer={setActiveContainer}
-                listInfo={e}
-                key={i}
-              />
-            ))}
-        </Grid>
+                {!loading &&
+                  activeContainer?.collapsedLists &&
+                  handlefilterListByScope(activeContainer?.collapsedLists).map((e, i) => (
+                    <GroceryListCard index={i} username={user?.username} activeContainer={activeContainer} setActiveContainer={setActiveContainer} listInfo={e} key={i} />
+                  ))}
+                {provided.placeholder}
+              </List>
+            )}
+          </Droppable>
+        </DragDropContext>
 
         {activeContainer?.collapsedLists.length === 0 && !loading && (
           <Grid item sx={{ maxWidth: mobileWidth }}>
             <Slide className="alert-slide" in={true} direction="right">
               <Alert severity={severity}>{alertMessage}</Alert>
             </Slide>
-            <img
-              alt="decorative-background"
-              src={handleContainerImg()}
-              loading="lazy"
-              height={400}
-              width={400}
-            />
+            <img alt="decorative-background" src={handleContainerImg()} loading="lazy" height={400} width={400} />
           </Grid>
         )}
       </Grid>
 
-      <NewListForm
-        activeContainer={activeContainer}
-        setActiveContainer={setActiveContainer}
-        user={user}
-        open={newListFormOpen}
-        setOpen={setNewListFormOpen}
-      />
+      <NewListForm activeContainer={activeContainer} setActiveContainer={setActiveContainer} user={user} open={newListFormOpen} setOpen={setNewListFormOpen} />
     </>
   );
 };

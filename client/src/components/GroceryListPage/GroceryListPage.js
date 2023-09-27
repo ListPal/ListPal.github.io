@@ -1,44 +1,24 @@
 // React imports
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+
 // Dnd imports
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
 // MUI imports
-import {
-  Typography,
-  Toolbar,
-  AppBar,
-  Slide,
-  Alert,
-  Stack,
-  Box,
-  CircularProgress,
-  List,
-} from "@mui/material";
+import { Typography, Toolbar, AppBar, Slide, Alert, Stack, Box, CircularProgress, List } from "@mui/material";
 
 // MUI Icons
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import PublicIcon from "@mui/icons-material/Public";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import KeyIcon from "@mui/icons-material/Key";
 
 // My imports
-import {
-  URLS,
-  colors,
-  dialogues,
-  borderColors,
-  groceryListScopes,
-  mobileWidth,
-  groceryContainerTypes,
-  messages,
-} from "../../utils/enum";
-import {
-  getPublicList,
-  postRequest,
-  checkSession,
-  getAllLists,
-} from "../../utils/testApi/testApi";
+import { URLS, colors, dialogues, borderColors, groceryListScopes, mobileWidth, groceryContainerTypes, messages } from "../../utils/enum";
+import { getPublicList, postRequest, checkSession, getAllLists } from "../../utils/testApi/testApi";
 import { mergeArrays, truncateString } from "../../utils/helper";
 
 // Component imports
@@ -52,18 +32,10 @@ import shoppingWallpaper from "../../utils/assets/shoppingWallpaperPlus.jpg";
 import christmasWallpaperPlus from "../../utils/assets/christmasWallpaperPlus.jpg";
 import Dialogue from "./Dialogues/Dialogue";
 
-function GroceryListPage({
-  activeList,
-  setActiveList,
-  activeContainer,
-  setActiveContainer,
-  user,
-  setUser,
-  wasDragged,
-  setWasDragged,
-  wasChecked,
-  setWasChecked,
-}) {
+// Other imports
+import PullToRefresh from "pulltorefreshjs";
+
+function GroceryListPage({ activeList, setActiveList, activeContainer, setActiveContainer, user, setUser }) {
   // States
   const location = useLocation();
   const [loading, setLoading] = useState(false);
@@ -72,6 +44,7 @@ function GroceryListPage({
   const [recentlyDeletedItem, setRecentlyDeletedItem] = useState(null);
   const [groupedByIdentifier, setGroupedByIdentifier] = useState([]);
   const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
+  const [showDone, setShowDone] = useState(true);
 
   // Other globals
   let groupedByCurrentIdx = 0; // global var that keeps the idx count to decide when to display the identifier in the lis item
@@ -79,14 +52,39 @@ function GroceryListPage({
   const state = location?.state || {};
   const containerId = state.containerId || urlParams.get("containerId");
   const listId = state.listId || urlParams.get("listId");
+  const listName = state.listName || urlParams.get("name");
   const scope = state.scope || urlParams.get("scope");
   const navigate = useNavigate();
 
   // Handlers
+  const handleCheckItems = async () => {
+    // Handling preconditions
+    if (!(scope && containerId && listId)) {
+      console.debug("Incomple data. One of `scope` | `containerId` | `listId` is null or undefined.");
+      setAlertMessage("Apologies. Something went wrong. Try refreshing the page and retry.");
+      return;
+    } else if (activeList?.groceryListItems.length === 0) {
+      console.debug("Empty list. No need to check items");
+      return;
+    }
+
+    // TODO: only send if there are modified items
+    const data = {
+      scope: activeList?.scope,
+      containerId: activeList?.containerId,
+      listId: activeList?.id,
+      itemIds: activeList?.groceryListItems.filter((item) => item.checked).map((item) => item.id),
+    };
+
+    // Derive public or authenticated uri
+    const uri = activeList?.scope === groceryListScopes.public ? URLS.checkPublicListItemsUri : URLS.checkListItemsUri;
+
+    // Post data and return the response to the next controller
+    const res = await postRequest(uri, data);
+    return res;
+  };
+
   const handleBack = () => {
-    // If private, just push the list
-    if (activeList?.scope === groceryListScopes.private)
-      handlePushList(activeList?.groceryListItems, false, true);
     navigate(-1);
   };
 
@@ -98,13 +96,11 @@ function GroceryListPage({
     const [reorderedItem] = listItems.splice(result.source.index, 1);
     listItems.splice(result.destination.index, 0, reorderedItem);
     setActiveList({ ...activeList, groceryListItems: listItems });
-    setWasDragged(true);
   };
 
   const handleGroupByUsername = async (items) => {
     // Empty items, no need to group
-    if (items.length === 0 || !items) {
-      console.debug(items);
+    if (!items || items.length === 0) {
       return new Map();
     }
     groupedByCurrentIdx = 0; // reset identifier index count
@@ -149,18 +145,14 @@ function GroceryListPage({
   const handleSync = async (cache) => {
     setLoading(true);
     // Pull
-    const pull = await handlePullList(false);
-    // Merge
-    const mergedArray = await mergeArrays(
-      activeList?.groceryListItems,
-      pull?.groceryListItems
-    );
+    const pull = await handlePullList(false, false);
+    // Merge (current merge resolution is: "keep theirs")
+    const mergedArray = await mergeArrays(activeList?.groceryListItems, pull?.groceryListItems);
     // Push
-    if (mergedArray) await handlePushList(mergedArray, false, false);
+    // if (mergedArray) await handlePushList(mergedArray, false, false);
+    // Cache response if necesary
+    if (cache === true) setActiveList({ ...activeList, groceryListItems: mergedArray });
     // Reset relevant states
-    setActiveList({ ...activeList, groceryListItems: mergedArray });
-    setWasDragged(false);
-    setWasChecked(false);
     setLoading(false);
   };
 
@@ -206,10 +198,7 @@ function GroceryListPage({
       if (activeContainer.containerType === groceryContainerTypes.todo) {
         return todoWallpaper;
       }
-      if (
-        activeContainer.containerType === groceryContainerTypes.whishlist &&
-        activeList?.listName?.toUpperCase().includes("CHRISTMAS")
-      ) {
+      if (activeContainer.containerType === groceryContainerTypes.whishlist && activeList?.listName?.toUpperCase().includes("CHRISTMAS")) {
         return christmasWallpaperPlus;
       }
     }
@@ -328,17 +317,12 @@ function GroceryListPage({
       listId: listId,
       scope: scope,
     };
-    const res =
-      scope === groceryListScopes.public
-        ? await getPublicList(data)
-        : await postRequest(URLS.getListUri, data);
+    const res = scope === groceryListScopes.public ? await getPublicList(data) : await postRequest(URLS.getListUri, data);
 
     // Cache it in state
     if (res?.status === 200) {
       // Group by items by category (Default)
-      const activeListMap = await handleGroupByCategory(
-        res?.body?.groceryListItems
-      ); // Map engineering: (username | category) => items
+      const activeListMap = await handleGroupByUsername(res?.body?.groceryListItems); // Map engineering: (username | category) => items
       const responseBody = await {
         ...res?.body,
         groceryListItems: [...activeListMap.values()].flat(),
@@ -365,11 +349,6 @@ function GroceryListPage({
   const handlePushList = async (items, cache, loadingControl) => {
     if (!items || items.length === 0) {
       console.debug("No items to reorder");
-      return;
-    }
-
-    if (!wasDragged) {
-      console.debug("No need to reorder");
       return;
     }
 
@@ -400,14 +379,13 @@ function GroceryListPage({
     return res;
   };
 
-  const handleRemoveDone = () => {
-    const uncheckedItems = activeList?.groceryListItems.filter(e => !e.checked)
-    const checkedItems = activeList?.groceryListItems.filter(e => e.checked)
-    setActiveList({ ...activeList, groceryListItems: [...uncheckedItems, ...checkedItems]});
-    // setActiveList({ ...activeList, groceryListItems: uncheckedItems});
-  }
-
+  useMemo(() => {
+    handleGroupByUsername(activeList?.groceryListItems);
+  }, [activeList]);
   useEffect(() => {
+    // No pull to refresh in this component to avoid a bug when dragging and dropping
+    PullToRefresh.destroyAll();
+
     // Fetch user and container if not a public list
     if (scope !== groceryListScopes.public && !user) {
       handleAtomicUserAndContainerFetch();
@@ -419,6 +397,9 @@ function GroceryListPage({
       return;
     }
 
+    // Sync previous list and discard
+    if (activeList?.groceryListItems.length > 0) handleCheckItems();
+
     // Pull new list
     handlePullList();
 
@@ -428,28 +409,15 @@ function GroceryListPage({
   return (
     <>
       <meta name="theme-color" content={handleDeriveThemeColor().bold} />
-
       {/* Alert messages*/}
       <Slide className="alert-slide" in={alertMessage && true}>
-        <Alert
-          severity={"error"}
-          sx={{ position: "fixed", width: "96vw", top: "8vh", zIndex: 10 }}
-        >
+        <Alert severity={"error"} sx={{ position: "fixed", width: "96vw", top: "8vh", zIndex: 10 }}>
           {alertMessage}
         </Alert>
       </Slide>
 
       {/* Dialogue (absolute positioned) */}
-      {openDialogue && (
-        <Dialogue
-          item={activeItem}
-          containerId={containerId}
-          activeList={activeList}
-          setActiveList={setActiveList}
-          openDialogue={openDialogue}
-          setOpenDialogue={setOpenDialogue}
-        />
-      )}
+      {openDialogue && <Dialogue item={activeItem} containerId={containerId} activeList={activeList} setActiveList={setActiveList} openDialogue={openDialogue} setOpenDialogue={setOpenDialogue} />}
 
       {/* Loading progress */}
       {loading && (
@@ -461,13 +429,9 @@ function GroceryListPage({
             zIndex: 10,
           }}
         >
-          <CircularProgress
-            sx={{ color: handleDeriveThemeColor().bold, position: "absolute" }}
-          />
+          <CircularProgress sx={{ color: handleDeriveThemeColor().bold, position: "absolute" }} />
           <IconButton>
-            <CheckCircleRoundedIcon
-              sx={{ color: handleDeriveThemeColor().bold }}
-            />
+            <CheckCircleRoundedIcon sx={{ color: handleDeriveThemeColor().bold }} />
           </IconButton>
         </Box>
       )}
@@ -483,21 +447,16 @@ function GroceryListPage({
         }}
       >
         <Toolbar>
-          <Stack direction={"row"}>
+          <Stack direction={"row"} alignItems={"center"}>
             <IconButton size="small" onClick={handleBack}>
               <ArrowBackIosIcon sx={{ color: "white" }} />
             </IconButton>
-            <Typography
-              padding={1}
-              variant="h5"
-              sx={{ color: "white", flexGrow: 1 }}
-            >
-              {location?.state?.listName && (
-                <Typography fontSize={16} variant="button">
-                  {truncateString(location?.state?.listName, 20)}
-                </Typography>
-              )}
+            <Typography padding={1} variant="h5" sx={{ color: "white", flexGrow: 1 }}>
+              <Typography fontSize={16} variant="button">
+                {truncateString(listName, 20)}
+              </Typography>
             </Typography>
+            {scope === groceryListScopes.public && <PublicIcon />}
           </Stack>
         </Toolbar>
       </AppBar>
@@ -512,6 +471,7 @@ function GroceryListPage({
               mt={"8vh"}
               sx={{
                 mt: "8vh",
+                minHeight: "80vh",
                 justifyContent: "center",
                 justifyItems: "center",
                 maxWidth: mobileWidth,
@@ -521,10 +481,8 @@ function GroceryListPage({
               {!loading &&
                 activeList?.groceryListItems.map((e, i) => (
                   <ListItem
-                    borderColor={handleBorderColor(
-                      e?.user?.username.split("@")[0]
-                    )}
-                    // identifier={handleShowIdentifier(e?.category)}
+                    borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
+                    identifier={handleShowIdentifier(e?.user?.username.split("@")[0])}
                     recentlyDeletedItem={recentlyDeletedItem}
                     setRecentlyDeletedItem={setRecentlyDeletedItem}
                     setOpenDialogue={setOpenDialogue}
@@ -538,11 +496,11 @@ function GroceryListPage({
                     setItem={setActiveItem}
                     user={user}
                     setUser={setUser}
-                    key={i + "item"}
+                    key={i}
                     index={i}
                     containerId={containerId}
                     setAlertMessage={setAlertMessage}
-                    setWasChecked={setWasChecked}
+                    showDone={showDone}
                   />
                 ))}
               {provided.placeholder}
@@ -558,7 +516,8 @@ function GroceryListPage({
         setOpenDialogue={setOpenDialogue}
         handleDeriveThemeColor={handleDeriveThemeColor}
         isEmptyList={activeList?.groceryListItems.length === 0}
-        handleRemoveDone={handleRemoveDone}
+        showDone={showDone}
+        setShowDone={setShowDone}
       />
 
       {/* Background Wallpaper */}

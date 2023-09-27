@@ -1,14 +1,7 @@
-import {
-  mobileWidth,
-  colors,
-  dialogues,
-  groceryListScopes,
-  messages,
-} from "../../../utils/enum";
+import { mobileWidth, colors, dialogues, groceryListScopes, messages } from "../../../utils/enum";
 import { useState } from "react";
 import ItemDescription from "../../ItemDescription/ItemDescription";
 import EditIcon from "@mui/icons-material/Edit";
-import PaidIcon from "@mui/icons-material/Paid";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { truncateString } from "../../../utils/helper";
@@ -16,15 +9,7 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import {
-  Button,
-  Typography,
-  Grid,
-  Paper,
-  Stack,
-  SpeedDial,
-  ListItemButton,
-} from "@mui/material";
+import { Button, Typography, Paper, Stack, SpeedDial, ListItemButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { deleteItem, deletePublicItem } from "../../../utils/testApi/testApi";
 import { Draggable } from "react-beautiful-dnd";
@@ -32,7 +17,6 @@ import { Draggable } from "react-beautiful-dnd";
 const actions = [
   { icon: <DeleteIcon sx={{ color: "red" }} />, name: "Delete item" },
   { icon: <EditIcon sx={{ color: "black" }} />, name: "Edit item" },
-  // { icon: <PaidIcon sx={{ color: "black" }} />, name: "Send/Request" },
 ];
 
 const ListItem = ({
@@ -44,13 +28,12 @@ const ListItem = ({
   setOpenDialogue,
   borderColor,
   setAlertMessage,
-  setWasChecked,
-  // Drag and drop props start here
+  showDone = true,
   index,
 }) => {
   // States
   const [isActive, setIsActive] = useState(false);
-  const [checked, setChecked] = useState(item?.checked);
+  const [checked, setChecked] = useState(false);
   const [openItemDescrition, setOpenItemDescription] = useState(false);
   const navigate = useNavigate();
 
@@ -64,34 +47,31 @@ const ListItem = ({
 
   const handleDeriveOpenOrCloseIcon = () => {
     if (isActive) {
-      return (
-        <CloseIcon
-          onClick={() => setIsActive(!isActive)}
-          sx={{ color: "black", position: "relative", right: 18 }}
-        />
-      );
+      return <CloseIcon onClick={() => setIsActive(!isActive)} sx={{ color: "black", position: "relative", right: 18 }} />;
     } else {
-      return (
-        <MoreHorizIcon
-          onClick={() => setIsActive(!isActive)}
-          sx={{ color: "black", position: "relative", right: 18 }}
-        />
-      );
+      return <MoreHorizIcon onClick={() => setIsActive(!isActive)} sx={{ color: "black", position: "relative", right: 18 }} />;
     }
   };
 
-  const handleCheck = () => {
+  const handleCheck = (refactor = false) => {
     // Mark items checked/unchecked
-    const checkedItems = activeList?.groceryListItems.map((e) =>
-      e.id === item?.id ? { ...e, checked: !e.checked } : e
-    );
+    let listItems = activeList?.groceryListItems || [];
+    const updatedItems = listItems.map((e) => (e.id === item?.id ? { ...e, checked: !e.checked } : e));
 
+    if (!refactor) {
+      // Sperate checked/unchcked items
+      const uncheckedItems = updatedItems.filter((e) => !e.checked);
+      const checkedItems = updatedItems.filter((e) => e.checked);
+      listItems = [...uncheckedItems, ...checkedItems];
+    } else {
+      // Do not sperate checked/unchcked items
+      listItems = updatedItems;
+    }
     // Update states
     setChecked(!checked);
-    setWasChecked(true)
     setActiveList({
       ...activeList,
-      groceryListItems: checkedItems,
+      groceryListItems: listItems,
     });
   };
 
@@ -115,15 +95,10 @@ const ListItem = ({
     };
 
     // Send DELETE request to server
-    const res =
-      activeList?.scope === groceryListScopes.public
-        ? await deletePublicItem(data)
-        : await deleteItem(data);
+    const res = activeList?.scope === groceryListScopes.public ? await deletePublicItem(data) : await deleteItem(data);
     if (res?.status === 200) {
       // Update items state
-      const previousItems = activeList?.groceryListItems.filter(
-        (e) => !(e.id === item?.id)
-      );
+      const previousItems = activeList?.groceryListItems.filter((e) => !(e.id === item?.id));
       setActiveList({ ...activeList, groceryListItems: previousItems });
     } else if (res?.status === 403) {
       navigate("/");
@@ -134,122 +109,79 @@ const ListItem = ({
     }
   };
 
-  const onClicks = [
-    handleDeleteItem,
-    openEditItemDialogue,
-    openSendMoneyDialogue,
-  ];
+  const onClicks = [handleDeleteItem, openEditItemDialogue, openSendMoneyDialogue];
 
   return (
     <>
-      <ListItemButton
-        disableRipple={true}
-        sx={{ maxWidth: `calc(${mobileWidth} - 20px`, positon: "relative" }}
-      >
-        {identifier && (
-          <Typography
-            variant="body2"
-            align="left"
-            sx={{
-              border: "0.5px solid lightgray",
-              backdropFilter: "blur(2px)",
-              borderRadius: 2,
-              mb: 1,
-              pl: 1,
-            }}
-          >
-            {`${identifier === "Misc" ? "Other" : identifier}`}
-          </Typography>
-        )}
-        <Draggable draggableId={`${index}`} index={index}>
-          {(provided) => (
-            <Paper
-              ref={provided.innerRef}
-              {...provided.draggableProps}
-              {...provided.dragHandleProps}
-              elevation={3}
-              sx={{
-                maxWidth: mobileWidth,
-                width: "100%",
-                height: 80,
-                borderLeft: `5px solid ${
-                  borderColor ? borderColor : colors.landingPageColors.bold
-                }`,
-              }}
-            >
-              <Stack
-                paddingRight={1}
-                direction={"row"}
+      {((showDone && item?.checked) || !item?.checked) && (
+        <ListItemButton disableRipple={true} sx={{ maxWidth: `calc(${mobileWidth} - 20px`, positon: "relative" }}>
+          <Draggable draggableId={`${index}`} index={index}>
+            {(provided) => (
+              <Paper
+                ref={provided.innerRef}
+                {...provided.draggableProps}
+                {...provided.dragHandleProps}
+                elevation={3}
                 sx={{
-                  height: "100%",
-                  justifyContent: "space-between",
-                  alignItems: "center",
+                  transition: "all 0.2s",
+                  background: item?.checked && "#F3F4F6",
+                  maxWidth: mobileWidth,
+                  width: "100%",
+                  height: 80,
+                  opacity: item?.checked && "100%",
+                  color: item?.checked && "gray",
+                  borderLeft: `5px solid ${borderColor ? borderColor : colors.landingPageColors.bold}`,
                 }}
               >
-                <Stack direction={"row"} sx={{ alignItems: "center" }}>
-                  {item?.checked ? (
-                    <Button disableRipple onClick={handleCheck}>
-                      <CheckCircleIcon
-                        fontSize="large"
-                        sx={{
-                          color: borderColor
-                            ? borderColor
-                            : colors.landingPageColors.bold,
-                        }}
-                      />
-                    </Button>
-                  ) : (
-                    <Button disableRipple onClick={handleCheck}>
-                      <RadioButtonUncheckedIcon
-                        fontSize="large"
-                        sx={{
-                          color: borderColor
-                            ? borderColor
-                            : colors.landingPageColors.bold,
-                        }}
-                      />
-                    </Button>
-                  )}
-                  <Typography
-                    onClick={handleOpenItemDescription}
-                    variant={"button"}
-                  >
-                    {item?.name && truncateString(item?.name, 30)}
-                    {item?.quantity > 1 && ` (${item?.quantity})`}
-                  </Typography>
-                </Stack>
-
-                <SpeedDial
-                  ariaLabel="SpeedDial"
-                  direction={"left"}
-                  icon={handleDeriveOpenOrCloseIcon()}
-                  open={isActive}
-                  sx={{ height: 35, width: 35 }}
+                <Stack
+                  paddingRight={1}
+                  direction={"row"}
+                  sx={{
+                    height: "100%",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
                 >
-                  {actions.map((action, i) => (
-                    <SpeedDialAction
-                      sx={{ position: "relative", right: 18 }}
-                      key={action.name}
-                      icon={action.icon}
-                      tooltipTitle={action.name}
-                      onClick={onClicks[i]}
-                    />
-                  ))}
-                </SpeedDial>
-              </Stack>
-            </Paper>
-          )}
-        </Draggable>
-      </ListItemButton>
+                  <Stack direction={"row"} sx={{ alignItems: "center" }}>
+                    {item?.checked ? (
+                      <Button disableRipple onClick={handleCheck}>
+                        <CheckCircleIcon
+                          fontSize="large"
+                          sx={{
+                            color: borderColor ? borderColor : colors.landingPageColors.bold,
+                          }}
+                        />
+                      </Button>
+                    ) : (
+                      <Button disableRipple onClick={handleCheck}>
+                        <RadioButtonUncheckedIcon
+                          fontSize="large"
+                          sx={{
+                            color: borderColor ? borderColor : colors.landingPageColors.bold,
+                          }}
+                        />
+                      </Button>
+                    )}
+                    <Typography sx={{ textDecorationLine: item?.checked && "line-through" }} onClick={handleOpenItemDescription} variant={"button"}>
+                      {item?.name && truncateString(item?.name, 25)}
+                      {item?.quantity > 1 && ` (${item?.quantity})`}
+                    </Typography>
+                  </Stack>
+
+                  <SpeedDial ariaLabel="SpeedDial" direction={"left"} icon={handleDeriveOpenOrCloseIcon()} open={isActive} sx={{ height: 35, width: 35 }}>
+                    {actions.map((action, i) => (
+                      <SpeedDialAction sx={{ position: "relative", right: 18 }} key={action.name} icon={action.icon} tooltipTitle={action.name} onClick={onClicks[i]} />
+                    ))}
+                  </SpeedDial>
+                </Stack>
+              </Paper>
+            )}
+          </Draggable>
+        </ListItemButton>
+      )}
 
       {openItemDescrition && isActive && (
-        <ItemDescription
-          setIsActive={setIsActive}
-          item={item}
-          openItemDescription={openItemDescrition}
-          setOpenItemDescription={setOpenItemDescription}
-          borderColor={borderColor}
-        />
+        <ItemDescription setIsActive={setIsActive} item={item} openItemDescription={openItemDescrition} setOpenItemDescription={setOpenItemDescription} borderColor={borderColor} />
       )}
     </>
   );
