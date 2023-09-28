@@ -20,7 +20,7 @@ import { getPublicList, postRequest, checkSession, getAllLists } from "../../uti
 import { mergeArrays, truncateString } from "../../utils/helper";
 
 // Component imports
-import ListItem from "./ListItem/ListItem";
+import Listitem from "./ListItem/ListItem";
 import BottomBar from "./BottomBar/BottomBar";
 
 // IMGS
@@ -478,7 +478,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
             >
               {!loading &&
                 activeList?.groceryListItems.map((e, i) => (
-                  <ListItem
+                  <Listitem
                     borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
                     identifier={handleShowIdentifier(e?.user?.username.split("@")[0])}
                     setOpenDialogue={setOpenDialogue}

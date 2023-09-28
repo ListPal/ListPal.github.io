@@ -9,7 +9,15 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import { Button, Typography, Paper, Stack, SpeedDial, ListItemButton } from "@mui/material";
+import {
+  Button,
+  Typography,
+  Paper,
+  Stack,
+  SpeedDial,
+  ListItemButton,
+  ListItem,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { deleteItem, deletePublicItem } from "../../../utils/testApi/testApi";
 import { Draggable } from "react-beautiful-dnd";
@@ -19,7 +27,20 @@ const actions = [
   { icon: <EditIcon sx={{ color: "black" }} />, name: "Edit item" },
 ];
 
-const ListItem = ({ identifier, item, setItem, activeList, setActiveList, setOpenDialogue, borderColor, setAlertMessage, showDone = true, index, modifiedIds, setModifiedIds }) => {
+const Listitem = ({
+  identifier,
+  item,
+  setItem,
+  activeList,
+  setActiveList,
+  setOpenDialogue,
+  borderColor,
+  setAlertMessage,
+  showDone = true,
+  index,
+  modifiedIds,
+  setModifiedIds,
+}) => {
   // States
   const [isActive, setIsActive] = useState(false);
   const [checked, setChecked] = useState(false);
@@ -36,17 +57,29 @@ const ListItem = ({ identifier, item, setItem, activeList, setActiveList, setOpe
 
   const handleDeriveOpenOrCloseIcon = () => {
     if (isActive) {
-      return <CloseIcon onClick={() => setIsActive(!isActive)} sx={{ color: "black", position: "relative", right: 18 }} />;
+      return (
+        <CloseIcon
+          onClick={() => setIsActive(!isActive)}
+          sx={{ color: "black", position: "relative", right: 18 }}
+        />
+      );
     } else {
-      return <MoreHorizIcon onClick={() => setIsActive(!isActive)} sx={{ color: "black", position: "relative", right: 18 }} />;
+      return (
+        <MoreHorizIcon
+          onClick={() => setIsActive(!isActive)}
+          sx={{ color: "black", position: "relative", right: 18 }}
+        />
+      );
     }
   };
 
   const handleCheck = () => {
     // Mark items checked/unchecked
     let listItems = activeList?.groceryListItems || [];
-    const updatedItems = listItems.map((e) => (e.id === item?.id ? { ...e, checked: !e.checked } : e));
-    
+    const updatedItems = listItems.map((e) =>
+      e.id === item?.id ? { ...e, checked: !e.checked } : e
+    );
+
     // Do not sperate checked/unchcked items
     listItems = updatedItems;
 
@@ -57,7 +90,7 @@ const ListItem = ({ identifier, item, setItem, activeList, setActiveList, setOpe
     } else {
       updatedModifiedIdSet.add(item?.id);
     }
-    
+
     // Update states
     setChecked(!checked);
     setModifiedIds(updatedModifiedIdSet);
@@ -87,7 +120,10 @@ const ListItem = ({ identifier, item, setItem, activeList, setActiveList, setOpe
     };
 
     // Send DELETE request to server
-    const res = activeList?.scope === groceryListScopes.public ? await deletePublicItem(data) : await deleteItem(data);
+    const res =
+      activeList?.scope === groceryListScopes.public
+        ? await deletePublicItem(data)
+        : await deleteItem(data);
     if (res?.status === 200) {
       // Update items state
       const previousItems = activeList?.groceryListItems.filter((e) => !(e.id === item?.id));
@@ -105,77 +141,101 @@ const ListItem = ({ identifier, item, setItem, activeList, setActiveList, setOpe
 
   return (
     <>
-      {((showDone && item?.checked) || !item?.checked) && (
-        <ListItemButton disableRipple={true} sx={{ maxWidth: `calc(${mobileWidth} - 20px`, positon: "relative" }}>
-          <Draggable draggableId={`${index}`} index={index}>
-            {(provided) => (
-              <Paper
-                ref={provided.innerRef}
-                {...provided.draggableProps}
-                {...provided.dragHandleProps}
-                elevation={3}
+      <Draggable draggableId={`${index}`} index={index}>
+        {(provided) => (
+          <ListItem
+            sx={{ maxWidth: `calc(${mobileWidth} - 20px`, positon: "relative" }}
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+          >
+            <Paper
+              elevation={3}
+              sx={{
+                transition: "all 0.2s",
+                background: item?.checked && "#F3F4F6",
+                maxWidth: mobileWidth,
+                width: "100%",
+                height: 80,
+                opacity: item?.checked && "100%",
+                color: item?.checked && "gray",
+                borderLeft: `5px solid ${
+                  borderColor ? borderColor : colors.landingPageColors.bold
+                }`,
+              }}
+            >
+              <Stack
+                paddingRight={1}
+                direction={"row"}
                 sx={{
-                  transition: "all 0.2s",
-                  background: item?.checked && "#F3F4F6",
-                  maxWidth: mobileWidth,
-                  width: "100%",
-                  height: 80,
-                  opacity: item?.checked && "100%",
-                  color: item?.checked && "gray",
-                  borderLeft: `5px solid ${borderColor ? borderColor : colors.landingPageColors.bold}`,
+                  height: "100%",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
-                <Stack
-                  paddingRight={1}
-                  direction={"row"}
-                  sx={{
-                    height: "100%",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <Stack direction={"row"} sx={{ alignItems: "center" }}>
-                    {item?.checked ? (
-                      <Button disableRipple onClick={handleCheck}>
-                        <CheckCircleIcon
-                          fontSize="large"
-                          sx={{
-                            color: borderColor ? borderColor : colors.landingPageColors.bold,
-                          }}
-                        />
-                      </Button>
-                    ) : (
-                      <Button disableRipple onClick={handleCheck}>
-                        <RadioButtonUncheckedIcon
-                          fontSize="large"
-                          sx={{
-                            color: borderColor ? borderColor : colors.landingPageColors.bold,
-                          }}
-                        />
-                      </Button>
-                    )}
-                    <Typography sx={{ textDecorationLine: item?.checked && "line-through" }} onClick={handleOpenItemDescription} variant={"button"}>
-                      {item?.name && truncateString(item?.name, 25)}
-                      {item?.quantity > 1 && ` (${item?.quantity})`}
-                    </Typography>
-                  </Stack>
-
-                  <SpeedDial ariaLabel="SpeedDial" direction={"left"} icon={handleDeriveOpenOrCloseIcon()} open={isActive} sx={{ height: 35, width: 35 }}>
-                    {actions.map((action, i) => (
-                      <SpeedDialAction sx={{ position: "relative", right: 18 }} key={action.name} icon={action.icon} tooltipTitle={action.name} onClick={onClicks[i]} />
-                    ))}
-                  </SpeedDial>
+                <Stack direction={"row"} sx={{ alignItems: "center" }}>
+                  {item?.checked ? (
+                    <Button disableRipple onClick={handleCheck}>
+                      <CheckCircleIcon
+                        fontSize="large"
+                        sx={{
+                          color: borderColor ? borderColor : colors.landingPageColors.bold,
+                        }}
+                      />
+                    </Button>
+                  ) : (
+                    <Button disableRipple onClick={handleCheck}>
+                      <RadioButtonUncheckedIcon
+                        fontSize="large"
+                        sx={{
+                          color: borderColor ? borderColor : colors.landingPageColors.bold,
+                        }}
+                      />
+                    </Button>
+                  )}
+                  <Typography
+                    sx={{ textDecorationLine: item?.checked && "line-through" }}
+                    onClick={handleOpenItemDescription}
+                    variant={"button"}
+                  >
+                    {item?.name && truncateString(item?.name, 25)}
+                    {item?.quantity > 1 && ` (${item?.quantity})`}
+                  </Typography>
                 </Stack>
-              </Paper>
-            )}
-          </Draggable>
-        </ListItemButton>
-      )}
+
+                <SpeedDial
+                  ariaLabel="SpeedDial"
+                  direction={"left"}
+                  icon={handleDeriveOpenOrCloseIcon()}
+                  open={isActive}
+                  sx={{ height: 35, width: 35 }}
+                >
+                  {actions.map((action, i) => (
+                    <SpeedDialAction
+                      sx={{ position: "relative", right: 18 }}
+                      key={action.name}
+                      icon={action.icon}
+                      tooltipTitle={action.name}
+                      onClick={onClicks[i]}
+                    />
+                  ))}
+                </SpeedDial>
+              </Stack>
+            </Paper>
+          </ListItem>
+        )}
+      </Draggable>
 
       {openItemDescrition && isActive && (
-        <ItemDescription setIsActive={setIsActive} item={item} openItemDescription={openItemDescrition} setOpenItemDescription={setOpenItemDescription} borderColor={borderColor} />
+        <ItemDescription
+          setIsActive={setIsActive}
+          item={item}
+          openItemDescription={openItemDescrition}
+          setOpenItemDescription={setOpenItemDescription}
+          borderColor={borderColor}
+        />
       )}
     </>
   );
 };
-export default ListItem;
+export default Listitem;

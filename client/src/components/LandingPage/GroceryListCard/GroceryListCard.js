@@ -1,8 +1,13 @@
-import { groceryContainerTypes, groceryListScopes, mobileWidth, radioGroupHelperTextObject } from "../../../utils/enum";
+import {
+  groceryContainerTypes,
+  groceryListScopes,
+  mobileWidth,
+  radioGroupHelperTextObject,
+} from "../../../utils/enum";
 import Paper from "@mui/material/Paper";
 import { useLocation, useNavigate } from "react-router-dom";
 import MoreOptions from "./MoreOptions/MoreOptions";
-import { Stack, Typography, Slide, Alert, Divider, ListItemButton } from "@mui/material";
+import { Stack, Typography, Slide, Alert, Divider, ListItemButton, ListItem } from "@mui/material";
 import { useState } from "react";
 import KeyIcon from "@mui/icons-material/Key";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -34,7 +39,10 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
         listName: listInfo?.listName,
         listId: listInfo?.id,
       };
-      navigate(`/list?containerId=${data.containerId}&listId=${data.listId}&scope=${listInfo?.scope}&name=${data.listName}`, { state: null });
+      navigate(
+        `/list?containerId=${data.containerId}&listId=${data.listId}&scope=${listInfo?.scope}&name=${data.listName}`,
+        { state: null }
+      );
     } else if (listInfo?.scope === groceryListScopes.restricted) {
       const data = {
         containerId: listInfo?.reference,
@@ -71,20 +79,24 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
 
   const handleDeriveWallpaper = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
-      return listInfo?.listName.toUpperCase().includes("THANK") ? thanksGivingWallpaper : groceryWallpaper;
+      return listInfo?.listName.toUpperCase().includes("THANK")
+        ? thanksGivingWallpaper
+        : groceryWallpaper;
     }
     if (activeContainer?.containerType === groceryContainerTypes.todo) {
       return todoWallpaper;
     }
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
-      return listInfo?.listName.toUpperCase().includes("CHRISTMAS") ? christmasWallpaper : shoppingWallpaper;
+      return listInfo?.listName.toUpperCase().includes("CHRISTMAS")
+        ? christmasWallpaper
+        : shoppingWallpaper;
     }
   };
 
   return (
     <Draggable draggableId={`${index}`} index={index}>
       {(provided) => (
-        <ListItemButton disableRipple >
+        <ListItem>
           <Paper
             ref={provided.innerRef}
             {...provided.draggableProps}
@@ -114,7 +126,12 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
             {/* All content */}
             <Stack p direction={"column"} sx={{ alignItems: "center" }}>
               <Stack width={"100%"} alignItems={"flex-end"}>
-                <MoreOptions username={username} listInfo={listInfo} activeContainer={activeContainer} setActiveContainer={setActiveContainer} />
+                <MoreOptions
+                  username={username}
+                  listInfo={listInfo}
+                  activeContainer={activeContainer}
+                  setActiveContainer={setActiveContainer}
+                />
               </Stack>
               <div
                 className="background-pic"
@@ -150,7 +167,7 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
               </div>
             </Stack>
           </Paper>
-        </ListItemButton>
+        </ListItem>
       )}
     </Draggable>
   );
