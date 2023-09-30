@@ -3,6 +3,7 @@ html {
   margin: 0;
   padding: 0;
   overscroll-behavior: contain;
+  color: "#6B7280";
 }
 body {
   padding: 0;

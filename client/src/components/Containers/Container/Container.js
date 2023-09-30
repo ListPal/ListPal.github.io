@@ -24,7 +24,7 @@ const Container = ({ heading, imgSrc, id }) => {
       >
         <CardActionArea onClick={handleClickContainer}>
           <CardContent>
-            <Typography variant="h6" sx={{ position: "absolute" }}>
+            <Typography variant="h6" fontFamily={'Urbanist'} sx={{ position: "absolute" }}>
               {heading}
             </Typography>
             <CardMedia>

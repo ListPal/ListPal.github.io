@@ -10,9 +10,10 @@ import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import MapsUgcIcon from "@mui/icons-material/MapsUgc";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import AutoDeleteOutlinedIcon from "@mui/icons-material/AutoDeleteOutlined";
-import RemoveDoneIcon from "@mui/icons-material/RemoveDone";
 import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
+import UnpublishedOutlinedIcon from '@mui/icons-material/UnpublishedOutlined';
 import { List, ListItemButton, ListItemAvatar } from "@mui/material";
 import { Link } from "react-router-dom";
 
@@ -106,8 +107,8 @@ const BottomBar = ({
 
         {/*  Move checked */}
         <IconButton sx={{ ml: 2.5 }} onClick={() => setShowDone(!showDone)}>
-          {showDone && <RemoveDoneIcon sx={{ color: handleDeriveThemeColor().bold }} />}
-          {!showDone && <DoneAllIcon sx={{ color: handleDeriveThemeColor().bold }} />}
+          {showDone && <TaskAltOutlinedIcon sx={{ color: handleDeriveThemeColor().bold }} />}
+          {!showDone && <UnpublishedOutlinedIcon sx={{ color: handleDeriveThemeColor().bold }} />}
         </IconButton>
 
         {/* Share List */}

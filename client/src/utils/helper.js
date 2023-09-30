@@ -1,5 +1,6 @@
 const truncateString = (str, n = 15) => {
   let result = "";
+  str = str.charAt(0).toUpperCase() + str.slice(1)
   str.length > n ? (result = str.slice(0, n - 3) + "...") : (result = str);
   return result;
 };

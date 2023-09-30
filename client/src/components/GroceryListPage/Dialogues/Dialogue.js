@@ -20,32 +20,15 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AppleIcon from "@mui/icons-material/Apple";
+import RemoveDoneIcon from "@mui/icons-material/RemoveDone";
 import { styled } from "@mui/material/styles";
-import {
-  URLS,
-  dialogueObject,
-  dialogues,
-  groceryListScopes,
-  messages,
-} from "../../../utils/enum";
-import {
-  postRequest,
-  deleteItem,
-  deletePublicItem,
-  deleteRequest,
-} from "../../../utils/testApi/testApi";
+import { URLS, dialogueObject, dialogues, groceryListScopes, messages } from "../../../utils/enum";
+import { postRequest, deleteRequest } from "../../../utils/testApi/testApi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../utils/dialoguesValidation";
 import LoadingButton from "@mui/lab/LoadingButton";
 
-function Dialogue({
-  containerId,
-  item,
-  openDialogue,
-  setOpenDialogue,
-  activeList,
-  setActiveList,
-}) {
+function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList, setActiveList }) {
   // States
   const [severity, setSeverity] = useState("info");
   const [alertMessage, setAlertMessage] = useState(null);
@@ -73,6 +56,7 @@ function Dialogue({
     if (header === "deleteIcon") return <DeleteIcon />;
     if (header === "editIcon") return <EditIcon />;
     if (header === "appleIcon") return <AppleIcon />;
+    if (header === "removeDoneIcon") return <RemoveDoneIcon />;
     return <></>;
   };
 
@@ -214,7 +198,31 @@ function Dialogue({
     }
   };
 
-  const handleResetList = async () => {
+  const handleRedirectToApple = () => {
+    // Redirect to p2p provider
+    setLoading(true);
+    window.open("wallet://cash");
+    setLoading(false);
+  };
+
+  const handleRedirectToVenmo = () => {
+    // Redirect to p2p provider
+    setLoading(true);
+    window.open("venmo://accounts");
+    setLoading(false);
+  };
+
+  const handleRedirectToCashapp = () => {
+    // Redirect to p2p provider
+    setLoading(true);
+    window.open("cashme://");
+    setLoading(false);
+  };
+
+  const handleEraseAllItems = async () => {
+    if (activeList?.groceryListItems.length === 0) {
+      console.debug("No items to delete");
+    }
     setLoading(true);
     const data = {
       containerId: containerId,
@@ -238,33 +246,42 @@ function Dialogue({
     }
   };
 
-  const handleRedirectToApple = () => {
-    // Redirect to p2p provider
+  const handleEraseCheckedItems = async () => {
+    const listItems = activeList?.groceryListItems.filter((e) => e.checked) || [];
+    if (listItems.length === 0) {
+      console.debug("No checked items to delete");
+      setOpenDialogue(dialogues.closed);
+      return;
+    }
+    const updatedListItems = activeList?.groceryListItems.filter((e) => !e.checked);
     setLoading(true);
-    window.open("wallet://cash");
-    setLoading(false);
+    const data = {
+      containerId: containerId,
+      scope: activeList?.scope,
+      listId: activeList?.id,
+      itemIds: listItems.map((e) => e.id),
+    };
+    const res = await deleteRequest(URLS.eraseListItems, data);
+    if (res?.status === 200) {
+      setActiveList((activeList) => {
+        return { ...activeList, groceryListItems: updatedListItems };
+      });
+      closeDialogueWithoutDelay();
+    } else if (res?.status === 403) {
+      navigate("/");
+    } else if (res?.status === 401) {
+      showAlert("warning", messages.unauthorizedAction);
+    } else {
+      console.log(res);
+      showAlert("error", messages.genericError);
+      closeDialogueWithDelay();
+    }
   };
 
-  const handleRedirectToVenmo = () => {
-    // Redirect to p2p provider
-    setLoading(true);
-    window.open("venmo://accounts");
-    setLoading(false);
-  };
+  const moneyActions = [handleRedirectToApple, handleRedirectToVenmo, handleRedirectToCashapp];
 
-  const handleRedirectToCashapp = () => {
-    // Redirect to p2p provider
-    setLoading(true);
-    window.open("cashme://");
-    setLoading(false);
-  };
-
-  const moneyActions = [
-    handleRedirectToApple,
-    handleRedirectToVenmo,
-    handleRedirectToCashapp,
-  ];
-
+  const resetListActions = [handleEraseAllItems, handleEraseCheckedItems];
+  
   return (
     <>
       <Modal
@@ -283,7 +300,7 @@ function Dialogue({
         <Fade in={openDialogue !== dialogues.closed}>
           <Paper
             sx={{
-              padding:1,
+              padding: 1,
               paddingLeft: 1,
               paddingRight: 1,
               display: "flex",
@@ -320,7 +337,7 @@ function Dialogue({
                 justifyContent: "center",
               }}
             >
-              <Typography variant="h4">
+              <Typography variant="h4" fontFamily={"Urbanist"}>
                 {dialogueObject[openDialogue]?.header}
               </Typography>
 
@@ -336,9 +353,7 @@ function Dialogue({
                         error={errorMessage && true}
                         inputRef={textFieldRef}
                         label={textField.text}
-                        helperText={
-                          errorMessage ? errorMessage : textField.helperText
-                        }
+                        helperText={errorMessage ? errorMessage : textField.helperText}
                         defaultValue={deriveDefaultText()}
                         inputProps={{
                           maxLength: 100,
@@ -350,24 +365,18 @@ function Dialogue({
                 {dialogueObject[openDialogue]?.radioButtons.length > 0 && (
                   <RadioGroup
                     row
-                    sx={{ justifyContent: 'flex-start', width:'100%' }}
+                    sx={{ justifyContent: "flex-start", width: "100%" }}
                     defaultValue="None"
                     onChange={handleCategorySelection}
                   >
-                    {dialogueObject[openDialogue]?.radioButtons.map(
-                      (radioButton, i) => (
-                        <FormControlLabel
-                          key={i}
-                          value={radioButton.category}
-                          control={<Radio />}
-                          label={
-                            <Typography >
-                              {radioButton.category}
-                            </Typography>
-                          }
-                        />
-                      )
-                    )}
+                    {dialogueObject[openDialogue]?.radioButtons.map((radioButton, i) => (
+                      <FormControlLabel
+                        key={i}
+                        value={radioButton.category}
+                        control={<Radio />}
+                        label={<Typography>{radioButton.category}</Typography>}
+                      />
+                    ))}
                   </RadioGroup>
                 )}
               </FormControl>
@@ -384,7 +393,7 @@ function Dialogue({
                       if (openDialogue === dialogues.addItem) {
                         handleAddItem(textFieldRef.current.value);
                       } else if (openDialogue === dialogues.resetList) {
-                        handleResetList();
+                        resetListActions[i]();
                       } else if (openDialogue === dialogues.editItem) {
                         handleEditItem(textFieldRef.current.value, category);
                       } else if (openDialogue === dialogues.sendMoney) {

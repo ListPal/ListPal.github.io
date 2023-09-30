@@ -268,7 +268,7 @@ const dialogueObject = {
         defaultValue: true,
         hidden: false,
         text: "Verify the name of the list",
-        helperText: "This will delete all items, but preserve the list",
+        helperText: "Erase items permanently, preserving the list",
       },
     ],
     radioButtons: [],
@@ -276,8 +276,14 @@ const dialogueObject = {
       {
         textColor: "black",
         color: "#fed59a",
-        text: "Reset All Items",
+        text: "Erase All Items",
         icon: "deleteIcon",
+      },
+      {
+        textColor: "black",
+        color: "#fed59a",
+        text: "Erase Checked",
+        icon: "removeDoneIcon",
       },
     ],
   },
@@ -312,6 +318,7 @@ const URLS = {
   getPeopleFromList: `${engine}/server/get-people-from-list`,
   getSuggestedPeople: `${engine}/server/fetch-suggested-people`,
   resetList: `${engine}/server/reset-list`,
+  eraseListItems: `${engine}/server/delete-list-items`,
   
   // Public endpoints
   createPublicListItemUri: `${engine}/public/shared/create-list-item`,

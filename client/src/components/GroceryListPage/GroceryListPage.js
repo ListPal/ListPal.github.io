@@ -1,23 +1,44 @@
 // React imports
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, createRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import SwipeableViews from "react-swipeable-views";
 
 // Dnd imports
-import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 // MUI imports
-import { Typography, Toolbar, AppBar, Slide, Alert, Stack, Box, CircularProgress, List } from "@mui/material";
+import {
+  Typography,
+  Toolbar,
+  AppBar,
+  Slide,
+  Alert,
+  Stack,
+  Box,
+  CircularProgress,
+  List,
+} from "@mui/material";
 
 // MUI Icons
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import PublicIcon from "@mui/icons-material/Public";
 
 // My imports
-import { URLS, colors, dialogues, borderColors, groceryListScopes, mobileWidth, groceryContainerTypes, messages } from "../../utils/enum";
+import {
+  URLS,
+  colors,
+  dialogues,
+  borderColors,
+  groceryListScopes,
+  mobileWidth,
+  groceryContainerTypes,
+  messages,
+} from "../../utils/enum";
 import { getPublicList, postRequest, checkSession, getAllLists } from "../../utils/testApi/testApi";
-import { mergeArrays, truncateString } from "../../utils/helper";
+import { mergeArrays } from "../../utils/helper";
 
 // Component imports
 import Listitem from "./ListItem/ListItem";
@@ -33,7 +54,14 @@ import Dialogue from "./Dialogues/Dialogue";
 // Other imports
 import PullToRefresh from "pulltorefreshjs";
 
-function GroceryListPage({ activeList, setActiveList, activeContainer, setActiveContainer, user, setUser }) {
+function GroceryListPage({
+  activeList,
+  setActiveList,
+  activeContainer,
+  setActiveContainer,
+  user,
+  setUser,
+}) {
   // States
   const location = useLocation();
   const [loading, setLoading] = useState(false);
@@ -41,9 +69,9 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
   const [alertMessage, setAlertMessage] = useState(null);
   const [groupedByIdentifier, setGroupedByIdentifier] = useState([]);
   const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
-  const [showDone, setShowDone] = useState(true);
-  const [modifiedIds, setModifiedIds] = useState(new Set())
-  // TODO: const [recentlyDeleted, setRecentlyDeleted] = useState(null); 
+  const [showDone, setShowDone] = useState(false);
+  const [modifiedIds, setModifiedIds] = useState(new Set());
+  const [slide, setSlide] = useState(0);
 
   // Other globals
   let groupedByCurrentIdx = 0; // global var that keeps the idx count to decide when to display the identifier in the lis item
@@ -57,10 +85,12 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
 
   // Handlers
   const handleCheckItems = async () => {
-    console.log('Triggered handleCheckedItems')
+    console.log("Triggered handleCheckedItems");
     // Handling preconditions
     if (!(scope && containerId && listId)) {
-      console.debug("Incomple data. One of `scope` | `containerId` | `listId` is null or undefined.");
+      console.debug(
+        "Incomple data. One of `scope` | `containerId` | `listId` is null or undefined."
+      );
       setAlertMessage("Apologies. Something went wrong. Try refreshing the page and retry.");
       return;
     } else if (activeList?.groceryListItems.length === 0) {
@@ -79,7 +109,10 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
     };
 
     // Derive public or authenticated uri
-    const uri = activeList?.scope === groceryListScopes.public ? URLS.checkPublicListItemsUri : URLS.checkListItemsUri;
+    const uri =
+      activeList?.scope === groceryListScopes.public
+        ? URLS.checkPublicListItemsUri
+        : URLS.checkListItemsUri;
 
     // Post data and return the response to the next controller
     const res = await postRequest(uri, data);
@@ -88,7 +121,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
 
   const handleBack = () => {
     if (modifiedIds.size > 0) {
-      handleCheckItems()
+      handleCheckItems();
     }
     navigate(-1);
   };
@@ -201,7 +234,10 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
       if (activeContainer.containerType === groceryContainerTypes.todo) {
         return todoWallpaper;
       }
-      if (activeContainer.containerType === groceryContainerTypes.whishlist && activeList?.listName?.toUpperCase().includes("CHRISTMAS")) {
+      if (
+        activeContainer.containerType === groceryContainerTypes.whishlist &&
+        activeList?.listName?.toUpperCase().includes("CHRISTMAS")
+      ) {
         return christmasWallpaperPlus;
       }
     }
@@ -320,7 +356,10 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
       listId: listId,
       scope: scope,
     };
-    const res = scope === groceryListScopes.public ? await getPublicList(data) : await postRequest(URLS.getListUri, data);
+    const res =
+      scope === groceryListScopes.public
+        ? await getPublicList(data)
+        : await postRequest(URLS.getListUri, data);
 
     // Cache it in state
     if (res?.status === 200) {
@@ -385,6 +424,13 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
   useMemo(() => {
     handleGroupByUsername(activeList?.groceryListItems);
   }, [activeList]);
+
+  useEffect(() => {
+    if (showDone) {
+      setSlide(0);
+    }
+  }, [showDone]);
+
   useEffect(() => {
     // No pull to refresh in this component to avoid a bug when dragging and dropping
     PullToRefresh.destroyAll();
@@ -395,7 +441,11 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
     }
 
     // Check for cached list items
-    if (activeList?.groceryListItems[0]?.listId === listId) {
+    if (
+      activeList?.id === listId &&
+      activeList?.listName === listName &&
+      activeList?.scope === scope
+    ) {
       console.debug("No need to fetch items.");
       return;
     }
@@ -417,7 +467,16 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
       </Slide>
 
       {/* Dialogue (absolute positioned) */}
-      {openDialogue && <Dialogue item={activeItem} containerId={containerId} activeList={activeList} setActiveList={setActiveList} openDialogue={openDialogue} setOpenDialogue={setOpenDialogue} />}
+      {openDialogue && (
+        <Dialogue
+          item={activeItem}
+          containerId={containerId}
+          activeList={activeList}
+          setActiveList={setActiveList}
+          openDialogue={openDialogue}
+          setOpenDialogue={setOpenDialogue}
+        />
+      )}
 
       {/* Loading progress */}
       {loading && (
@@ -451,10 +510,14 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
             <IconButton size="small" onClick={handleBack}>
               <ArrowBackIosIcon sx={{ color: "white" }} />
             </IconButton>
-            <Typography padding={1} variant="h5" sx={{ color: "white", flexGrow: 1 }}>
-              <Typography fontSize={16} variant="button">
-                {listName}
-              </Typography>
+            <Typography
+              padding={1}
+              fontSize={16}
+              variant={"overline"}
+              fontFamily={"Urbanist"}
+              sx={{ color: "white", flexGrow: 1 }}
+            >
+              {listName}
             </Typography>
             {scope === groceryListScopes.public && <PublicIcon />}
           </Stack>
@@ -462,25 +525,101 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
       </AppBar>
 
       {/* List items */}
-      <DragDropContext onDragEnd={handleOnDragEnd}>
-        <Droppable droppableId="list-items">
-          {(provided, snapshot) => (
-            <List
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              sx={{
-                mt: "8vh",
-                justifyContent: "center",
-                justifyItems: "center",
-                maxWidth: mobileWidth,
-                pb: "10vh",
-              }}
+      <SwipeableViews disabled={showDone} index={slide} onChangeIndex={(slide) => setSlide(slide)}>
+        {/* Active items */}
+        <DragDropContext onDragEnd={handleOnDragEnd}>
+          <Droppable droppableId="list-items">
+            {(provided, snapshot) => (
+              <List
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                sx={{
+                  pr: 1,
+                  pb: "10vh",
+                  mt: "8vh",
+                  ml: "10px",
+                  minHeight: "50vh",
+                  overflowX: "hidden",
+                  width: "calc(100vw - 20px)",
+                  maxWidth: `calc(${mobileWidth} - 20px`,
+                }}
+              >
+                {!showDone && (
+                  <Typography
+                    variant={"subtitle2"}
+                    fontFamily={"Urbanist"}
+                    color={"#374151"}
+                    sx={{ backdropFilter: "blur(3px)" }}
+                  >
+                    {"Swipe Left To See Checked Items"}
+                  </Typography>
+                )}
+                {!loading &&
+                  activeList?.groceryListItems.map((e, i) => {
+                    if (!e.checked || showDone)
+                      return (
+                        <Draggable draggableId={`${i}`} index={i} key={i}>
+                          {(provided) => (
+                            <Listitem
+                              provided={provided}
+                              borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
+                              identifier={e?.user?.username.split("@")[0]}
+                              setOpenDialogue={setOpenDialogue}
+                              setActiveList={setActiveList}
+                              openDialogue={openDialogue}
+                              activeContainer={activeContainer}
+                              setActiveContainer={setActiveContainer}
+                              activeList={activeList}
+                              listId={listId}
+                              item={e}
+                              setItem={setActiveItem}
+                              user={user}
+                              setUser={setUser}
+                              key={i}
+                              index={i}
+                              containerId={containerId}
+                              setAlertMessage={setAlertMessage}
+                              modifiedIds={modifiedIds}
+                              setModifiedIds={setModifiedIds}
+                            />
+                          )}
+                        </Draggable>
+                      );
+                  })}
+                {provided.placeholder}
+              </List>
+            )}
+          </Droppable>
+        </DragDropContext>
+
+        {/* Checked items */}
+        {!showDone ? (
+          <List
+            sx={{
+              pr: 1,
+              pb: "10vh",
+              mt: "8vh",
+              ml: "10px",
+              minHeight: "50vh",
+              overflowX: "hidden",
+              width: "calc(100vw - 20px)",
+              maxWidth: `calc(${mobileWidth} - 20px`,
+            }}
+          >
+            <Typography
+              variant={"subtitle2"}
+              fontFamily={"Urbanist"}
+              color={"#374151"}
+              sx={{ backdropFilter: "blur(3px)" }}
             >
-              {!loading &&
-                activeList?.groceryListItems.map((e, i) => (
+              {"Swipe Right To See Active Items"}
+            </Typography>
+            {activeList?.groceryListItems.map((e, i) => {
+              if (e.checked)
+                return (
                   <Listitem
                     borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
-                    identifier={handleShowIdentifier(e?.user?.username.split("@")[0])}
+                    identifier={e?.user?.username.split("@")[0]}
                     setOpenDialogue={setOpenDialogue}
                     setActiveList={setActiveList}
                     openDialogue={openDialogue}
@@ -496,18 +635,16 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
                     index={i}
                     containerId={containerId}
                     setAlertMessage={setAlertMessage}
-                    showDone={showDone}
                     modifiedIds={modifiedIds}
                     setModifiedIds={setModifiedIds}
-                    // recentlyDeleted={recentlyDeleted}
-                    // setRecentlyDeleted={setRecentlyDeleted}
                   />
-                ))}
-              {provided.placeholder}
-            </List>
-          )}
-        </Droppable>
-      </DragDropContext>
+                );
+            })}
+          </List>
+        ) : (
+          <></>
+        )}
+      </SwipeableViews>
 
       {/* Bottom Bar with buttons */}
       <BottomBar

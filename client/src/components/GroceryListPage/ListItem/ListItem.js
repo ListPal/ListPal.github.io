@@ -17,6 +17,10 @@ import {
   SpeedDial,
   ListItemButton,
   ListItem,
+  ListItemText,
+  IconButton,
+  ListItemAvatar,
+  ListItemIcon,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { deleteItem, deletePublicItem } from "../../../utils/testApi/testApi";
@@ -24,20 +28,19 @@ import { Draggable } from "react-beautiful-dnd";
 
 const actions = [
   { icon: <DeleteIcon sx={{ color: "red" }} />, name: "Delete item" },
-  { icon: <EditIcon sx={{ color: "black" }} />, name: "Edit item" },
+  { icon: <EditIcon sx={{ color: "#374151" }} />, name: "Edit item" },
 ];
 
 const Listitem = ({
-  identifier,
+  identifier = "unknown",
   item,
   setItem,
   activeList,
   setActiveList,
   setOpenDialogue,
-  borderColor,
+  borderColor = colors.landingPageColors.bold,
   setAlertMessage,
-  showDone = true,
-  index,
+  provided,
   modifiedIds,
   setModifiedIds,
 }) => {
@@ -60,14 +63,14 @@ const Listitem = ({
       return (
         <CloseIcon
           onClick={() => setIsActive(!isActive)}
-          sx={{ color: "black", position: "relative", right: 18 }}
+          sx={{ color: "#374151", position: "relative", right: 18 }}
         />
       );
     } else {
       return (
         <MoreHorizIcon
           onClick={() => setIsActive(!isActive)}
-          sx={{ color: "black", position: "relative", right: 18 }}
+          sx={{ color: "#374151", position: "relative", right: 18 }}
         />
       );
     }
@@ -141,90 +144,67 @@ const Listitem = ({
 
   return (
     <>
-      <Draggable draggableId={`${index}`} index={index}>
-        {(provided) => (
-          <ListItem
-            sx={{ maxWidth: `calc(${mobileWidth} - 20px`, positon: "relative" }}
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
+      <ListItem
+        sx={{
+          mt: 1,
+          background: item?.checked ? "#F3F4F6" : "white",
+          borderLeft: `5px solid ${borderColor}`,
+          height: 80,
+          borderRadius: 1,
+          boxShadow: "0 6.4px 14.4px 0 rgb(0 0 0 / 13%), 0 1.2px 3.6px 0 rgb(0 0 0 / 11%)",
+        }}
+        ref={provided?.innerRef}
+        {...provided?.draggableProps}
+        {...provided?.dragHandleProps}
+        secondaryAction={
+          <SpeedDial
+            ariaLabel="SpeedDial"
+            direction={"left"}
+            icon={handleDeriveOpenOrCloseIcon()}
+            open={isActive}
+            sx={{ height: 35, width: 35 }}
           >
-            <Paper
-              elevation={3}
-              sx={{
-                transition: "all 0.2s",
-                background: item?.checked && "#F3F4F6",
-                maxWidth: mobileWidth,
-                width: "100%",
-                height: 80,
-                opacity: item?.checked && "100%",
-                color: item?.checked && "gray",
-                borderLeft: `5px solid ${
-                  borderColor ? borderColor : colors.landingPageColors.bold
-                }`,
-              }}
-            >
-              <Stack
-                paddingRight={1}
-                direction={"row"}
+            {actions.map((action, i) => (
+              <SpeedDialAction
+                sx={{ position: "relative", right: 18 }}
+                key={action.name}
+                icon={action.icon}
+                tooltipTitle={action.name}
+                onClick={onClicks[i]}
+              />
+            ))}
+          </SpeedDial>
+        }
+      >
+        <ListItemIcon>
+          <IconButton disableRipple onClick={handleCheck}>
+            {item?.checked ? (
+              <CheckCircleIcon
+                fontSize="large"
                 sx={{
-                  height: "100%",
-                  justifyContent: "space-between",
-                  alignItems: "center",
+                  color: borderColor ? borderColor : colors.landingPageColors.bold,
                 }}
-              >
-                <Stack direction={"row"} sx={{ alignItems: "center" }}>
-                  {item?.checked ? (
-                    <Button disableRipple onClick={handleCheck}>
-                      <CheckCircleIcon
-                        fontSize="large"
-                        sx={{
-                          color: borderColor ? borderColor : colors.landingPageColors.bold,
-                        }}
-                      />
-                    </Button>
-                  ) : (
-                    <Button disableRipple onClick={handleCheck}>
-                      <RadioButtonUncheckedIcon
-                        fontSize="large"
-                        sx={{
-                          color: borderColor ? borderColor : colors.landingPageColors.bold,
-                        }}
-                      />
-                    </Button>
-                  )}
-                  <Typography
-                    sx={{ textDecorationLine: item?.checked && "line-through" }}
-                    onClick={handleOpenItemDescription}
-                    variant={"button"}
-                  >
-                    {item?.name && truncateString(item?.name, 25)}
-                    {item?.quantity > 1 && ` (${item?.quantity})`}
-                  </Typography>
-                </Stack>
-
-                <SpeedDial
-                  ariaLabel="SpeedDial"
-                  direction={"left"}
-                  icon={handleDeriveOpenOrCloseIcon()}
-                  open={isActive}
-                  sx={{ height: 35, width: 35 }}
-                >
-                  {actions.map((action, i) => (
-                    <SpeedDialAction
-                      sx={{ position: "relative", right: 18 }}
-                      key={action.name}
-                      icon={action.icon}
-                      tooltipTitle={action.name}
-                      onClick={onClicks[i]}
-                    />
-                  ))}
-                </SpeedDial>
-              </Stack>
-            </Paper>
-          </ListItem>
-        )}
-      </Draggable>
+              />
+            ) : (
+              <RadioButtonUncheckedIcon
+                fontSize="large"
+                sx={{
+                  color: borderColor ? borderColor : colors.landingPageColors.bold,
+                }}
+              />
+            )}
+          </IconButton>
+        </ListItemIcon>
+        <ListItemText secondary={identifier} onClick={handleOpenItemDescription}>
+          <Typography
+            fontFamily={"Urbanist"}
+            color={item?.checked ? "gray" : "#374151"}
+            sx={{ textDecorationLine: item?.checked && "line-through" }}
+          >
+            {item?.name && truncateString(item?.name, 25)}
+          </Typography>
+        </ListItemText>
+      </ListItem>
 
       {openItemDescrition && isActive && (
         <ItemDescription

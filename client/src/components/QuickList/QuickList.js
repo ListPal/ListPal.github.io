@@ -37,6 +37,7 @@ const QuickList = () => {
             <ArrowBackIosIcon sx={{ color: "white" }} />
           </IconButton>
           <Typography
+            fontFamily={"Urbanist"}
             padding={1}
             variant="h5"
             sx={{ color: "white", flexGrow: 1 }}

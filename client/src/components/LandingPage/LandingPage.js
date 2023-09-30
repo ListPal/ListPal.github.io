@@ -267,6 +267,7 @@ const LandingPage = ({ activeList, setActiveList, user, setUser, activeContainer
                   }}
                 >
                   <Typography
+                  fontFamily={'Urbanist'}
                     variant="h5"
                     gutterBottom
                     sx={{
@@ -335,7 +336,7 @@ const LandingPage = ({ activeList, setActiveList, user, setUser, activeContainer
                     color: "white",
                   }}
                 >
-                  <Typography sx={{ color: "white" }}>Create New List</Typography>
+                  <Typography sx={{ color: "white" }} >Create New List</Typography>
                   <AddIcon fontSize="large" sx={{ color: "white" }} />
                 </Button>
               </Stack>

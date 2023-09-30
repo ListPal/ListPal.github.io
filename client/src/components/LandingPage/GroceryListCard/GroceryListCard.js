@@ -150,6 +150,7 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
               >
                 <Typography
                   padding={1}
+                  fontFamily={'Urbanist'}
                   sx={{
                     display: "flex",
                     zIndex: 1,

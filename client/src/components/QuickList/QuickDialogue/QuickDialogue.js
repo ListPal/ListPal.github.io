@@ -171,7 +171,7 @@ const QuickDialogue = ({
                 justifyContent: 'center',
               }}
             >
-              <Typography variant='h4'>{dialogueObject?.header}</Typography>
+              <Typography variant='h4' fontFamily={"Urbanist"}>{dialogueObject?.header}</Typography>
 
               {dialogueObject?.textFields.map((e, i) => (
                 <CssTextField

@@ -52,9 +52,7 @@ const AddPeopleList = () => {
   };
 
   const handleCreateUserSet = (users) => {
-    return Array.from(
-      new Map(users.map((obj) => [JSON.stringify(obj), obj])).values()
-    );
+    return Array.from(new Map(users.map((obj) => [JSON.stringify(obj), obj])).values());
   };
 
   const handleToggleListItem = (value) => () => {
@@ -137,8 +135,7 @@ const AddPeopleList = () => {
       console.log(res);
       handleShowAlert({
         severity: "error",
-        message:
-          "Hmm... It seems like you are not authorized to do this action.",
+        message: "Hmm... It seems like you are not authorized to do this action.",
       });
     } else if (res?.status === 403) {
       console.log(res);
@@ -146,8 +143,7 @@ const AddPeopleList = () => {
     } else {
       handleShowAlert({
         severity: "error",
-        message:
-          "Whoops! Something went wrong on our end. We are working to fix this",
+        message: "Whoops! Something went wrong on our end. We are working to fix this",
       });
       console.log(res);
     }
@@ -155,23 +151,22 @@ const AddPeopleList = () => {
   };
 
   const handleFetchSuggested = async () => {
-    setLoading(true)
+    setLoading(true);
     const data = {
       userIdentifier: location?.state?.selfUsername,
       criteria: "USERNAME",
     };
     const res = await postRequest(URLS.getSuggestedPeople, data);
     if (res?.status === 200) {
-      console.log(res?.body)
-      setSuggested(res?.body)
+      console.log(res?.body);
+      setSuggested(res?.body);
     } else if (res?.status === 201) {
-      console.log(res)
+      console.log(res);
     } else if (res?.status === 401) {
       console.log(res);
       handleShowAlert({
         severity: "error",
-        message:
-          "Hmm... It seems like you are not authorized to do this action.",
+        message: "Hmm... It seems like you are not authorized to do this action.",
       });
     } else if (res?.status === 403) {
       console.log(res);
@@ -179,8 +174,7 @@ const AddPeopleList = () => {
     } else {
       handleShowAlert({
         severity: "error",
-        message:
-          "Whoops! Something went wrong on our end. We are working to fix this",
+        message: "Whoops! Something went wrong on our end. We are working to fix this",
       });
       console.log(res);
     }
@@ -205,10 +199,7 @@ const AddPeopleList = () => {
             <IconButton onClick={() => navigate(-1)}>
               <ArrowBackIosIcon />
             </IconButton>
-            <Switch
-              checked={lookupByPhone}
-              onChange={() => setLookupByPhone(!lookupByPhone)}
-            />
+            <Switch checked={lookupByPhone} onChange={() => setLookupByPhone(!lookupByPhone)} />
             <Typography
               variant="button"
               sx={{ color: "#4B5563" }}
@@ -223,10 +214,7 @@ const AddPeopleList = () => {
                 label={"Lookup user by phone"}
                 type="tel"
                 helperText={
-                  <Typography
-                    color={textfieldMessage?.severity}
-                    variant="helperText"
-                  >
+                  <Typography color={textfieldMessage?.severity} variant="helperText">
                     {textfieldMessage?.message}
                   </Typography>
                 }
@@ -253,10 +241,7 @@ const AddPeopleList = () => {
                 inputRef={textFieldUserRef}
                 label={"Lookup user by email"}
                 helperText={
-                  <Typography
-                    color={textfieldMessage?.severity}
-                    variant="helperText"
-                  >
+                  <Typography color={textfieldMessage?.severity} variant="helperText">
                     {textfieldMessage?.message}
                   </Typography>
                 }
@@ -281,7 +266,7 @@ const AddPeopleList = () => {
       </Grid>
 
       <Grid item sx={{ width: "100vw" }}>
-        <Typography variant="h5" textAlign={"left"}>
+        <Typography variant="h5" textAlign={"left"} fontFamily={"Urbanist"}>
           Recents
         </Typography>
         <List
@@ -326,7 +311,7 @@ const AddPeopleList = () => {
         {peopleToAdd.length > 0 && (
           <LoadingButton
             endIcon={<></>}
-            loadingPosition={'end'}
+            loadingPosition={"end"}
             loading={loading}
             fullWidth
             onClick={handleAddPeople}

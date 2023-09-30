@@ -237,7 +237,7 @@ function NewListForm({
                 justifyContent: "center",
               }}
             >
-              <Typography variant="h3">Create List</Typography>
+              <Typography variant="h3" fontFamily={'Urbanist'}>Create List</Typography>
 
               <FormControl>
                 <CssTextField

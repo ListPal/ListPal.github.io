@@ -98,11 +98,10 @@ const QuickListItem = ({
                 </Button>
               )}
               <Typography
-                variant={"button"}
+                fontFamily={"Urbanist"}
                 onClick={handleOpenItemDescription}
               >
                 {item?.name && truncateString(item?.name, 30)}
-                {item?.quantity > 1 && ` (${item?.quantity})`}
               </Typography>
             </Stack>
 

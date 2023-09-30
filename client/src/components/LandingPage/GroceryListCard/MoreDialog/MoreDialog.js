@@ -32,11 +32,7 @@ import {
   messages,
   mobileWidth,
 } from "../../../../utils/enum";
-import {
-  removePeopleFromList,
-  deleteList,
-  postRequest,
-} from "../../../../utils/testApi/testApi";
+import { removePeopleFromList, deleteList, postRequest } from "../../../../utils/testApi/testApi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../../utils/dialoguesValidation";
 import AppleIcon from "@mui/icons-material/Apple";
@@ -60,7 +56,6 @@ const MoreDialog = ({
   // Other locals
   const textFieldRef = useRef(null);
   const location = useLocation();
-  const urlParams = new URLSearchParams(location.search);
   const navigate = useNavigate();
 
   const handleInputValidation = async (input) => {
@@ -96,8 +91,7 @@ const MoreDialog = ({
     } else {
       showAlert({
         severity: "error",
-        message:
-          "Whoops! Something went wrong on our end. We are working to fix this",
+        message: "Whoops! Something went wrong on our end. We are working to fix this",
       });
       console.log(res);
     }
@@ -105,6 +99,22 @@ const MoreDialog = ({
   };
 
   const handleEditListOptions = async (newListName, listScope) => {
+    // Handle preconditions
+    if (!newListName || !listScope) {
+      console.debug("No listname or scop provided");
+      return;
+    }
+    
+    if (
+      listScope !== groceryListScopes.public &&
+      listScope !== groceryListScopes.private &&
+      listScope !== groceryListScopes.restricted
+    ) {
+      console.debug("No valid list scope provided");
+      return;
+    }
+
+    // Reset States
     setLoading(true);
     setErrorMessage(null);
     setAlertMessage(null);
@@ -129,7 +139,7 @@ const MoreDialog = ({
     if (res?.status === 200) {
       const updatedLists = activeContainer?.collapsedLists.map((list) => {
         if (list.id === listInfo?.id) {
-          return { ...list, listName: newListName, scope: listScope };
+          return {...list, listName: newListName, scope: listScope};
         } else {
           return list;
         }
@@ -137,14 +147,12 @@ const MoreDialog = ({
       setActiveContainer((container) => {
         return { ...container, collapsedLists: updatedLists };
       });
+
       closeDialogueWithoutDelay();
     } else if (res?.status === 403) {
       navigate("/");
     } else if (res?.status === 401) {
-      showAlert(
-        "warning",
-        "Cannot do this action cause you did not create this list."
-      );
+      showAlert("warning", "Cannot do this action cause you did not create this list.");
       closeDialogueWithDelay();
     } else {
       console.log(res);
@@ -219,12 +227,6 @@ const MoreDialog = ({
     setLoading(false);
   };
 
-  const moneyActions = [
-    handleRedirectToApple,
-    handleRedirectToVenmo,
-    handleRedirectToCashapp,
-  ];
-
   const deriveCorrectIcon = (icon) => {
     if (icon === "deleteIcon") return <DeleteIcon />;
     if (icon === "editIcon") return <EditIcon />;
@@ -232,7 +234,7 @@ const MoreDialog = ({
     if (icon === "lookup") return <SearchIcon />;
     if (icon === "phone") return <LocalPhoneIcon />;
     if (icon === "deletePeople") return <PeopleAltIcon />;
-    return <></>
+    return <></>;
   };
 
   const showAlert = (severity, msg) => {
@@ -256,15 +258,15 @@ const MoreDialog = ({
     setLoading(false);
   };
 
+  const moneyActions = [handleRedirectToApple, handleRedirectToVenmo, handleRedirectToCashapp];
+
   return (
     <>
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={openDialogue !== dialogues.closed}
-        onClose={
-          alertMessage ? closeDialogueWithDelay : closeDialogueWithoutDelay
-        }
+        onClose={alertMessage ? closeDialogueWithDelay : closeDialogueWithoutDelay}
         closeAfterTransition
         slots={{ backdrop: Backdrop }}
         slotProps={{
@@ -299,7 +301,7 @@ const MoreDialog = ({
                 alignItems: "center",
               }}
             >
-              <Typography variant="h4">
+              <Typography variant="h4" fontFamily={"Urbanist"}>
                 {dialogueObject[openDialogue]?.header}
               </Typography>
 
@@ -315,12 +317,8 @@ const MoreDialog = ({
                         inputRef={textFieldRef}
                         id="custom-css-outlined-input"
                         label={textField.text}
-                        helperText={
-                          errorMessage ? errorMessage : textField.helperText
-                        }
-                        defaultValue={
-                          textField.defaultValue ? listInfo?.listName : null
-                        }
+                        helperText={errorMessage ? errorMessage : textField.helperText}
+                        defaultValue={textField.defaultValue ? listInfo?.listName : null}
                         inputProps={{
                           maxLength: 30,
                           required: true,
@@ -338,21 +336,9 @@ const MoreDialog = ({
                     onChange={handleListScopeSelection}
                     sx={{ justifyContent: "center" }}
                   >
-                    <FormControlLabel
-                      value="PUBLIC"
-                      control={<Radio />}
-                      label="Public"
-                    />
-                    <FormControlLabel
-                      value="PRIVATE"
-                      control={<Radio />}
-                      label="Private"
-                    />
-                    <FormControlLabel
-                      value="RESTRICTED"
-                      control={<Radio />}
-                      label="Restricted"
-                    />
+                    <FormControlLabel value="PUBLIC" control={<Radio />} label="Public" />
+                    <FormControlLabel value="PRIVATE" control={<Radio />} label="Private" />
+                    <FormControlLabel value="RESTRICTED" control={<Radio />} label="Restricted" />
                   </RadioGroup>
                 )}
               </FormControl>
@@ -376,18 +362,14 @@ const MoreDialog = ({
                     loading={loading}
                     loadingPosition="end"
                     disabled={
-                      openDialogue === dialogues.deletePeople &&
-                      peopleToDelete.length === 0
+                      openDialogue === dialogues.deletePeople && peopleToDelete.length === 0
                     }
                     endIcon={deriveCorrectIcon(button.icon)}
                     onClick={() => {
                       if (openDialogue === dialogues.deleteList) {
                         handleDeleteList();
                       } else if (openDialogue === dialogues.editList) {
-                        handleEditListOptions(
-                          textFieldRef.current.value,
-                          listScope
-                        );
+                        handleEditListOptions(textFieldRef.current.value, listScope);
                       } else if (openDialogue === dialogues.sendMoney) {
                         moneyActions[i]();
                       } else if (openDialogue === dialogues.deletePeople) {
