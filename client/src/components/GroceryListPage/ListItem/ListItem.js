@@ -21,6 +21,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { deleteItem, deletePublicItem } from "../../../utils/testApi/testApi";
+import { color } from "@mui/system";
 
 const actions = [
   { icon: <DeleteIcon sx={{ color: "red" }} />, name: "Delete item" },
@@ -34,7 +35,7 @@ const Listitem = ({
   activeList,
   setActiveList,
   setOpenDialogue,
-  borderColor = colors.landingPageColors.bold,
+  borderColor,
   setAlertMessage,
   provided,
   modifiedIds,
@@ -144,7 +145,7 @@ const Listitem = ({
         sx={{
           mt: 1,
           background: item?.checked ? "#F3F4F6" : "white",
-          borderLeft: `5px solid ${borderColor}`,
+          borderLeft: `5px solid ${borderColor || colors.fallbackColors.blod}`,
           height: 80,
           borderRadius: 1,
           boxShadow: "0 6.4px 14.4px 0 rgb(0 0 0 / 13%), 0 1.2px 3.6px 0 rgb(0 0 0 / 11%)",

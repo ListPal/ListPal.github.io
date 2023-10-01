@@ -93,16 +93,6 @@ const LandingPage = ({
     setSeverity(severity);
   };
 
-  const checkItems = async () => {
-    const data = {
-      containerId: location?.state?.containerId,
-      scope: activeList?.scope,
-      listId: activeList?.id,
-      itemIds: activeList?.groceryListItems.filter((item) => item.checked).map((item) => item.id),
-    };
-    return await postRequest(URLS.checkListItemUri, data);
-  };
-
   const handleDeriveStrip = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
       return groceryStrip;
@@ -207,13 +197,16 @@ const LandingPage = ({
       return lists;
     }
     if (filter === filterCardsBy.public) {
-      return lists.filter((e) => e.scope === groceryListScopes.public);
+      const filteredLists = lists.filter((e) => e.scope === groceryListScopes.public)
+      return filteredLists;
     }
     if (filter === filterCardsBy.private) {
-      return lists.filter((e) => e.scope === groceryListScopes.private);
+      const filteredLists = lists.filter((e) => e.scope === groceryListScopes.private)
+      return filteredLists;
     }
     if (filter === filterCardsBy.restricted) {
-      return lists.filter((e) => e.scope === groceryListScopes.restricted);
+      const filteredLists = lists.filter((e) => e.scope === groceryListScopes.restricted)
+      return filteredLists;
     }
   };
 
@@ -236,14 +229,14 @@ const LandingPage = ({
         window.location.reload();
       },
     });
-    // Reset altert mesage
-    setAlertMessage("No lists yet to display. Create your first list 🥳");
+
     // Fetch only if lists are not cached
     if (activeContainer?.id !== location?.state?.containerId) {
       pullLists();
     } else {
       console.debug("Lists are cached. No need to fetch");
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -278,7 +271,7 @@ const LandingPage = ({
               <Stack
                 direction="column"
                 padding={1}
-                sx={{ height: "100%", justifyContent: "space-between" }}
+                sx={{ height: "100%", justifyContent: "space-between", alignItems:'center' }}
               >
                 <Stack
                   direction={"row"}
@@ -330,6 +323,7 @@ const LandingPage = ({
                 <Stack
                   direction={"column"}
                   sx={{
+                    width:'100vw',
                     maxWidth: mobileWidth,
                     height: 40,
                     backgroundImage: `url(${handleDeriveStrip()})`,
@@ -482,11 +476,12 @@ const LandingPage = ({
         </Grid>
 
         {activeContainer?.collapsedLists.length === 0 && !loading && (
-          <Grid item sx={{ maxWidth: mobileWidth }}>
-            <Slide className="alert-slide" in={true} direction="right">
+          <Grid item sx={{ width: '100vw', maxWidth: mobileWidth }}>
+            <Slide className="alert-slide" in={true} direction="right" sx={{width: '100vw'}}> 
               <Alert severity={severity}>{alertMessage}</Alert>
             </Slide>
             <img
+              style={{}}
               alt="decorative-background"
               src={handleContainerImg()}
               loading="lazy"

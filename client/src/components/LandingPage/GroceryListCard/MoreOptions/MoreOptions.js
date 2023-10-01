@@ -80,7 +80,7 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer, username }
             </IconButton>
           )}
 
-          {listInfo?.scope === groceryListScopes.restricted && (
+          {/* {listInfo?.scope === groceryListScopes.restricted && (
             <IconButton
               onClick={() => {
                 setOpenDialogue(dialogues.sendMoney);
@@ -88,7 +88,7 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer, username }
             >
               <PaidIcon sx={{ color: "black" }} />
             </IconButton>
-          )}
+          )} */}
           <IconButton
             onClick={() => {
               setOpenDialogue(dialogues.editList);
