@@ -12,7 +12,6 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import NotesIcon from "@mui/icons-material/Notes";
 import {
   Typography,
-  Stack,
   SpeedDial,
   ListItem,
   ListItemText,
@@ -21,7 +20,6 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { deleteItem, deletePublicItem } from "../../../utils/testApi/testApi";
-import { color } from "@mui/system";
 
 const actions = [
   { icon: <DeleteIcon sx={{ color: "red" }} />, name: "Delete item" },
@@ -42,7 +40,8 @@ const Listitem = ({
   setModifiedIds,
 }) => {
   // States
-  const [isActive, setIsActive] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [openSpeedDial, setOpenSpeedDial] = useState(false);
   const [checked, setChecked] = useState(false);
   const [openItemDescrition, setOpenItemDescription] = useState(false);
   const navigate = useNavigate();
@@ -51,22 +50,21 @@ const Listitem = ({
   const handleOpenItemDescription = () => {
     if (item?.name.length > 24) {
       setOpenItemDescription(true);
-      setIsActive(true);
     }
   };
 
   const handleDeriveOpenOrCloseIcon = () => {
-    if (isActive) {
+    if (openSpeedDial) {
       return (
         <CloseIcon
-          onClick={() => setIsActive(!isActive)}
+          onClick={() => setOpenSpeedDial(!openSpeedDial)}
           sx={{ color: "#374151", position: "relative", right: 18 }}
         />
       );
     } else {
       return (
         <MoreHorizIcon
-          onClick={() => setIsActive(!isActive)}
+          onClick={() => setOpenSpeedDial(!openSpeedDial)}
           sx={{ color: "#374151", position: "relative", right: 18 }}
         />
       );
@@ -74,6 +72,7 @@ const Listitem = ({
   };
 
   const handleCheck = () => {
+    setLoading(true)
     // Mark items checked/unchecked
     let listItems = activeList?.groceryListItems || [];
     const updatedItems = listItems.map((e) =>
@@ -98,11 +97,14 @@ const Listitem = ({
       ...activeList,
       groceryListItems: listItems,
     });
+
+    setLoading(false)
   };
 
   const openEditItemDialogue = () => {
     setOpenDialogue(dialogues.editItem);
     setItem(item);
+    setOpenSpeedDial(false);
   };
 
   const openSendMoneyDialogue = () => {
@@ -111,6 +113,7 @@ const Listitem = ({
   };
 
   const handleDeleteItem = async () => {
+    setLoading(true)
     // Construct data to be sent
     const data = {
       containerId: activeList?.containerId,
@@ -128,6 +131,7 @@ const Listitem = ({
       // Update items state
       const previousItems = activeList?.groceryListItems.filter((e) => !(e.id === item?.id));
       setActiveList({ ...activeList, groceryListItems: previousItems });
+      setOpenSpeedDial(false);
     } else if (res?.status === 403) {
       navigate("/");
     } else if (res?.status === 401) {
@@ -135,6 +139,7 @@ const Listitem = ({
     } else {
       setAlertMessage(messages.genericError);
     }
+    setLoading(false)
   };
 
   const onClicks = [handleDeleteItem, openEditItemDialogue, openSendMoneyDialogue];
@@ -159,7 +164,7 @@ const Listitem = ({
             ariaLabel="SpeedDial"
             direction={"left"}
             icon={handleDeriveOpenOrCloseIcon()}
-            open={isActive}
+            open={openSpeedDial}
             sx={{ height: 35, width: 35 }}
           >
             {actions.map((action, i) => (
@@ -169,6 +174,9 @@ const Listitem = ({
                 icon={action.icon}
                 tooltipTitle={action.name}
                 onClick={onClicks[i]}
+                FabProps={{
+                  disabled: loading
+                }}
               />
             ))}
           </SpeedDial>
@@ -197,7 +205,7 @@ const Listitem = ({
           secondary={
             <Typography fontSize={12} fontFamily={"Urbanist"} color={"#9CA3AF"}>
               {identifier}
-              {item?.name.length >= 28 && <NotesIcon fontSize={"12"} color={'action'}/>}
+              {item?.name.length >= 28 && <NotesIcon fontSize={"12"} color={"action"} />}
             </Typography>
           }
           onClick={handleOpenItemDescription}
@@ -212,9 +220,8 @@ const Listitem = ({
         </ListItemText>
       </ListItem>
 
-      {openItemDescrition && isActive && (
+      {openItemDescrition && (
         <ItemDescription
-          setIsActive={setIsActive}
           item={item}
           openItemDescription={openItemDescrition}
           setOpenItemDescription={setOpenItemDescription}

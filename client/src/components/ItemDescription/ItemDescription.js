@@ -9,15 +9,13 @@ import {
 import { colors } from "../../utils/enum";
 
 const ItemDescription = ({
-  borderColor,
   item,
+  borderColor,
   openItemDescription,
   setOpenItemDescription,
-  setIsActive,
 }) => {
   const handleClose = () => {
     setOpenItemDescription(false);
-    setIsActive(false);
   };
   return (
     <Modal
