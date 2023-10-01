@@ -44,6 +44,10 @@ const AddPeopleList = () => {
   const location = useLocation();
 
   // Handlers
+  const handleSwitch = () => {
+    setLookupByPhone(!lookupByPhone)
+    setTextfieldMessage(null);
+  }
   const handleShowAlert = (severity, message) => {
     setAlert({
       severity: severity,
@@ -200,7 +204,7 @@ const AddPeopleList = () => {
             <IconButton onClick={() => navigate(-1)}>
               <ArrowBackIosIcon />
             </IconButton>
-            <Switch checked={lookupByPhone} onChange={() => setLookupByPhone(!lookupByPhone)} />
+            <Switch checked={lookupByPhone} onChange={handleSwitch} />
             <Typography
               variant="button"
               sx={{ color: "#4B5563" }}
