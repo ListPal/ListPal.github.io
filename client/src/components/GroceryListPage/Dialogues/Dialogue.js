@@ -281,7 +281,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
   const moneyActions = [handleRedirectToApple, handleRedirectToVenmo, handleRedirectToCashapp];
 
   const resetListActions = [handleEraseAllItems, handleEraseCheckedItems];
-  
+
   return (
     <>
       <Modal
@@ -303,6 +303,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
               padding: 1,
               paddingLeft: 1,
               paddingRight: 1,
+              paddingBottom: 2,
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -313,7 +314,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
               transform: "translate(-50%)",
               borderRadius: 5,
               width: 300,
-              height: 300,
+              minHeight: 300,
             }}
           >
             <Slide
@@ -346,8 +347,11 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
                   (textField, i) =>
                     !textField.hidden && (
                       <CssTextField
+                        multiline={textField?.multiline}
+                        maxRows={4}
+                        sx={{mt:i, mb: -1 * (i - 1)}}
                         fullWidth
-                        required
+                        required={textField?.required}
                         id="custom-css-outlined-input"
                         key={`${textField.text}${i}`}
                         error={errorMessage && true}
@@ -356,28 +360,10 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
                         helperText={errorMessage ? errorMessage : textField.helperText}
                         defaultValue={deriveDefaultText()}
                         inputProps={{
-                          maxLength: 100,
+                          maxLength: textField?.maxLength || 100,
                         }}
                       />
                     )
-                )}
-
-                {dialogueObject[openDialogue]?.radioButtons.length > 0 && (
-                  <RadioGroup
-                    row
-                    sx={{ justifyContent: "flex-start", width: "100%" }}
-                    defaultValue="None"
-                    onChange={handleCategorySelection}
-                  >
-                    {dialogueObject[openDialogue]?.radioButtons.map((radioButton, i) => (
-                      <FormControlLabel
-                        key={i}
-                        value={radioButton.category}
-                        control={<Radio />}
-                        label={<Typography>{radioButton.category}</Typography>}
-                      />
-                    ))}
-                  </RadioGroup>
                 )}
               </FormControl>
 
@@ -425,13 +411,14 @@ export default Dialogue;
 const CssTextField = styled(TextField)({
   "& label.Mui-focused": {
     color: "#A0AAB4",
+    // marginTop: 5
   },
   "& .MuiInput-underline:after": {
     borderBottomColor: "black",
   },
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
-      border: "2px solid black",
+      border: "1px solid black",
       borderRadius: 0,
     },
     "&:hover fieldset": {

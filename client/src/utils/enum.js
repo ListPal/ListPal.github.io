@@ -84,19 +84,22 @@ const dialogueObject = {
     header: "Add Item",
     textFields: [
       {
+        maxLength: 100,
         defaultValue: true,
         hidden: false,
         text: "Enter item name",
         helperText: "Name your grocery list item",
+        required: true,
       },
-    ],
-    radioButtons: [
-      //   {category: 'Produce'},
-      //   {category: 'Frozen'},
-      //   {category: 'Snacks'},
-      //   {category: 'Beverage'},
-      //   {category: 'Home Care'},
-      //   {category: 'None'},
+      // {
+      //   maxLength: 500,
+      //   defaultValue: true,
+      //   hidden: false,
+      //   text: "Enter item description",
+      //   helperText: "Short description (not required)",
+      //   multiline: true,
+      //   required: false,
+      // },
     ],
     button: [
       {

@@ -9,22 +9,18 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import NotesIcon from "@mui/icons-material/Notes";
 import {
-  Button,
   Typography,
-  Paper,
   Stack,
   SpeedDial,
-  ListItemButton,
   ListItem,
   ListItemText,
   IconButton,
-  ListItemAvatar,
   ListItemIcon,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { deleteItem, deletePublicItem } from "../../../utils/testApi/testApi";
-import { Draggable } from "react-beautiful-dnd";
 
 const actions = [
   { icon: <DeleteIcon sx={{ color: "red" }} />, name: "Delete item" },
@@ -200,6 +196,7 @@ const Listitem = ({
           secondary={
             <Typography fontSize={12} fontFamily={"Urbanist"} color={"#9CA3AF"}>
               {identifier}
+              {item?.name.length >= 28 && <NotesIcon fontSize={"12"} color={'action'}/>}
             </Typography>
           }
           onClick={handleOpenItemDescription}
