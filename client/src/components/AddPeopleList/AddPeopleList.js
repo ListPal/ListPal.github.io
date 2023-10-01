@@ -10,6 +10,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Alert,
+  CircularProgress,
   Grid,
   IconButton,
   Slide,
@@ -294,15 +295,9 @@ const AddPeopleList = () => {
               >
                 <ListItemButton>
                   <ListItemAvatar>
-                    <Avatar
-                      alt={`${user?.name}`}
-                      src={`/static/images/avatar/${user?.name}.jpg`}
-                    />
+                    <Avatar alt={`${user?.name}`} src={`/static/images/avatar/${user?.name}.jpg`} />
                   </ListItemAvatar>
-                  <ListItemText
-                    id={labelId}
-                    primary={`${user?.name} ${user?.lastName}`}
-                  />
+                  <ListItemText id={labelId} primary={`${user?.name} ${user?.lastName}`} />
                 </ListItemButton>
               </ListItem>
             );
@@ -328,6 +323,18 @@ const AddPeopleList = () => {
           </LoadingButton>
         )}
       </Grid>
+
+      {loading && (
+        <CircularProgress
+          sx={{
+            position: "absolute",
+            top: "calc(50% - 10px)",
+            left: "calc(50% - 10px)",
+            zIndex: 10,
+          }}
+        />
+      )}
+
       <Slide sx={{ position: "fixed", top: 0, left: 0 }} in={alert}>
         <Alert severity={alert?.severity}>
           <Typography variant="subtitle2" textAlign={"left"}>

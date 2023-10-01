@@ -1,7 +1,14 @@
 import { Button, Alert, Typography, Slide, IconButton, List } from "@mui/material";
 import { useState, useEffect } from "react";
 import { getAllLists, logout, postRequest, checkSession } from "../../utils/testApi/testApi";
-import { colors, filterCardsBy, groceryContainerTypes, groceryListScopes, messages, URLS } from "../../utils/enum";
+import {
+  colors,
+  filterCardsBy,
+  groceryContainerTypes,
+  groceryListScopes,
+  messages,
+  URLS,
+} from "../../utils/enum";
 import "./LandingPage.scss";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
@@ -31,10 +38,19 @@ import todo from "../../utils/assets/todo.jpg";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import PullToRefresh from "pulltorefreshjs";
 
-const LandingPage = ({ activeList, setActiveList, user, setUser, activeContainer, setActiveContainer }) => {
+const LandingPage = ({
+  activeList,
+  setActiveList,
+  user,
+  setUser,
+  activeContainer,
+  setActiveContainer,
+}) => {
   // States
   const [filter, setFilter] = useState(filterCardsBy.all);
-  const [alertMessage, setAlertMessage] = useState("No lists yet to display. Create your first list 🥳");
+  const [alertMessage, setAlertMessage] = useState(
+    "No lists yet to display. Create your first list 🥳"
+  );
   const [severity, setSeverity] = useState("info");
   const [newListFormOpen, setNewListFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -248,11 +264,22 @@ const LandingPage = ({ activeList, setActiveList, user, setUser, activeContainer
               alignItems: "center",
             }}
           >
-            {loading && <Skeleton animation="wave" sx={{ borderRadius: 5, maxWidth: `calc(0.9 * ${mobileWidth})` }} width={"90vw"} height={130} />}
+            {loading && (
+              <Skeleton
+                animation="wave"
+                sx={{ borderRadius: 5, maxWidth: `calc(0.9 * ${mobileWidth})` }}
+                width={"90vw"}
+                height={130}
+              />
+            )}
 
             {/* User Info Menu Bar */}
             {!loading && (
-              <Stack direction="column" padding={1} sx={{ height: "100%", justifyContent: "space-between" }}>
+              <Stack
+                direction="column"
+                padding={1}
+                sx={{ height: "100%", justifyContent: "space-between" }}
+              >
                 <Stack
                   direction={"row"}
                   padding={1}
@@ -267,7 +294,7 @@ const LandingPage = ({ activeList, setActiveList, user, setUser, activeContainer
                   }}
                 >
                   <Typography
-                  fontFamily={'Urbanist'}
+                    fontFamily={"Urbanist"}
                     variant="h5"
                     gutterBottom
                     sx={{
@@ -278,7 +305,11 @@ const LandingPage = ({ activeList, setActiveList, user, setUser, activeContainer
                     <IconButton size={"small"} disableRipple onClick={handleBack}>
                       <ArrowBackIosIcon />
                     </IconButton>
-                    <Avatar sx={{ width: 56, height: 56 }} alt={user?.name} src="[enter path here]" />
+                    <Avatar
+                      sx={{ width: 56, height: 56 }}
+                      alt={user?.name}
+                      src="[enter path here]"
+                    />
                     <span style={{ width: "10px" }} />
                     {user?.name && truncateString(user?.name)}
                   </Typography>
@@ -312,7 +343,15 @@ const LandingPage = ({ activeList, setActiveList, user, setUser, activeContainer
 
         {/* Create List Menu */}
         <Grid item>
-          {loading && <Skeleton animation="wave" variant="rectangular" height={"35vmin"} width={"100vmin"} sx={{ maxWidth: mobileWidth }} />}
+          {loading && (
+            <Skeleton
+              animation="wave"
+              variant="rectangular"
+              height={"35vmin"}
+              width={"100vmin"}
+              sx={{ maxWidth: mobileWidth }}
+            />
+          )}
           {!loading && (
             <Paper
               sx={{
@@ -336,7 +375,7 @@ const LandingPage = ({ activeList, setActiveList, user, setUser, activeContainer
                     color: "white",
                   }}
                 >
-                  <Typography sx={{ color: "white" }} >Create New List</Typography>
+                  <Typography sx={{ color: "white" }}>Create New List</Typography>
                   <AddIcon fontSize="large" sx={{ color: "white" }} />
                 </Button>
               </Stack>
@@ -403,38 +442,68 @@ const LandingPage = ({ activeList, setActiveList, user, setUser, activeContainer
         </Grid>
 
         {/* ListCard below */}
-        <DragDropContext onDragEnd={handleOnDragEnd}>
-          <Droppable droppableId="list-items">
-            {(provided, snapshot) => (
-              <List sx={{ pb: 2, maxWidth: mobileWidth }} {...provided.droppableProps} ref={provided.innerRef}>
-                {loading && (
-                  <Stack width={"100vw"} direction={"column"} mt={5}>
-                    <Skeleton animation={"wave"} variant="rectangular" sx={{ maxWidth: mobileWidth }} height={150} />
-                  </Stack>
-                )}
+        <Grid item>
+          <DragDropContext onDragEnd={handleOnDragEnd}>
+            <Droppable droppableId="list-items">
+              {(provided, snapshot) => (
+                <List
+                  sx={{ pb: 2, maxWidth: mobileWidth, width: "100vw" }}
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                >
+                  {loading && (
+                    <Stack width={"100vw"} direction={"column"} mt={5}>
+                      <Skeleton
+                        animation={"wave"}
+                        variant="rectangular"
+                        sx={{ maxWidth: mobileWidth }}
+                        height={150}
+                      />
+                    </Stack>
+                  )}
 
-                {!loading &&
-                  activeContainer?.collapsedLists &&
-                  handlefilterListByScope(activeContainer?.collapsedLists).map((e, i) => (
-                    <GroceryListCard index={i} username={user?.username} activeContainer={activeContainer} setActiveContainer={setActiveContainer} listInfo={e} key={i} />
-                  ))}
-                {provided.placeholder}
-              </List>
-            )}
-          </Droppable>
-        </DragDropContext>
+                  {!loading &&
+                    activeContainer?.collapsedLists &&
+                    handlefilterListByScope(activeContainer?.collapsedLists).map((e, i) => (
+                      <GroceryListCard
+                        index={i}
+                        username={user?.username}
+                        activeContainer={activeContainer}
+                        setActiveContainer={setActiveContainer}
+                        listInfo={e}
+                        key={i}
+                      />
+                    ))}
+                  {provided.placeholder}
+                </List>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </Grid>
 
         {activeContainer?.collapsedLists.length === 0 && !loading && (
           <Grid item sx={{ maxWidth: mobileWidth }}>
             <Slide className="alert-slide" in={true} direction="right">
               <Alert severity={severity}>{alertMessage}</Alert>
             </Slide>
-            <img alt="decorative-background" src={handleContainerImg()} loading="lazy" height={400} width={400} />
+            <img
+              alt="decorative-background"
+              src={handleContainerImg()}
+              loading="lazy"
+              height={400}
+              width={400}
+            />
           </Grid>
         )}
       </Grid>
 
-      <NewListForm activeContainer={activeContainer} setActiveContainer={setActiveContainer} user={user} open={newListFormOpen} setOpen={setNewListFormOpen} />
+      <NewListForm
+        activeContainer={activeContainer}
+        setActiveContainer={setActiveContainer}
+        user={user}
+        open={newListFormOpen}
+        setOpen={setNewListFormOpen}
+      />
     </>
   );
 };

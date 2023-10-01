@@ -105,11 +105,10 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
             sx={{
               maxWidth: mobileWidth,
               borderRadius: 0,
-              width: "96vw",
+              width: "100vw",
             }}
           >
             <Slide
-              className="alert-slide"
               in={alertMessage && true}
               sx={{
                 position: "fixed",
@@ -150,7 +149,7 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
               >
                 <Typography
                   padding={1}
-                  fontFamily={'Urbanist'}
+                  fontFamily={"Urbanist"}
                   sx={{
                     display: "flex",
                     zIndex: 1,

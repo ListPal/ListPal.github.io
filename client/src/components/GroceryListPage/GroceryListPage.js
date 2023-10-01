@@ -550,6 +550,7 @@ function GroceryListPage({
                     fontFamily={"Urbanist"}
                     color={"#374151"}
                     sx={{ backdropFilter: "blur(3px)" }}
+                    maxWidth={`calc(${mobileWidth} - 20px)`}
                   >
                     {"Swipe Left To See Checked Items"}
                   </Typography>
@@ -610,7 +611,8 @@ function GroceryListPage({
               variant={"subtitle2"}
               fontFamily={"Urbanist"}
               color={"#374151"}
-              sx={{ backdropFilter: "blur(3px)" }}
+              sx={{ backdropFilter: "blur(3px)"}}
+              maxWidth={`calc(${mobileWidth} - 20px)`}
             >
               {"Swipe Right To See Active Items"}
             </Typography>

@@ -51,7 +51,7 @@ const ItemDescription = ({
           }}
         >
           <Stack>
-            <Typography align="left" variant="button" overflow={'auto'} width={'85vw'}>
+            <Typography align="left" overflow={'auto'} width={'85vw'} fontFamily={'Urbanist'}>
               {item?.name}
             </Typography>
           </Stack>

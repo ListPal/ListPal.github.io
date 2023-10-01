@@ -152,6 +152,7 @@ const Listitem = ({
           height: 80,
           borderRadius: 1,
           boxShadow: "0 6.4px 14.4px 0 rgb(0 0 0 / 13%), 0 1.2px 3.6px 0 rgb(0 0 0 / 11%)",
+          maxWidth: `calc(${mobileWidth} - 20px)`,
         }}
         ref={provided?.innerRef}
         {...provided?.draggableProps}
@@ -195,13 +196,20 @@ const Listitem = ({
             )}
           </IconButton>
         </ListItemIcon>
-        <ListItemText secondary={identifier} onClick={handleOpenItemDescription}>
+        <ListItemText
+          secondary={
+            <Typography fontSize={12} fontFamily={"Urbanist"} color={"#9CA3AF"}>
+              {identifier}
+            </Typography>
+          }
+          onClick={handleOpenItemDescription}
+        >
           <Typography
             fontFamily={"Urbanist"}
             color={item?.checked ? "gray" : "#374151"}
             sx={{ textDecorationLine: item?.checked && "line-through" }}
           >
-            {item?.name && truncateString(item?.name, 25)}
+            {item?.name && truncateString(item?.name, 28)}
           </Typography>
         </ListItemText>
       </ListItem>
