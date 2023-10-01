@@ -7,6 +7,8 @@ import {
   Radio,
   RadioGroup,
   Box,
+  CircularProgress,
+  FormHelperText,
 } from "@mui/material";
 import { useState, useRef } from "react";
 import Slide from "@mui/material/Slide";
@@ -31,12 +33,16 @@ import {
   groceryListScopes,
   messages,
   mobileWidth,
+  radioGroupHelperTextObject,
 } from "../../../../utils/enum";
 import { removePeopleFromList, deleteList, postRequest } from "../../../../utils/testApi/testApi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../../utils/dialoguesValidation";
 import AppleIcon from "@mui/icons-material/Apple";
 import RemovePeople from "../../../RemovePeople/RemovePeople";
+import KeyIcon from "@mui/icons-material/Key";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import PublicIcon from "@mui/icons-material/Public";
 
 const MoreDialog = ({
   listInfo,
@@ -57,6 +63,32 @@ const MoreDialog = ({
   const textFieldRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Handlers
+  const handleRadioGroupHelperText = () => {
+    if (listScope === radioGroupHelperTextObject.public) {
+      return (
+        <Typography variant="subtitle4">
+          {" "}
+          <PublicIcon sx={{ fontSize: "15px" }} /> Everyone with a link to this list has access
+        </Typography>
+      );
+    } else if (listScope === radioGroupHelperTextObject.private) {
+      return (
+        <Typography variant="subtitle4">
+          {" "}
+          <LockOutlinedIcon sx={{ fontSize: "15px" }} /> Only you have access to this list
+        </Typography>
+      );
+    } else if (listScope === radioGroupHelperTextObject.restricted) {
+      return (
+        <Typography variant="subtitle4">
+          {" "}
+          <KeyIcon sx={{ fontSize: "15px" }} /> You, and people you add have access to this list.
+        </Typography>
+      );
+    }
+  };
 
   const handleInputValidation = async (input) => {
     return dialogueValidation(input);
@@ -104,7 +136,7 @@ const MoreDialog = ({
       console.debug("No listname or scop provided");
       return;
     }
-    
+
     if (
       listScope !== groceryListScopes.public &&
       listScope !== groceryListScopes.private &&
@@ -139,7 +171,7 @@ const MoreDialog = ({
     if (res?.status === 200) {
       const updatedLists = activeContainer?.collapsedLists.map((list) => {
         if (list.id === listInfo?.id) {
-          return {...list, listName: newListName, scope: listScope};
+          return { ...list, listName: newListName, scope: listScope };
         } else {
           return list;
         }
@@ -341,6 +373,7 @@ const MoreDialog = ({
                     <FormControlLabel value="RESTRICTED" control={<Radio />} label="Restricted" />
                   </RadioGroup>
                 )}
+                <FormHelperText>{handleRadioGroupHelperText()}</FormHelperText>
               </FormControl>
 
               {openDialogue === dialogues.deletePeople && (
@@ -392,6 +425,17 @@ const MoreDialog = ({
                 );
               })}
             </Stack>
+            {!loading && openDialogue === dialogues.deletePeople && (
+              <CircularProgress
+                color={"inherit"}
+                sx={{
+                  position: "absolute",
+                  top: "calc(50% - 10px)",
+                  left: "calc(50% - 10px)",
+                  zIndex: 10,
+                }}
+              />
+            )}
           </Paper>
         </Fade>
       </Modal>
