@@ -1,6 +1,6 @@
 import { Button, Alert, Typography, Slide, IconButton, List } from "@mui/material";
 import { useState, useEffect } from "react";
-import { getAllLists, logout, postRequest, checkSession } from "../../utils/testApi/testApi";
+import { getAllLists, logout, postRequest, checkSession } from "../../utils/rest";
 import {
   colors,
   filterCardsBy,
@@ -29,12 +29,12 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import Skeleton from "@mui/material/Skeleton";
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 // IMGS
-import groceryStrip from "../../utils/assets/groceryStrip.jpg";
-import todoStrip from "../../utils/assets/todoStrip.jpg";
-import shoppingStrip from "../../utils/assets/shoppingStrip.jpg";
-import grocery from "../../utils/assets/grocery.jpg";
-import shop from "../../utils/assets/shop.jpg";
-import todo from "../../utils/assets/todo.jpg";
+import groceryStrip from "../../assets/groceryStrip.jpg";
+import todoStrip from "../../assets/todoStrip.jpg";
+import shoppingStrip from "../../assets/shoppingStrip.jpg";
+import grocery from "../../assets/grocery.jpg";
+import shop from "../../assets/shop.jpg";
+import todo from "../../assets/todo.jpg";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import PullToRefresh from "pulltorefreshjs";
 

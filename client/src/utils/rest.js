@@ -1,4 +1,4 @@
-const { URLS } = require("../enum")
+const { URLS } = require("./enum")
 
 const logout = async () => {
   return postRequest(URLS.logout, null)

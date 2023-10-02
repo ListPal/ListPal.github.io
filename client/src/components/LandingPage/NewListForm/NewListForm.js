@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
 import {
   Alert,
-  Button,
   Typography,
   FormControl,
   FormControlLabel,
@@ -18,12 +17,15 @@ import TextField from "@mui/material/TextField";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import { styled } from "@mui/material/styles";
-import { postRequest } from "../../../utils/testApi/testApi";
+import { postRequest } from "../../../utils/rest";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
 import KeyIcon from '@mui/icons-material/Key';
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PublicIcon from "@mui/icons-material/Public";
+import LoadingButton from "@mui/lab/LoadingButton/LoadingButton";
+import { useNavigate } from "react-router-dom";
+import { dialogueValidation } from "../../../utils/dialoguesValidation";
 import {
   URLS,
   colors,
@@ -31,11 +33,7 @@ import {
   groceryListScopes,
   mobileWidth,
   newListFormHelperText,
-  radioGroupHelperTextObject,
 } from "../../../utils/enum";
-import { useNavigate } from "react-router-dom";
-import { dialogueValidation } from "../../../utils/dialoguesValidation";
-import LoadingButton from "@mui/lab/LoadingButton/LoadingButton";
 
 function NewListForm({
   open,
@@ -57,11 +55,11 @@ function NewListForm({
 
   // Handlers
   const handleRadioGroupHelperText = () => {
-    if (listScope === radioGroupHelperTextObject.public) {
+    if (listScope === groceryListScopes.public) {
       return <Typography variant="subtitle4"> <PublicIcon sx={{ fontSize: "15px" }} /> Everyone with a link to this list has access</Typography>;
-    } else if (listScope === radioGroupHelperTextObject.private) {
+    } else if (listScope === groceryListScopes.private) {
       return <Typography variant="subtitle4"> <LockOutlinedIcon sx={{ fontSize: "15px" }} /> Only you have access to this list</Typography>;
-    } else if (listScope === radioGroupHelperTextObject.restricted) {
+    } else if (listScope === groceryListScopes.restricted) {
       return <Typography variant="subtitle4"> <KeyIcon sx={{ fontSize: "15px" }} /> You, and people you add have access to this list.</Typography>;
     }
   };

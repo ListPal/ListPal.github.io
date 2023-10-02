@@ -1,5 +1,4 @@
 import {
-  Button,
   Typography,
   CircularProgress,
   Grid,
@@ -12,7 +11,7 @@ import {
   validationErrors,
 } from "../../utils/inputValidation";
 import { useState, useRef } from "react";
-import { postRequest, logout } from "../../utils/testApi/testApi";
+import { postRequest, logout } from "../../utils/rest";
 import { URLS, colors, mobileWidth } from "../../utils/enum";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -150,7 +149,6 @@ const Register = ({ setUser, setActiveList }) => {
             alignItems: "center",
             textAlign: "left",
             width: "100vw",
-            background: "#1F2937",
             background: "#1F2937",
           }}
         >

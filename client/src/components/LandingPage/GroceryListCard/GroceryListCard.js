@@ -2,23 +2,22 @@ import {
   groceryContainerTypes,
   groceryListScopes,
   mobileWidth,
-  radioGroupHelperTextObject,
 } from "../../../utils/enum";
 import Paper from "@mui/material/Paper";
 import { useLocation, useNavigate } from "react-router-dom";
 import MoreOptions from "./MoreOptions/MoreOptions";
-import { Stack, Typography, Slide, Alert, Divider, ListItemButton, ListItem } from "@mui/material";
+import { Stack, Typography, Slide, Alert, ListItem } from "@mui/material";
 import { useState } from "react";
 import KeyIcon from "@mui/icons-material/Key";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PublicIcon from "@mui/icons-material/Public";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 // IMGS
-import groceryWallpaper from "../../../utils/assets/groceryWallpaper.jpg";
-import shoppingWallpaper from "../../../utils/assets/shoppingWallpaper.jpg";
-import todoWallpaper from "../../../utils/assets/todoWallpaper.jpg";
-import christmasWallpaper from "../../../utils/assets/christmasWallpaper.jpg";
-import thanksGivingWallpaper from "../../../utils/assets/thanksGivingWallpaper.jpg";
+import groceryWallpaper from "../../../assets/groceryWallpaper.jpg";
+import shoppingWallpaper from "../../../assets/shoppingWallpaper.jpg";
+import todoWallpaper from "../../../assets/todoWallpaper.jpg";
+import christmasWallpaper from "../../../assets/christmasWallpaper.jpg";
+import thanksGivingWallpaper from "../../../assets/thanksGivingWallpaper.jpg";
 import { Draggable } from "react-beautiful-dnd";
 
 const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContainer, index }) => {
@@ -29,7 +28,6 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
   // Other locals
   const navigate = useNavigate();
   const location = useLocation();
-  const urlParams = new URLSearchParams(location.search);
 
   // Handlers
   const handleNavigate = () => {
@@ -64,16 +62,16 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
   };
 
   const handleDeriveListScopeIcon = () => {
-    if (listInfo?.scope === radioGroupHelperTextObject.private) {
+    if (listInfo?.scope === groceryListScopes.private) {
       return <LockOutlinedIcon sx={{ fontSize: "15px" }} />;
-    } else if (listInfo?.scope === radioGroupHelperTextObject.public) {
+    } else if (listInfo?.scope === groceryListScopes.public) {
       return <PublicIcon sx={{ fontSize: "15px" }} />;
-    } else if (listInfo?.scope === radioGroupHelperTextObject.public) {
+    } else if (listInfo?.scope === groceryListScopes.public) {
       return <AdminPanelSettingsIcon sx={{ fontSize: "15px" }} />;
     } else if (listInfo?.scope === groceryListScopes.restricted) {
       return <KeyIcon sx={{ fontSize: "15px" }} />;
     } else {
-      return "";
+      return <></>;
     }
   };
 
@@ -114,7 +112,7 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
                 position: "fixed",
                 top: 0,
                 left: 0,
-                zIndex: 2,
+                zIndex: 10,
               }}
             >
               <Alert severity={severity}>

@@ -8,12 +8,7 @@ import {
   Paper,
   Stack,
   TextField,
-  RadioGroup,
-  Radio,
-  FormControlLabel,
   FormControl,
-  FormHelperText,
-  Button,
 } from "@mui/material";
 import { useState, useRef } from "react";
 import AddIcon from "@mui/icons-material/Add";
@@ -23,7 +18,7 @@ import AppleIcon from "@mui/icons-material/Apple";
 import RemoveDoneIcon from "@mui/icons-material/RemoveDone";
 import { styled } from "@mui/material/styles";
 import { URLS, dialogueObject, dialogues, groceryListScopes, messages } from "../../../utils/enum";
-import { postRequest, deleteRequest } from "../../../utils/testApi/testApi";
+import { postRequest, deleteRequest } from "../../../utils/rest";
 import { useLocation, useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../utils/dialoguesValidation";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -34,7 +29,6 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
   const [alertMessage, setAlertMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [category, setCategory] = useState("None");
 
   // Other Locals
   const location = useLocation();
@@ -43,10 +37,6 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
   const navigate = useNavigate();
 
   // Handlers
-  const handleCategorySelection = (event) => {
-    setCategory(event.target.value);
-  };
-
   const handleInputValidation = async (input) => {
     return dialogueValidation(input);
   };
@@ -123,7 +113,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       listId: activeList?.id,
       containerId: containerId,
       scope: activeList?.scope,
-      category: category === "None" ? "Misc" : category,
+      category: 'Misc',
     };
     const uri =
       activeList?.scope === groceryListScopes.public
@@ -151,7 +141,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
     setErrorMessage(null);
 
     // Didn't change anything
-    if (name.toUpperCase() === item?.name.toUpperCase() && category === item?.category) {
+    if (name.toUpperCase() === item?.name.toUpperCase()) {
       closeDialogueWithoutDelay();
       setLoading(false);
       return;
@@ -171,7 +161,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       ...updatedItem,
       containerId: containerId,
       scope: activeList?.scope,
-      category: category === "None" ? "Misc" : category,
+      category: 'Misc',
     };
     const uri =
       activeList?.scope === groceryListScopes.public
@@ -381,7 +371,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
                       } else if (openDialogue === dialogues.resetList) {
                         resetListActions[i]();
                       } else if (openDialogue === dialogues.editItem) {
-                        handleEditItem(textFieldRef.current.value, category);
+                        handleEditItem(textFieldRef.current.value);
                       } else if (openDialogue === dialogues.sendMoney) {
                         moneyActions[i]();
                       }

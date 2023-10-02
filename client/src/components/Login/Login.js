@@ -7,10 +7,10 @@ import {
   TextField,
   Divider,
 } from "@mui/material";
-import { postRequest, checkSession } from "../../utils/testApi/testApi";
+import { postRequest, checkSession } from "../../utils/rest";
 import { URLS, colors, mobileWidth } from "../../utils/enum";
 import { Link, useNavigate } from "react-router-dom";
-import vector from "../../utils/assets/login.jpg";
+import vector from "../../assets/login.jpg";
 import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import { usernamePasswordValidation } from "../../utils/inputValidation";
 import LoadingButton from "@mui/lab/LoadingButton";

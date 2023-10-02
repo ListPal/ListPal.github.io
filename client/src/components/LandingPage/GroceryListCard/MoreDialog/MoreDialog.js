@@ -1,12 +1,10 @@
 import {
   Alert,
-  Button,
   Typography,
   FormControl,
   FormControlLabel,
   Radio,
   RadioGroup,
-  Box,
   CircularProgress,
   FormHelperText,
 } from "@mui/material";
@@ -33,10 +31,9 @@ import {
   groceryListScopes,
   messages,
   mobileWidth,
-  radioGroupHelperTextObject,
 } from "../../../../utils/enum";
-import { removePeopleFromList, deleteList, postRequest } from "../../../../utils/testApi/testApi";
-import { useLocation, useNavigate } from "react-router-dom";
+import { removePeopleFromList, deleteList, postRequest } from "../../../../utils/rest";
+import { useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../../utils/dialoguesValidation";
 import AppleIcon from "@mui/icons-material/Apple";
 import RemovePeople from "../../../RemovePeople/RemovePeople";
@@ -61,26 +58,25 @@ const MoreDialog = ({
 
   // Other locals
   const textFieldRef = useRef(null);
-  const location = useLocation();
   const navigate = useNavigate();
 
   // Handlers
   const handleRadioGroupHelperText = () => {
-    if (listScope === radioGroupHelperTextObject.public) {
+    if (listScope === groceryListScopes.public) {
       return (
         <Typography variant="subtitle4">
           {" "}
           <PublicIcon sx={{ fontSize: "15px" }} /> Everyone with a link to this list has access
         </Typography>
       );
-    } else if (listScope === radioGroupHelperTextObject.private) {
+    } else if (listScope === groceryListScopes.private) {
       return (
         <Typography variant="subtitle4">
           {" "}
           <LockOutlinedIcon sx={{ fontSize: "15px" }} /> Only you have access to this list
         </Typography>
       );
-    } else if (listScope === radioGroupHelperTextObject.restricted) {
+    } else if (listScope === groceryListScopes.restricted) {
       return (
         <Typography variant="subtitle4">
           {" "}

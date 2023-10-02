@@ -21,8 +21,8 @@ import {
 } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { useLocation, useNavigate } from "react-router-dom";
-import { addPeopleToList, postRequest } from "../../utils/testApi/testApi";
-import { lookupUser } from "../../utils/testApi/testApi";
+import { addPeopleToList, postRequest } from "../../utils/rest";
+import { lookupUser } from "../../utils/rest";
 import {
   peopleLookupValidationByUsername,
   peopleLookupValidationByPhone,
@@ -191,9 +191,8 @@ const AddPeopleList = () => {
       navigate("/");
     } else {
       handleFetchSuggested();
-
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <Grid container spacing={4} p>

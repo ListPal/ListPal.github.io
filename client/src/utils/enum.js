@@ -1,7 +1,21 @@
 const mobileWidth = "480px";
 
-const itemType = {
-  listItem: "LIST_ITEM",
+// Enum to display cards in landing page
+const filterCardsBy = {
+  all: 0,
+  public: 1,
+  private: 2,
+  restricted: 3,
+};
+
+// Generalized messages here
+const messages = {
+  unauthorizedAction:
+    "Hmmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities.",
+  unauthorizedAccess:
+    "Hmmm... It seems like you don't have access to this link. Please make sure that you are accessing a list in which you are added.",
+  genericError: "Apologies. Something went wrong on our end.",
+  noList: "Whoops! This link is no longer active.",
 };
 
 const groceryContainerTypes = {
@@ -16,6 +30,12 @@ const groceryListScopes = {
   restricted: "RESTRICTED",
 };
 
+const newListFormHelperText = {
+  shopping: "Good list names are short (e.g. Kate's Birthday, Shared Christmas List)",
+  grocery: "Good list names are short (e.g. Walmart List, Thanksgiving Party, Dinner Recipe)",
+  todo: "Good list names are short (e.g.  Work to-do List, Home Remodel Project 🏠)",
+};
+
 const borderColors = [
   "#7b9370",
   "#F0B323",
@@ -28,21 +48,6 @@ const borderColors = [
   "#aff5b4",
   "#FF6969",
 ];
-
-const dialogues = {
-  closed: null,
-  addItem: "addItem",
-  deleteList: "deleteList",
-  editItem: "editItem",
-  deleteItem: "deleteItem",
-  select: "selectItem",
-  editList: "editList",
-  addPeople: "addPeople",
-  deletePeople: "deletePeople",
-  sendMoney: "sendMoney",
-  addQuickItem: "addQuickItem",
-  resetList: "resetList",
-};
 
 const colors = {
   fallbackColors: {
@@ -67,16 +72,19 @@ const colors = {
   },
 };
 
-const newListFormHelperText = {
-  shopping: "Good list names are short (e.g. Kate's Birthday, Shared Christmas List)",
-  grocery: "Good list names are short (e.g. Walmart List, Thanksgiving Party, Dinner Recipe)",
-  todo: "Good list names are short (e.g.  Work to-do List, Home Remodel Project 🏠)",
-};
-
-const radioGroupHelperTextObject = {
-  private: "PRIVATE",
-  public: "PUBLIC",
-  restricted: "RESTRICTED",
+const dialogues = {
+  closed: null,
+  addItem: "addItem",
+  deleteList: "deleteList",
+  editItem: "editItem",
+  deleteItem: "deleteItem",
+  select: "selectItem",
+  editList: "editList",
+  addPeople: "addPeople",
+  deletePeople: "deletePeople",
+  sendMoney: "sendMoney",
+  addQuickItem: "addQuickItem",
+  resetList: "resetList",
 };
 
 const dialogueObject = {
@@ -91,15 +99,6 @@ const dialogueObject = {
         helperText: "Name your grocery list item",
         required: true,
       },
-      // {
-      //   maxLength: 500,
-      //   defaultValue: true,
-      //   hidden: false,
-      //   text: "Enter item description",
-      //   helperText: "Short description (not required)",
-      //   multiline: true,
-      //   required: false,
-      // },
     ],
     button: [
       {
@@ -334,26 +333,7 @@ const URLS = {
   refactorCollapsedLists: `${engine}/server/update-collapsed-list-order`,
 };
 
-// Generalized messages here
-const messages = {
-  unauthorizedAction:
-    "Hmmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities.",
-  unauthorizedAccess:
-    "Hmmm... It seems like you don't have access to this link. Please make sure that you are accessing a list in which you are added.",
-  genericError: "Apologies. Something went wrong on our end.",
-  noList: "Whoops! This link is no longer active.",
-};
-
-// Enum to display cards in landing page
-const filterCardsBy = {
-  all: 0,
-  public: 1,
-  private: 2,
-  restricted: 3,
-};
-
 export {
-  itemType,
   messages,
   filterCardsBy,
   URLS,
@@ -364,6 +344,5 @@ export {
   dialogues,
   colors,
   newListFormHelperText,
-  radioGroupHelperTextObject,
   dialogueObject,
 };

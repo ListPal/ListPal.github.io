@@ -4,11 +4,11 @@ import Container from "./Container/Container";
 import { truncateString } from "../../utils/helper";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { mobileWidth } from "../../utils/enum";
-import { logout } from "../../utils/testApi/testApi";
+import { logout } from "../../utils/rest";
 import { useNavigate } from "react-router-dom";
-import grocery from "../../utils/assets/grocery.jpg";
-import shop from "../../utils/assets/shop.jpg";
-import todo from "../../utils/assets/todo.jpg";
+import grocery from "../../assets/grocery.jpg";
+import shop from "../../assets/shop.jpg";
+import todo from "../../assets/todo.jpg";
 
 const Containers = ({ setUser, user, activeList, setActiveList, activeContainer, setActiveContainer }) => {
   const navigate = useNavigate();

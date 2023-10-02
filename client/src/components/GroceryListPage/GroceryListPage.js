@@ -1,5 +1,5 @@
 // React imports
-import { useState, useEffect, useMemo, useRef, createRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SwipeableViews from "react-swipeable-views";
 
@@ -23,7 +23,6 @@ import {
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import PublicIcon from "@mui/icons-material/Public";
 
 // My imports
@@ -37,7 +36,7 @@ import {
   groceryContainerTypes,
   messages,
 } from "../../utils/enum";
-import { getPublicList, postRequest, checkSession, getAllLists } from "../../utils/testApi/testApi";
+import { getPublicList, postRequest, checkSession, getAllLists } from "../../utils/rest";
 import { mergeArrays } from "../../utils/helper";
 
 // Component imports
@@ -45,10 +44,10 @@ import Listitem from "./ListItem/ListItem";
 import BottomBar from "./BottomBar/BottomBar";
 
 // IMGS
-import groceryWallpaper from "../../utils/assets/groceryWallpaperPlus.jpg";
-import todoWallpaper from "../../utils/assets/todoWallpaperPlus.jpg";
-import shoppingWallpaper from "../../utils/assets/shoppingWallpaperPlus.jpg";
-import christmasWallpaperPlus from "../../utils/assets/christmasWallpaperPlus.jpg";
+import groceryWallpaper from "../../assets/groceryWallpaperPlus.jpg";
+import todoWallpaper from "../../assets/todoWallpaperPlus.jpg";
+import shoppingWallpaper from "../../assets/shoppingWallpaperPlus.jpg";
+import christmasWallpaperPlus from "../../assets/christmasWallpaperPlus.jpg";
 import Dialogue from "./Dialogues/Dialogue";
 
 // Other imports
@@ -210,22 +209,6 @@ function GroceryListPage({
     return borderColors[groupedByIdentifier.indexOf(identifier)];
   };
 
-  const handleShowIdentifier = (identifier) => {
-    // Handling preconditions
-    if (!identifier) {
-      console.debug("No identifier was fed to derive handleShowIdentifier");
-      return handleDeriveThemeColor().bold;
-    }
-
-    // Look for identifier index in the groupedByIdentifier array
-    const idx = groupedByIdentifier.indexOf(identifier);
-    if (idx === groupedByCurrentIdx) {
-      groupedByCurrentIdx++;
-      return identifier;
-    }
-    return null;
-  };
-
   const handleDeriveWallpaper = () => {
     if (activeContainer?.containerType) {
       if (activeContainer.containerType === groceryContainerTypes.grocery) {
@@ -363,13 +346,16 @@ function GroceryListPage({
 
     // Cache it in state
     if (res?.status === 200) {
-      // Group by items by category (Default)
-      const activeListMap = await handleGroupByUsername(res?.body?.groceryListItems); // Map engineering: (username | category) => items
-      const responseBody = await {
-        ...res?.body,
-        groceryListItems: [...activeListMap.values()].flat(),
-      };
-      if (cache) setActiveList(responseBody);
+      if (cache) setActiveList({...activeList, groceryListItems: res?.body?.groceryListItems});
+      
+      // TODO: Decide if this is useful or not
+      // Group by items by category (Default) 
+      // const activeListMap = await handleGroupByUsername(res?.body?.groceryListItems); // Map engineering: (username | category) => items
+      // const responseBody = await {
+      //   ...res?.body,
+      //   groceryListItems: [...activeListMap.values()].flat(),
+      // };
+      // if (cache) setActiveList(responseBody);
     } else if (res?.status === 401) {
       setAlertMessage(messages.unauthorizedAccess);
     } else if (res?.status === 403) {
@@ -423,6 +409,7 @@ function GroceryListPage({
 
   useMemo(() => {
     handleGroupByUsername(activeList?.groceryListItems);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeList]);
 
   useEffect(() => {
@@ -528,7 +515,7 @@ function GroceryListPage({
       <SwipeableViews disabled={showDone} index={slide} onChangeIndex={(slide) => setSlide(slide)}>
         {/* Active items */}
         <DragDropContext onDragEnd={handleOnDragEnd}>
-          <Droppable droppableId="list-items">
+          <Droppable droppableId="list-items" >
             {(provided, snapshot) => (
               <List
                 {...provided.droppableProps}
@@ -613,7 +600,7 @@ function GroceryListPage({
               variant={"subtitle2"}
               fontFamily={"Urbanist"}
               color={"#374151"}
-              sx={{ backdropFilter: "blur(3px)"}}
+              sx={{ backdropFilter: "blur(3px)" }}
               maxWidth={`calc(${mobileWidth} - 20px)`}
             >
               {"Swipe Right To See Active Items"}

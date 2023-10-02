@@ -19,7 +19,7 @@ import {
   ListItemIcon,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { deleteItem, deletePublicItem } from "../../../utils/testApi/testApi";
+import { deleteItem, deletePublicItem } from "../../../utils/rest";
 
 const actions = [
   { icon: <DeleteIcon sx={{ color: "red" }} />, name: "Delete item" },

@@ -7,10 +7,8 @@ import {
   ListItemAvatar,
   ListItemButton,
   ListItemText,
-  peopleToDelete,
-  setPeopleToDelete
 } from "@mui/material";
-import { postRequest } from "../../utils/testApi/testApi";
+import { postRequest } from "../../utils/rest";
 import { URLS } from "../../utils/enum";
 import { useNavigate } from "react-router-dom";
 
@@ -36,17 +34,16 @@ const RemovePeople = ({
     setPeopleToDelete(newChecked);
   };
 
-
   const handleFetchCurrentPeople = async () => {
     const data = {
       containerId: listInfo?.reference,
       listId: listInfo?.id,
     };
-    setLoading(true)
+    setLoading(true);
     const res = await postRequest(URLS.getPeopleFromList, data);
     if (res?.status === 200) {
-      const people = res?.body.filter(username => username !== activeContainer?.username)
-      setCurrentPeople(people)
+      const people = res?.body.filter((username) => username !== activeContainer?.username);
+      setCurrentPeople(people);
     } else if (res?.status === 201) {
       console.log(res);
     } else if (res?.status === 401) {
@@ -57,10 +54,16 @@ const RemovePeople = ({
     } else {
       console.log(res);
     }
-    setLoading(false)
+    setLoading(false);
   };
 
-  useEffect(() => {handleFetchCurrentPeople()}, []);
+  useEffect(
+    () => {
+      handleFetchCurrentPeople();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   return (
     <List
@@ -88,15 +91,9 @@ const RemovePeople = ({
           >
             <ListItemButton>
               <ListItemAvatar>
-                <Avatar
-                  alt={`${user}`}
-                  src={`/static/images/avatar/${user}.jpg`}
-                />
+                <Avatar alt={`${user}`} src={`/static/images/avatar/${user}.jpg`} />
               </ListItemAvatar>
-              <ListItemText
-                id={labelId}
-                primary={`${user.split("@")[0]}`}
-              />
+              <ListItemText id={labelId} primary={`${user.split("@")[0]}`} />
             </ListItemButton>
           </ListItem>
         );
