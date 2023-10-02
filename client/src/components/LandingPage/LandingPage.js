@@ -288,6 +288,7 @@ const LandingPage = ({
                 >
                   <Typography
                     fontFamily={"Urbanist"}
+                    fontWeight={500}
                     variant="h5"
                     gutterBottom
                     sx={{
@@ -477,11 +478,10 @@ const LandingPage = ({
 
         {activeContainer?.collapsedLists.length === 0 && !loading && (
           <Grid item sx={{ width: '100vw', maxWidth: mobileWidth }}>
-            <Slide className="alert-slide" in={true} direction="right" sx={{width: '100vw'}}> 
+            <Slide className="alert-slide" in={true} direction="right" sx={{width: '100%'}}> 
               <Alert severity={severity}>{alertMessage}</Alert>
             </Slide>
             <img
-              style={{}}
               alt="decorative-background"
               src={handleContainerImg()}
               loading="lazy"

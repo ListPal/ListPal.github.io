@@ -52,22 +52,27 @@ const borderColors = [
 const colors = {
   fallbackColors: {
     low: "#e8faff",
+    medium: '#b9efff',
     blod: "#2cc8f7",
   },
   landingPageColors: {
     low: "#eaf6e4",
+    medium: '#b9efff',
     bold: "#7b9370",
   },
   todoColors: {
     low: "#F3F4F6",
+    medium: '#b9efff',
     bold: "#9CA3AF",
   },
   shoppingColors: {
     low: "#E1F2F6",
+    medium: '#79c0ff',
     bold: "#007CAD",
   },
   quickListColors: {
     low: "#E1F2F6",
+    medium: '#b9efff',
     bold: "#1F2937",
   },
 };
@@ -292,8 +297,8 @@ const dialogueObject = {
 };
 
 // Engines
-// const engine = "https://katespracticespace.com";
-const engine = "http://joses-macbook-pro-3.local:8080";
+const engine = "https://katespracticespace.com";
+// const engine = "http://joses-macbook-pro-3.local:8080";
 
 const URLS = {
   // Authentication endpoins

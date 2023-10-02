@@ -58,6 +58,7 @@ const Containers = ({ setUser, user, activeList, setActiveList, activeContainer,
           >
             <Typography
               fontFamily={'Urbanist'}
+              fontWeight={500}
               variant="h5"
               gutterBottom
               sx={{

@@ -47,7 +47,6 @@ import BottomBar from "./BottomBar/BottomBar";
 import groceryWallpaper from "../../assets/groceryWallpaperPlus.jpg";
 import todoWallpaper from "../../assets/todoWallpaperPlus.jpg";
 import shoppingWallpaper from "../../assets/shoppingWallpaperPlus.jpg";
-import christmasWallpaperPlus from "../../assets/christmasWallpaperPlus.jpg";
 import Dialogue from "./Dialogues/Dialogue";
 
 // Other imports
@@ -195,7 +194,7 @@ function GroceryListPage({
     // Handling preconditions
     if (!identifier) {
       console.error("No identifier was fed to derive borderColor");
-      return handleDeriveThemeColor().bold;
+      return handleDeriveThemeColor()?.bold;
     }
 
     if (
@@ -203,7 +202,7 @@ function GroceryListPage({
       groupedByIdentifier.indexOf(identifier) === -1 ||
       groupedByIdentifier.indexOf(identifier) === 0
     ) {
-      return handleDeriveThemeColor().bold;
+      return handleDeriveThemeColor()?.bold;
     }
 
     return borderColors[groupedByIdentifier.indexOf(identifier)];
@@ -217,12 +216,12 @@ function GroceryListPage({
       if (activeContainer.containerType === groceryContainerTypes.todo) {
         return todoWallpaper;
       }
-      if (
-        activeContainer.containerType === groceryContainerTypes.whishlist &&
-        activeList?.listName?.toUpperCase().includes("CHRISTMAS")
-      ) {
-        return christmasWallpaperPlus;
-      }
+      // if (
+      //   activeContainer.containerType === groceryContainerTypes.whishlist &&
+      //   activeList?.listName?.toUpperCase().includes("CHRISTMAS")
+      // ) {
+      //   return christmasWallpaperPlus;
+      // }
     }
     if (containerId.includes(groceryContainerTypes.grocery)) {
       return groceryWallpaper;
@@ -237,40 +236,46 @@ function GroceryListPage({
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
       return {
         bold: colors.landingPageColors.bold,
+        medium: colors.landingPageColors.medium,
         low: colors.landingPageColors.low,
       };
     }
     if (activeContainer?.containerType === groceryContainerTypes.todo) {
       return {
         bold: colors.todoColors.bold,
+        medium: colors.todoColors.medium,
         low: colors.todoColors.low,
       };
     }
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
       return {
         bold: colors.shoppingColors.bold,
+        medium: colors.shoppingColors.medium,
         low: colors.shoppingColors.low,
       };
     }
     if (containerId.includes(groceryContainerTypes.grocery)) {
       return {
         bold: colors.landingPageColors.bold,
+        medium: colors.landingPageColors.medium,
         low: colors.landingPageColors.low,
       };
     }
     if (containerId.includes(groceryContainerTypes.todo)) {
       return {
         bold: colors.todoColors.bold,
+        medium: colors.todoColors.medium,
         low: colors.todoColors.low,
       };
     }
     if (containerId.includes(groceryContainerTypes.whishlist)) {
       return {
         bold: colors.shoppingColors.bold,
+        medium: colors.shoppingColors.medium,
         low: colors.shoppingColors.low,
       };
     }
-    return { bold: colors.fallbackColors.blod, low: colors.fallbackColors.low };
+    return { bold: colors.fallbackColors.blod, medium: colors.fallbackColors.medium, low: colors.fallbackColors.low };
   };
 
   const handleFetchUserInfo = async () => {
@@ -332,7 +337,6 @@ function GroceryListPage({
     }
     // Reset states
     if (loadingControl) setLoading(true);
-    setActiveList(null);
     setAlertMessage(null);
     const data = {
       containerId: containerId,
@@ -346,8 +350,7 @@ function GroceryListPage({
 
     // Cache it in state
     if (res?.status === 200) {
-      if (cache) setActiveList({...activeList, groceryListItems: res?.body?.groceryListItems});
-      
+      if (cache) setActiveList({...res?.body, groceryListItems: res?.body?.groceryListItems});
       // TODO: Decide if this is useful or not
       // Group by items by category (Default) 
       // const activeListMap = await handleGroupByUsername(res?.body?.groceryListItems); // Map engineering: (username | category) => items
@@ -502,6 +505,7 @@ function GroceryListPage({
               fontSize={16}
               variant={"overline"}
               fontFamily={"Urbanist"}
+              fontWeight={400}
               sx={{ color: "white", flexGrow: 1 }}
             >
               {listName}
@@ -521,21 +525,20 @@ function GroceryListPage({
                 {...provided.droppableProps}
                 ref={provided.innerRef}
                 sx={{
-                  pr: 1,
                   pb: "10vh",
                   mt: "8vh",
-                  ml: "10px",
                   minHeight: "50vh",
                   maxHeight: "80vh",
                   overflowX: "hidden",
-                  width: "calc(100vw - 20px)",
-                  maxWidth: `calc(${mobileWidth} - 20px`,
+                  width: "100vw",
+                  maxWidth: mobileWidth,
                 }}
               >
                 {!showDone && (
                   <Typography
                     variant={"subtitle2"}
                     fontFamily={"Urbanist"}
+                    fontWeight={400}
                     color={"#374151"}
                     sx={{ backdropFilter: "blur(3px)" }}
                     maxWidth={`calc(${mobileWidth} - 20px)`}
@@ -584,21 +587,20 @@ function GroceryListPage({
         {/* Checked items */}
         {!showDone ? (
           <List
-            sx={{
-              pr: 1,
-              pb: "10vh",
-              mt: "8vh",
-              ml: "10px",
-              minHeight: "50vh",
-              maxHeight: "80vh",
-              overflowX: "hidden",
-              width: "calc(100vw - 20px)",
-              maxWidth: `calc(${mobileWidth} - 20px`,
-            }}
+          sx={{
+            pb: "10vh",
+            mt: "8vh",
+            minHeight: "50vh",
+            maxHeight: "80vh",
+            overflowX: "hidden",
+            width: "100vw",
+            maxWidth: mobileWidth,
+          }}
           >
             <Typography
               variant={"subtitle2"}
               fontFamily={"Urbanist"}
+              fontWeight={400}
               color={"#374151"}
               sx={{ backdropFilter: "blur(3px)" }}
               maxWidth={`calc(${mobileWidth} - 20px)`}
@@ -659,6 +661,7 @@ function GroceryListPage({
           maxWidth: mobileWidth,
           zIndex: "-1",
           backgroundImage: `url(${handleDeriveWallpaper()})`,
+          backdropFilter:'',
           backgroundSize: "60%",
           overflowX: "hidden",
         }}

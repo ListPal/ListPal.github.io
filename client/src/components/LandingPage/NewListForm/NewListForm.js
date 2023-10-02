@@ -164,7 +164,7 @@ function NewListForm({
         borderRadius: 0,
       },
       "&.Mui-focused fieldset": {
-        borderColor: "black",
+        borderColor: handleThemeColor(),
       },
     },
   });

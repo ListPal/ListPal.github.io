@@ -12,8 +12,8 @@ import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import AutoDeleteOutlinedIcon from "@mui/icons-material/AutoDeleteOutlined";
 import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
-import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
-import UnpublishedOutlinedIcon from '@mui/icons-material/UnpublishedOutlined';
+import TaskAltOutlinedIcon from "@mui/icons-material/TaskAltOutlined";
+import UnpublishedOutlinedIcon from "@mui/icons-material/UnpublishedOutlined";
 import { List, ListItemButton, ListItemAvatar } from "@mui/material";
 import { Link } from "react-router-dom";
 
@@ -76,7 +76,7 @@ const BottomBar = ({
           <AttachMoneyOutlinedIcon sx={{ color: handleDeriveThemeColor().bold }} />
         </IconButton>
 
-        {/* Share List */}
+        {/* Add Item */}
         <div
           style={{
             display: "flex",
