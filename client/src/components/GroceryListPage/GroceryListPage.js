@@ -42,11 +42,6 @@ import { mergeArrays } from "../../utils/helper";
 // Component imports
 import Listitem from "./ListItem/ListItem";
 import BottomBar from "./BottomBar/BottomBar";
-
-// IMGS
-import groceryWallpaper from "../../assets/groceryWallpaperPlus.jpg";
-import todoWallpaper from "../../assets/todoWallpaperPlus.jpg";
-import shoppingWallpaper from "../../assets/shoppingWallpaperPlus.jpg";
 import Dialogue from "./Dialogues/Dialogue";
 
 // Other imports
@@ -59,6 +54,9 @@ function GroceryListPage({
   setActiveContainer,
   user,
   setUser,
+  groceryWallpaper,
+  todoWallpaper,
+  shoppingWallpaper,
 }) {
   // States
   const location = useLocation();
@@ -436,7 +434,7 @@ function GroceryListPage({
       activeList?.listName === listName &&
       activeList?.scope === scope
     ) {
-      console.debug("No need to fetch items.");
+      // console.debug("No need to fetch items.");
       return;
     }
 

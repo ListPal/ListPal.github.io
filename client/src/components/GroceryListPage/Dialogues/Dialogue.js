@@ -22,6 +22,7 @@ import { postRequest, deleteRequest } from "../../../utils/rest";
 import { useLocation, useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../utils/dialoguesValidation";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { fontFamily } from "@mui/system";
 
 function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList, setActiveList }) {
   // States
@@ -113,7 +114,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       listId: activeList?.id,
       containerId: containerId,
       scope: activeList?.scope,
-      category: 'Misc',
+      category: "Misc",
     };
     const uri =
       activeList?.scope === groceryListScopes.public
@@ -161,7 +162,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       ...updatedItem,
       containerId: containerId,
       scope: activeList?.scope,
-      category: 'Misc',
+      category: "Misc",
     };
     const uri =
       activeList?.scope === groceryListScopes.public
@@ -339,7 +340,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
                       <CssTextField
                         multiline={textField?.multiline}
                         maxRows={4}
-                        sx={{mt:i, mb: -1 * (i - 1)}}
+                        sx={{ mt: i, mb: -1 * (i - 1) }}
                         fullWidth
                         required={textField?.required}
                         id="custom-css-outlined-input"
@@ -349,6 +350,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
                         label={textField.text}
                         helperText={errorMessage ? errorMessage : textField.helperText}
                         defaultValue={deriveDefaultText()}
+                        InputProps={{style: {fontFamily: 'Urbanist'}}}
                         inputProps={{
                           maxLength: textField?.maxLength || 100,
                         }}
@@ -377,6 +379,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
                       }
                     }}
                     sx={{
+                      fontFamily: "Urbanist",
                       height: 50,
                       "&:hover": { background: button.color },
                       background: button.color,

@@ -246,6 +246,7 @@ function NewListForm({
                   id="custom-css-outlined-input"
                   label="Give your List a name"
                   helperText={errorMessage ? errorMessage : handleHelperText()}
+                  InputProps={{ style: { fontFamily: "Urbanist" } }}
                   inputProps={{
                     maxLength: 30,
                   }}
@@ -286,6 +287,7 @@ function NewListForm({
                 onClick={() => handleCreateList(listNameRef.current.value)}
                 variant="contained"
                 sx={{
+                  fontFamily: "Urbanist",
                   background: handleThemeColor(),
                   "&:hover": { background: handleThemeColor() },
                   height: "45px",

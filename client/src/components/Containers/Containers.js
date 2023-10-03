@@ -6,11 +6,20 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { mobileWidth } from "../../utils/enum";
 import { logout } from "../../utils/rest";
 import { useNavigate } from "react-router-dom";
-import grocery from "../../assets/grocery.jpg";
-import shop from "../../assets/shop.jpg";
-import todo from "../../assets/todo.jpg";
 
-const Containers = ({ setUser, user, activeList, setActiveList, activeContainer, setActiveContainer }) => {
+const Containers = ({
+  setUser,
+  user,
+  activeList,
+  setActiveList,
+  activeContainer,
+  setActiveContainer,
+  grocery,
+  shop,
+  todo,
+}) => {
+  const imgSources = [shop, grocery, todo];
+  const containerIds = ["wishlistContainerId", "groceryContainerId", "todoContainerId"];
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -57,7 +66,7 @@ const Containers = ({ setUser, user, activeList, setActiveList, activeContainer,
             }}
           >
             <Typography
-              fontFamily={'Urbanist'}
+              fontFamily={"Urbanist"}
               fontWeight={500}
               variant="h5"
               gutterBottom
@@ -94,15 +103,22 @@ const Containers = ({ setUser, user, activeList, setActiveList, activeContainer,
 
         <Grid item>
           {user &&
-            ["Shopping Lists", "Grocery Lists", "To-do Lists"].map((e, i) => {
-              return <Container key={i} id={user[containerIds[i]]} heading={e} imgSrc={imgSources[i]} />;
+            ["Shopping Lists", "Grocery Lists", "Productivity Lists"].map((e, i) => {
+              return (
+                <Container
+                  key={i}
+                  id={user[containerIds[i]]}
+                  heading={e}
+                  imgSrc={imgSources[i]}
+                  grocery={grocery}
+                  todo={todo}
+                  shop={shop}
+                />
+              );
             })}
         </Grid>
       </Grid>
     </>
   );
 };
-
-const imgSources = [shop, grocery, todo];
-const containerIds = ["wishlistContainerId", "groceryContainerId", "todoContainerId"];
 export default Containers;

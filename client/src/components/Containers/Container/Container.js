@@ -33,7 +33,7 @@ const Container = ({ heading, imgSrc, id }) => {
                 src={imgSrc}
                 loading="lazy"
                 height={300}
-                width={350}
+                width={330}
               />
             </CardMedia>
           </CardContent>

@@ -9,6 +9,16 @@ import Register from "./components/Register/Register";
 import QuickList from "./components/QuickList/QuickList";
 import Containers from "./components/Containers/Containers";
 import AddPeopleList from "./components/AddPeopleList/AddPeopleList";
+// IMGS
+import groceryWallpaper from "./assets/groceryWallpaperPlus.jpg";
+import todoWallpaper from "./assets/todoWallpaperPlus.jpg";
+import shoppingWallpaper from "./assets/shoppingWallpaperPlus.jpg";
+import groceryStrip from "./assets/groceryStrip.jpg";
+import todoStrip from "./assets/todoStrip.jpg";
+import shoppingStrip from "./assets/shoppingStrip.jpg";
+import grocery from "./assets/grocery.jpg";
+import shop from "./assets/shop.jpg";
+import todo from "./assets/todo.jpg";
 
 function App() {
   const [activeList, setActiveList] = useState({ groceryListItems: [] });
@@ -24,27 +34,92 @@ function App() {
         <Routes>
           <Route
             path="/containers"
-            element={<Containers user={user} setUser={setUser} activeList={activeList} setActiveList={setActiveList} activeContainer={activeContainer} setActiveContainer={setActiveContainer} />}
+            element={
+              <Containers
+                grocery={grocery}
+                todo={todo}
+                shop={shop}
+                user={user}
+                setUser={setUser}
+                activeList={activeList}
+                setActiveList={setActiveList}
+                activeContainer={activeContainer}
+                setActiveContainer={setActiveContainer}
+              />
+            }
           />
           <Route
             path="/"
-            element={<Login user={user} setUser={setUser} activeList={activeList} setActiveList={setActiveList} activeContainer={activeContainer} setActiveContainer={setActiveContainer} />}
+            element={
+              <Login
+                user={user}
+                setUser={setUser}
+                activeList={activeList}
+                setActiveList={setActiveList}
+                activeContainer={activeContainer}
+                setActiveContainer={setActiveContainer}
+              />
+            }
           />
           <Route
             path="/register"
-            element={<Register setUser={setUser} activeList={activeList} setActiveList={setActiveList} activeContainer={activeContainer} setActiveContainer={setActiveContainer} />}
+            element={
+              <Register
+                setUser={setUser}
+                activeList={activeList}
+                setActiveList={setActiveList}
+                activeContainer={activeContainer}
+                setActiveContainer={setActiveContainer}
+              />
+            }
           />
           <Route
             path="/container"
-            element={<LandingPage activeContainer={activeContainer} setActiveContainer={setActiveContainer} user={user} setUser={setUser} activeList={activeList} setActiveList={setActiveList} />}
+            element={
+              <LandingPage
+                groceryStrip={groceryStrip}
+                todoStrip={todoStrip}
+                shoppingStrip={shoppingStrip}
+                grocery={grocery}
+                todo={todo}
+                shop={shop}
+                activeContainer={activeContainer}
+                setActiveContainer={setActiveContainer}
+                user={user}
+                setUser={setUser}
+                activeList={activeList}
+                setActiveList={setActiveList}
+              />
+            }
           />
           <Route
             path="/list"
-            element={<GroceryListPage activeContainer={activeContainer} setActiveContainer={setActiveContainer} user={user} setUser={setUser} activeList={activeList} setActiveList={setActiveList} />}
+            element={
+              <GroceryListPage
+                groceryWallpaper={groceryWallpaper}
+                todoWallpaper={todoWallpaper}
+                shoppingWallpaper={shoppingWallpaper}
+                activeContainer={activeContainer}
+                setActiveContainer={setActiveContainer}
+                user={user}
+                setUser={setUser}
+                activeList={activeList}
+                setActiveList={setActiveList}
+              />
+            }
           />
           <Route
             path="/addPeople"
-            element={<AddPeopleList activeContainer={activeContainer} setActiveContainer={setActiveContainer} user={user} setUser={setUser} activeList={activeList} setActiveList={setActiveList} />}
+            element={
+              <AddPeopleList
+                activeContainer={activeContainer}
+                setActiveContainer={setActiveContainer}
+                user={user}
+                setUser={setUser}
+                activeList={activeList}
+                setActiveList={setActiveList}
+              />
+            }
           />
           <Route path="/quick-list" element={<QuickList />} />
         </Routes>

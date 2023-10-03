@@ -100,7 +100,6 @@ const MoreDialog = ({
       listId: listInfo?.id,
       containerId: listInfo?.reference,
     };
-    setLoading(true);
     const res = await removePeopleFromList(data);
     if (res?.status === 200) {
       closeDialogueWithoutDelay();
@@ -123,7 +122,6 @@ const MoreDialog = ({
       });
       console.log(res);
     }
-    setLoading(false);
   };
 
   const handleEditListOptions = async (newListName, listScope) => {
@@ -347,6 +345,7 @@ const MoreDialog = ({
                         label={textField.text}
                         helperText={errorMessage ? errorMessage : textField.helperText}
                         defaultValue={textField.defaultValue ? listInfo?.listName : null}
+                        InputProps={{ style: { fontFamily: "Urbanist" } }}
                         inputProps={{
                           maxLength: 30,
                           required: true,
@@ -364,12 +363,12 @@ const MoreDialog = ({
                     onChange={handleListScopeSelection}
                     sx={{ justifyContent: "center" }}
                   >
-                    <FormControlLabel value="PUBLIC" control={<Radio />} label="Public" />
+                    <FormControlLabel value="PUBLIC" control={<Radio />} label="Public"/>
                     <FormControlLabel value="PRIVATE" control={<Radio />} label="Private" />
                     <FormControlLabel value="RESTRICTED" control={<Radio />} label="Restricted" />
+                    <FormHelperText>{handleRadioGroupHelperText()}</FormHelperText>
                   </RadioGroup>
                 )}
-                <FormHelperText>{handleRadioGroupHelperText()}</FormHelperText>
               </FormControl>
 
               {openDialogue === dialogues.deletePeople && (
@@ -406,6 +405,7 @@ const MoreDialog = ({
                       }
                     }}
                     sx={{
+                      fontFamily: "Urbanist",
                       width: "90%",
                       height: 50,
                       "&:hover": {
@@ -421,7 +421,7 @@ const MoreDialog = ({
                 );
               })}
             </Stack>
-            {!loading && openDialogue === dialogues.deletePeople && (
+            {loading && openDialogue === dialogues.deletePeople && (
               <CircularProgress
                 color={"inherit"}
                 sx={{

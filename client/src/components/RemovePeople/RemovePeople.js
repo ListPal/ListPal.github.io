@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 const RemovePeople = ({
   listInfo,
+  loading,
   setLoading,
   peopleToDelete,
   setPeopleToDelete,

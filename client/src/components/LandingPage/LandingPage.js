@@ -28,13 +28,6 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import Skeleton from "@mui/material/Skeleton";
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
-// IMGS
-import groceryStrip from "../../assets/groceryStrip.jpg";
-import todoStrip from "../../assets/todoStrip.jpg";
-import shoppingStrip from "../../assets/shoppingStrip.jpg";
-import grocery from "../../assets/grocery.jpg";
-import shop from "../../assets/shop.jpg";
-import todo from "../../assets/todo.jpg";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import PullToRefresh from "pulltorefreshjs";
 
@@ -45,6 +38,12 @@ const LandingPage = ({
   setUser,
   activeContainer,
   setActiveContainer,
+  groceryStrip,
+  shoppingStrip,
+  todoStrip,
+  grocery,
+  todo,
+  shop,
 }) => {
   // States
   const [filter, setFilter] = useState(filterCardsBy.all);
@@ -234,7 +233,7 @@ const LandingPage = ({
     if (activeContainer?.id !== location?.state?.containerId) {
       pullLists();
     } else {
-      console.debug("Lists are cached. No need to fetch");
+      // console.debug("Lists are cached. No need to fetch");
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -349,6 +348,7 @@ const LandingPage = ({
           )}
           {!loading && (
             <Paper
+            elevation={0}
               sx={{
                 display: "flex",
                 width: "100vw",
