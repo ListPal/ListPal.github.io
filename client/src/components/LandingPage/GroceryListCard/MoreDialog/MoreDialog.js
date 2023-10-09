@@ -309,9 +309,9 @@ const MoreDialog = ({
               display: "flex",
               justifyContent: "center",
               direction: "column",
-              top: "45vh",
+              top: "25vh",
               left: "50vw",
-              transform: "translate(-50%, -50%)",
+              transform: "translate(-50%, 0)",
               borderRadius: 5,
               width: "85vw",
               maxWidth: mobileWidth,
@@ -363,7 +363,7 @@ const MoreDialog = ({
                     onChange={handleListScopeSelection}
                     sx={{ justifyContent: "center" }}
                   >
-                    <FormControlLabel value="PUBLIC" control={<Radio />} label="Public"/>
+                    <FormControlLabel value="PUBLIC" control={<Radio />} label="Public" />
                     <FormControlLabel value="PRIVATE" control={<Radio />} label="Private" />
                     <FormControlLabel value="RESTRICTED" control={<Radio />} label="Restricted" />
                     <FormHelperText>{handleRadioGroupHelperText()}</FormHelperText>
@@ -432,22 +432,22 @@ const MoreDialog = ({
                 }}
               />
             )}
+            <Slide
+              className="alert-slide"
+              in={alertMessage && true}
+              sx={{
+                position: "fixed",
+                top: '-25vh',
+                left: 0,
+              }}
+            >
+              <Alert severity={severity}>
+                <Typography>{alertMessage}</Typography>
+              </Alert>
+            </Slide>
           </Paper>
         </Fade>
       </Modal>
-      <Slide
-        className="alert-slide"
-        in={alertMessage && true}
-        sx={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-        }}
-      >
-        <Alert severity={severity}>
-          <Typography>{alertMessage}</Typography>
-        </Alert>
-      </Slide>
     </>
   );
 };

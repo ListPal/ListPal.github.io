@@ -6,6 +6,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemButton from "@mui/material/ListItemButton";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
 
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -23,12 +24,10 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { useLocation, useNavigate } from "react-router-dom";
 import { addPeopleToList, postRequest } from "../../utils/rest";
 import { lookupUser } from "../../utils/rest";
-import {
-  peopleLookupValidationByUsername,
-  peopleLookupValidationByPhone,
-} from "../../utils/inputValidation";
+import { handleValidatePhone, handleValidateUsername } from "../../utils/inputValidation";
 import { URLS } from "../../utils/enum";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { fontFamily, styled } from "@mui/system";
 
 const AddPeopleList = () => {
   // States
@@ -45,9 +44,9 @@ const AddPeopleList = () => {
 
   // Handlers
   const handleSwitch = () => {
-    setLookupByPhone(!lookupByPhone)
+    setLookupByPhone(!lookupByPhone);
     setTextfieldMessage(null);
-  }
+  };
   const handleShowAlert = (severity, message) => {
     setAlert({
       severity: severity,
@@ -77,8 +76,8 @@ const AddPeopleList = () => {
     setTextfieldMessage(null);
     // Input validation
     const valid = lookupByPhone
-      ? await peopleLookupValidationByPhone(textFieldUserRef.current.value)
-      : await peopleLookupValidationByUsername(textFieldUserRef.current.value);
+      ? await handleValidatePhone(textFieldUserRef.current.value)
+      : await handleValidateUsername(textFieldUserRef.current.value);
     if (!valid?.validated) {
       setTextfieldMessage({
         severity: "error",
@@ -203,16 +202,17 @@ const AddPeopleList = () => {
             <IconButton onClick={() => navigate(-1)}>
               <ArrowBackIosIcon />
             </IconButton>
-            <Switch checked={lookupByPhone} onChange={handleSwitch} />
+            <Switch checked={!lookupByPhone} onChange={handleSwitch} />
             <Typography
               variant="button"
+              fontSize={16}
+              fontFamily={"Urbanist"}
               sx={{ color: "#4B5563" }}
             >{`Toggle lookup option`}</Typography>
           </Stack>
           <Stack sx={{ width: "95vw" }}>
             {lookupByPhone && (
-              <TextField
-                sx={{}}
+              <CssTextField
                 error={textfieldMessage?.error && true}
                 inputRef={textFieldUserRef}
                 label={"Lookup user by phone"}
@@ -226,6 +226,7 @@ const AddPeopleList = () => {
                   maxLength: 10,
                 }}
                 InputProps={{
+                  style: { fontFamily: "Urbanist" },
                   endAdornment: (
                     <IconButton
                       sx={{ background: "#f2f3ff" }}
@@ -239,7 +240,7 @@ const AddPeopleList = () => {
               />
             )}
             {!lookupByPhone && (
-              <TextField
+              <CssTextField
                 type="email"
                 error={textfieldMessage?.error && true}
                 inputRef={textFieldUserRef}
@@ -253,6 +254,7 @@ const AddPeopleList = () => {
                   maxLength: 100,
                 }}
                 InputProps={{
+                  style: { fontFamily: "Urbanist" },
                   endAdornment: (
                     <IconButton
                       sx={{ background: "#f2f3ff" }}
@@ -292,6 +294,7 @@ const AddPeopleList = () => {
                     onChange={handleToggleListItem(user)}
                     checked={peopleToAdd.indexOf(user) !== -1}
                     inputProps={{ "aria-labelledby": labelId }}
+                    checkedIcon={<CheckBoxIcon sx={{ color: "black" }} />}
                   />
                 }
                 disablePadding
@@ -300,7 +303,11 @@ const AddPeopleList = () => {
                   <ListItemAvatar>
                     <Avatar alt={`${user?.name}`} src={`/static/images/avatar/${user?.name}.jpg`} />
                   </ListItemAvatar>
-                  <ListItemText id={labelId} primary={`${user?.name} ${user?.lastName}`} />
+                  <ListItemText
+                    id={labelId}
+                    primary={`${user?.name} ${user?.lastName}`}
+                    primaryTypographyProps={{ fontFamily: "Urbanist", fontSize: 16 }}
+                  />
                 </ListItemButton>
               </ListItem>
             );
@@ -315,11 +322,15 @@ const AddPeopleList = () => {
             onClick={handleAddPeople}
             variant={"contained"}
             sx={{
-              height: 50,
+              height: 60,
               position: "fixed",
               bottom: 0,
               left: 0,
               borderRadius: 0,
+              background: "black",
+              "&:hover": {
+                background: "black",
+              },
             }}
           >
             Add All
@@ -348,5 +359,25 @@ const AddPeopleList = () => {
     </Grid>
   );
 };
+
+const CssTextField = styled(TextField)({
+  "& label.Mui-focused": {
+    color: "#A0AAB4",
+  },
+  "& .MuiInput-underline:after": {
+    borderBottomColor: "black",
+  },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      border: "1px solid black",
+    },
+    "&:hover fieldset": {
+      borderColor: "black",
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: "black",
+    },
+  },
+});
 
 export default AddPeopleList;

@@ -47,19 +47,22 @@ const LandingPage = ({
 }) => {
   // States
   const [filter, setFilter] = useState(filterCardsBy.all);
-  const [alertMessage, setAlertMessage] = useState(
-    "No lists yet to display. Create your first list 🥳"
-  );
   const [severity, setSeverity] = useState("info");
   const [newListFormOpen, setNewListFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [wasRefactored, setWasRefactored] = useState(false);
+  const [alertMessage, setAlertMessage] = useState(
+    "No lists yet to display. Create your first list 🥳"
+  );
 
   // Other locals
   const navigate = useNavigate();
   const location = useLocation();
 
   // Handlers
+  const handleOpenNewListForm = () => {
+    setNewListFormOpen(!newListFormOpen);
+  };
   const handleBack = async () => {
     if (wasRefactored) {
       // Set the new order
@@ -148,6 +151,7 @@ const LandingPage = ({
       navigate("/");
     } else if (res?.status === 400) {
       console.log(res);
+      
     } else {
       showAlert("error", messages.genericError);
     }
@@ -196,15 +200,15 @@ const LandingPage = ({
       return lists;
     }
     if (filter === filterCardsBy.public) {
-      const filteredLists = lists.filter((e) => e.scope === groceryListScopes.public)
+      const filteredLists = lists.filter((e) => e.scope === groceryListScopes.public);
       return filteredLists;
     }
     if (filter === filterCardsBy.private) {
-      const filteredLists = lists.filter((e) => e.scope === groceryListScopes.private)
+      const filteredLists = lists.filter((e) => e.scope === groceryListScopes.private);
       return filteredLists;
     }
     if (filter === filterCardsBy.restricted) {
-      const filteredLists = lists.filter((e) => e.scope === groceryListScopes.restricted)
+      const filteredLists = lists.filter((e) => e.scope === groceryListScopes.restricted);
       return filteredLists;
     }
   };
@@ -241,7 +245,7 @@ const LandingPage = ({
 
   return (
     <>
-      <meta name="theme-color" content="white" />
+      <meta name="theme-color" content={"white"} />
       <Grid spacing={1} container sx={{ maxWidth: mobileWidth, alignItems: "center" }}>
         <Grid item>
           <Paper
@@ -270,7 +274,7 @@ const LandingPage = ({
               <Stack
                 direction="column"
                 padding={1}
-                sx={{ height: "100%", justifyContent: "space-between", alignItems:'center' }}
+                sx={{ height: "100%", justifyContent: "space-between", alignItems: "center" }}
               >
                 <Stack
                   direction={"row"}
@@ -302,6 +306,7 @@ const LandingPage = ({
                       sx={{ width: 56, height: 56 }}
                       alt={user?.name}
                       src="[enter path here]"
+                      onClick={() => navigate("/profile")}
                     />
                     <span style={{ width: "10px" }} />
                     {user?.name && truncateString(user?.name)}
@@ -323,7 +328,7 @@ const LandingPage = ({
                 <Stack
                   direction={"column"}
                   sx={{
-                    width:'100vw',
+                    width: "100vw",
                     maxWidth: mobileWidth,
                     height: 40,
                     backgroundImage: `url(${handleDeriveStrip()})`,
@@ -348,7 +353,7 @@ const LandingPage = ({
           )}
           {!loading && (
             <Paper
-            elevation={0}
+              elevation={0}
               sx={{
                 display: "flex",
                 width: "100vw",
@@ -362,7 +367,7 @@ const LandingPage = ({
               <Stack direction="column" padding={5} spacing={2}>
                 <Button
                   variant={"outlined"}
-                  onClick={() => setNewListFormOpen(!newListFormOpen)}
+                  onClick={handleOpenNewListForm}
                   sx={{
                     "&:hover": { border: "2px solid white" },
                     borderRadius: 0,
@@ -477,8 +482,8 @@ const LandingPage = ({
         </Grid>
 
         {activeContainer?.collapsedLists.length === 0 && !loading && (
-          <Grid item sx={{ width: '100vw', maxWidth: mobileWidth }}>
-            <Slide className="alert-slide" in={true} direction="right" sx={{width: '100%'}}> 
+          <Grid item sx={{ width: "100vw", maxWidth: mobileWidth }}>
+            <Slide className="alert-slide" in={true} direction="right" sx={{ width: "100%" }}>
               <Alert severity={severity}>{alertMessage}</Alert>
             </Slide>
             <img

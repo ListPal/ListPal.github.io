@@ -76,7 +76,12 @@ const Containers = ({
                 color: "white",
               }}
             >
-              <Avatar sx={{ width: 56, height: 56 }} alt={user?.name} src="[enter path here]" />
+              <Avatar
+                onClick={() => navigate("/profile")}
+                sx={{ width: 56, height: 56 }}
+                alt={user?.name}
+                src="[enter path here]"
+              />
               <span style={{ width: "10px" }} />
               {user?.name ? truncateString(user.name) : "Unknown"}
             </Typography>

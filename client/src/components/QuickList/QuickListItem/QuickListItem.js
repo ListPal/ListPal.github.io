@@ -72,7 +72,7 @@ const QuickListItem = ({
             width: "95vw",
             height: 80,
             opacity: 0.9,
-            borderLeft: `5px solid ${borderColor ? borderColor : colors.quickListColors.bold}`,
+            borderLeft: `5px solid black`,
           }}
         >
           <Stack

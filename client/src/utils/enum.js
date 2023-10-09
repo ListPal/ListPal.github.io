@@ -8,14 +8,14 @@ const filterCardsBy = {
   restricted: 3,
 };
 
-// Generalized messages here
+// Normalized messages here
 const messages = {
+  genericError: "Apologies. Something went wrong.",
+  noList: "Whoops! This link is no longer active.",
   unauthorizedAction:
     "Hmmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities.",
   unauthorizedAccess:
     "Hmmm... It seems like you don't have access to this link. Please make sure that you are accessing a list in which you are added.",
-  genericError: "Apologies. Something went wrong on our end.",
-  noList: "Whoops! This link is no longer active.",
 };
 
 const groceryContainerTypes = {
@@ -52,28 +52,28 @@ const borderColors = [
 const colors = {
   fallbackColors: {
     low: "#e8faff",
-    medium: '#b9efff',
-    blod: "#2cc8f7",
+    medium: "#b9efff",
+    bold: "black",
   },
   landingPageColors: {
     low: "#eaf6e4",
-    medium: '#b9efff',
+    medium: "#b9efff",
     bold: "#7b9370",
   },
   todoColors: {
     low: "#F3F4F6",
-    medium: '#b9efff',
+    medium: "#b9efff",
     bold: "#9CA3AF",
   },
   shoppingColors: {
     low: "#E1F2F6",
-    medium: '#79c0ff',
+    medium: "#79c0ff",
     bold: "#007CAD",
   },
   quickListColors: {
     low: "#E1F2F6",
-    medium: '#b9efff',
-    bold: "#1F2937",
+    medium: "#b9efff",
+    bold: "black",
   },
 };
 
@@ -101,7 +101,7 @@ const dialogueObject = {
         defaultValue: true,
         hidden: false,
         text: "Enter item name",
-        helperText: "Name your grocery list item",
+        helperText: "Name your list item",
         required: true,
       },
     ],
@@ -217,7 +217,7 @@ const dialogueObject = {
     button: [
       {
         textColor: "white",
-        color: "#1F2937",
+        color: "black",
         text: "Add Item",
         icon: "addIcon",
       },
@@ -297,8 +297,8 @@ const dialogueObject = {
 };
 
 // Engines
-const engine = "https://katespracticespace.com";
-// const engine = "http://joses-macbook-pro-3.local:8080";
+// const engine = "https://katespracticespace.com";
+const engine = "http://joses-macbook-pro-3.local:8080";
 
 const URLS = {
   // Authentication endpoins
@@ -326,7 +326,11 @@ const URLS = {
   getSuggestedPeople: `${engine}/server/fetch-suggested-people`,
   resetList: `${engine}/server/reset-list`,
   eraseListItems: `${engine}/server/delete-list-items`,
-  
+  updateEmail: `${engine}/server/update-email`,
+  updateName: `${engine}/server/update-name`,
+  updatePhone: `${engine}/server/update-phone`,
+  updatePassword: `${engine}/server/update-password`,
+
   // Public endpoints
   createPublicListItemUri: `${engine}/public/shared/create-list-item`,
   getPublicListUri: `${engine}/public/shared/get-list`,

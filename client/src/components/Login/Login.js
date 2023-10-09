@@ -156,10 +156,10 @@ const Login = ({ setActiveContainer, setUser }) => {
             height: "50px",
             width: "80vw",
             maxWidth: mobileWidth,
-            background: colors.landingPageColors.bold,
+            background: colors.fallbackColors.bold,
             "&:hover": {
-              background: colors.landingPageColors.bold,
-              border: `2px solid ${colors.landingPageColors.bold}`,
+              background: colors.fallbackColors.bold,
+              border: `2px solid ${colors.fallbackColors.bold}`,
             },
           }}
         >

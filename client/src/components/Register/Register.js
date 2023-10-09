@@ -1,15 +1,5 @@
-import {
-  Typography,
-  CircularProgress,
-  Grid,
-  Stack,
-  TextField,
-  IconButton,
-} from "@mui/material";
-import {
-  registrationValidation,
-  validationErrors,
-} from "../../utils/inputValidation";
+import { Typography, CircularProgress, Grid, Stack, TextField, IconButton } from "@mui/material";
+import { registrationValidation, validationErrors } from "../../utils/inputValidation";
 import { useState, useRef } from "react";
 import { postRequest, logout } from "../../utils/rest";
 import { URLS, colors, mobileWidth } from "../../utils/enum";
@@ -21,8 +11,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 
 const Register = ({ setUser, setActiveList }) => {
   const [isPasswordVisibile, setIsPasswordVisible] = useState(false);
-  const [isConfirmPasswordVisibile, setIsConfirmPasswordVisible] =
-    useState(false);
+  const [isConfirmPasswordVisibile, setIsConfirmPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [validation, setValidation] = useState({
     validated: true,
@@ -56,12 +45,11 @@ const Register = ({ setUser, setActiveList }) => {
   const handleRegister = async (name, lastName, username, password, phone) => {
     setLoading(true);
     const data = {
-      name: name,
-      lastName: lastName,
-      phone: phone,
-      username: username.toLowerCase(),
-      email: username.toLowerCase(),
-      password: password,
+      name: name.trim() || '',
+      lastName: lastName.trim() || '',
+      phone: phone.trim() || '',
+      email: username.toLowerCase().trim() || '',
+      password: password || '',
     };
 
     // Validate regisration input on client side
@@ -119,7 +107,7 @@ const Register = ({ setUser, setActiveList }) => {
 
   return (
     <>
-      <meta name="theme-color" content={colors.quickListColors.bold} />
+      <meta name="theme-color" content={'black'} />
       {loading && (
         <>
           <CircularProgress
@@ -149,13 +137,10 @@ const Register = ({ setUser, setActiveList }) => {
             alignItems: "center",
             textAlign: "left",
             width: "100vw",
-            background: "#1F2937",
+            background: colors.fallbackColors.bold,
           }}
         >
-          <ArrowBackIosIcon
-            sx={{ color: "white" }}
-            onClick={() => navigate("/")}
-          />
+          <ArrowBackIosIcon sx={{ color: "white" }} onClick={() => navigate("/")} />
           <Typography sx={{ color: "white" }} variant="h4">
             Create Account
           </Typography>
@@ -174,9 +159,7 @@ const Register = ({ setUser, setActiveList }) => {
           <TextField
             autoFocus
             error={validation.error === validationErrors.name}
-            helperText={
-              validation.error === validationErrors.name && validation?.message
-            }
+            helperText={validation.error === validationErrors.name && validation?.message}
             required
             id="name-input"
             label="Name"
@@ -189,10 +172,7 @@ const Register = ({ setUser, setActiveList }) => {
           />
           <TextField
             error={validation.error === validationErrors.lastName}
-            helperText={
-              validation.error === validationErrors.lastName &&
-              validation?.message
-            }
+            helperText={validation.error === validationErrors.lastName && validation?.message}
             required
             id="last-name-input"
             label="Last Name"
@@ -251,17 +231,10 @@ const Register = ({ setUser, setActiveList }) => {
                 <IconButton
                   size="small"
                   onClick={() =>
-                    handleDeriveVisibilityIcon(
-                      isPasswordVisibile,
-                      setIsPasswordVisible
-                    )
+                    handleDeriveVisibilityIcon(isPasswordVisibile, setIsPasswordVisible)
                   }
                 >
-                  {isPasswordVisibile ? (
-                    <VisibilityOffIcon />
-                  ) : (
-                    <VisibilityIcon />
-                  )}
+                  {isPasswordVisibile ? <VisibilityOffIcon /> : <VisibilityIcon />}
                 </IconButton>
               ),
             }}
@@ -269,8 +242,7 @@ const Register = ({ setUser, setActiveList }) => {
           <TextField
             error={validation.error === validationErrors.password_mismatch}
             helperText={
-              validation.error === validationErrors.password_mismatch &&
-              validation?.message
+              validation.error === validationErrors.password_mismatch && validation?.message
             }
             required
             id="password-input2"
@@ -294,11 +266,7 @@ const Register = ({ setUser, setActiveList }) => {
                     )
                   }
                 >
-                  {isConfirmPasswordVisibile ? (
-                    <VisibilityOffIcon />
-                  ) : (
-                    <VisibilityIcon />
-                  )}
+                  {isConfirmPasswordVisibile ? <VisibilityOffIcon /> : <VisibilityIcon />}
                 </IconButton>
               ),
             }}
@@ -327,18 +295,18 @@ const Register = ({ setUser, setActiveList }) => {
           <LoadingButton
             loading={loading}
             endIcon={<></>}
-            loadingPosition={'end'}
+            loadingPosition={"end"}
             sx={{
-              position: 'fixed',
+              position: "fixed",
               bottom: 30,
               borderRadius: "20px 0px 20px 0px",
               height: "50px",
               width: "80vw",
               maxWidth: mobileWidth,
-              background: "#1F2937",
+              background: colors.fallbackColors.bold,
               "&:hover": {
-                background: "#1F2937",
-                border: `2px solid "#1F2937`,
+                background: colors.fallbackColors.bold,
+                border: `2px solid ${colors.fallbackColors.bold}`,
               },
             }}
             variant="contained"

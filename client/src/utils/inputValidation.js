@@ -1,7 +1,6 @@
-const MIN_USERNAME_LENGTH = 5;
-const MIN_PASSWORD_LENGTH = 8;
-
+// Error normalization
 const validationErrors = {
+  null_error: "null_error",
   email_length: "email_length",
   password_length: "password_length",
   password_mismatch: "password_mismatch",
@@ -14,34 +13,40 @@ const validationErrors = {
   phone_length: "phone_length",
 };
 
-const usernamePasswordValidation = async (username, password) => {
-  if (
-    username.length < MIN_USERNAME_LENGTH ||
-    password.length < MIN_PASSWORD_LENGTH
-  ) {
+// Private functions
+const validateEmail = (email) => {
+  if (!email) {
+    console.log("Email is null");
     return {
-      error: validationErrors.username_password,
-      message: "Wrong username or password",
+      error: validationErrors.null_error,
       validated: false,
+      message: "Email cannot be empty.",
     };
   }
 
-  if (
-    !/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])(?=.*\d)[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/.test(
-      password
-    )
-  ) {
+  if (email === "") {
+    console.log("Email cannot be empty");
     return {
-      error: validationErrors.email_regex,
-      message: "Worng username or password",
+      error: validationErrors.name,
       validated: false,
+      message: "Email cannot be empty.",
     };
   }
 
-  if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(username)) {
+  if (email.length > 100) {
+    console.log("Invalid email length");
+    return {
+      error: validationErrors.email_length,
+      validated: false,
+      message: "Email size exceeded.",
+    };
+  }
+
+  if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+    console.log("Invalid email");
     return {
       error: validationErrors.email_regex,
-      message: "Worng username or password",
+      message: "Invalid email.",
       validated: false,
     };
   }
@@ -53,76 +58,17 @@ const usernamePasswordValidation = async (username, password) => {
   };
 };
 
-const registrationValidation = async (registration) => {
-  // validate name/lastname
-  if (registration.name === "") {
-    console.log("Empty name/lastname");
+const validatePassword = (password) => {
+  if (!password) {
+    console.log("Password is null");
     return {
-      error: validationErrors.name,
+      error: validationErrors.null_error,
       validated: false,
-      message: "Name cannot be empty.",
+      message: "Password cannot be empty.",
     };
   }
 
-  if (registration.name.length > 20) {
-    console.log("Too long name/lastname");
-    return {
-      error: validationErrors.name,
-      validated: false,
-      message: "Name size exceeded.",
-    };
-  }
-
-  if (registration.lastName === "") {
-    console.log("Empty name/lastname");
-    return {
-      error: validationErrors.lastName,
-      validated: false,
-      message: "Last Name cannot be empty.",
-    };
-  }
-
-  if (registration.lastName.length > 40) {
-    console.log("Too long name/lastname");
-    return {
-      error: validationErrors.lastName,
-      validated: false,
-      message: "Last Name size exceeded.",
-    };
-  }
-
-  if (registration.username === "") {
-    console.log("Username cannot be empty");
-    return {
-      error: validationErrors.name,
-      validated: false,
-      message: "Username cannot be empty.",
-    };
-  }
-
-  if (registration.username.length > 100) {
-    console.log("Invalid uname length");
-    return {
-      error: validationErrors.email_length,
-      validated: false,
-      message: "email size exceeded.",
-    };
-  }
-
-  if (
-    !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-      registration.username
-    )
-  ) {
-    console.log("Invalid uname");
-    return {
-      error: validationErrors.email_regex,
-      message: "Invalid email.",
-      validated: false,
-    };
-  }
-
-  if (registration.password.length > 50) {
+  if (password.length > 50) {
     console.log("invalid pword length");
     return {
       error: validationErrors.password_length,
@@ -133,7 +79,7 @@ const registrationValidation = async (registration) => {
 
   if (
     !/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])(?=.*\d)[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/.test(
-      registration.password
+      password
     )
   ) {
     console.log("invalid pword");
@@ -145,7 +91,89 @@ const registrationValidation = async (registration) => {
     };
   }
 
-  if (registration.phone.length > 0 && registration.phone.length !== 10) {
+  return {
+    error: null,
+    message: null,
+    validated: true,
+  };
+};
+
+const validateName = (name) => {
+  if (!name) {
+    console.log("Name is null");
+    return {
+      error: validationErrors.name,
+      validated: false,
+      message: "Name cannot be empty.",
+    };
+  }
+
+  if (name === "") {
+    console.log("Empty name/lastname");
+    return {
+      error: validationErrors.name,
+      validated: false,
+      message: "Name cannot be empty.",
+    };
+  }
+
+  if (name.length > 20) {
+    console.log("Too long name/lastname");
+    return {
+      error: validationErrors.name,
+      validated: false,
+      message: "Name size exceeded.",
+    };
+  }
+
+  return {
+    error: null,
+    message: null,
+    validated: true,
+  };
+};
+
+const validateLastName = (lastName) => {
+  if (!lastName) {
+    console.log("Last name is null");
+    return {
+      error: validationErrors.lastName,
+      validated: false,
+      message: "Last name cannot be empty.",
+    };
+  }
+
+  if (lastName === "") {
+    console.log("Empty name/lastname");
+    return {
+      error: validationErrors.lastName,
+      validated: false,
+      message: "Last Name cannot be empty.",
+    };
+  }
+
+  if (lastName.length > 40) {
+    console.log("Too long name/lastname");
+    return {
+      error: validationErrors.lastName,
+      validated: false,
+      message: "Last Name size exceeded.",
+    };
+  }
+
+  return {
+    error: null,
+    message: null,
+    validated: true,
+  };
+};
+
+const validatePhone = (phone) => {
+  if (!phone) {
+    console.log("Phone is null");
+  }
+
+  if (phone.length > 0 && phone.length !== 10) {
     console.log("invalid phone length");
     return {
       error: validationErrors.phone_length,
@@ -154,7 +182,7 @@ const registrationValidation = async (registration) => {
     };
   }
 
-  if (registration.phone.length > 20) {
+  if (phone.length > 20) {
     console.log("invalid phone length");
     return {
       error: validationErrors.phone_length,
@@ -162,7 +190,7 @@ const registrationValidation = async (registration) => {
       message: "Exceeded phone number length.",
     };
   }
-  if (registration.phone.length > 0 && !/^\d{10}$/.test(registration.phone)) {
+  if (phone.length > 0 && !/^\d{10}$/.test(phone)) {
     console.log("Invalid phone");
     return {
       error: validationErrors.phone_regex,
@@ -170,7 +198,7 @@ const registrationValidation = async (registration) => {
       message: "Invalid phone number.",
     };
   }
-  console.log("Registration Validated");
+
   return {
     error: null,
     message: null,
@@ -178,84 +206,87 @@ const registrationValidation = async (registration) => {
   };
 };
 
-const peopleLookupValidationByPhone = async (lookupData) => {
-  if (lookupData.length !== 10) {
-    console.log("invalid phone length");
+// Public interfaces
+const usernamePasswordValidation = async (username, password) => {
+  let validation;
+
+  validation = validateEmail(username);
+  if (!validation?.validated) {
+    return {
+      error: validationErrors.username_password,
+      message: "Wrong username or password",
+      validated: false,
+    };
+  }
+
+  validation = validatePassword(password);
+  if (!validation?.validated) {
+    return {
+      error: validationErrors.username_password,
+      message: "Wrong username or password",
+      validated: false,
+    };
+  }
+
+  return validation;
+};
+
+const registrationValidation = async (registration) => {
+  let validation;
+
+  validation = validateName(registration?.name);
+  if (!validation?.validated) return validation;
+
+  validation = validateLastName(registration?.lastName);
+  if (!validation?.validated) return validation;
+
+  validation = validateEmail(registration?.email);
+  if (!validation?.validated) return validation;
+
+  validation = validatePassword(registration?.password);
+  if (!validation?.validated) return validation;
+
+  validation = validatePhone(registration?.phone);
+  if (!validation?.validated) return validation;
+
+  validation = console.log("Registration Validated");
+  return validation;
+};
+
+const handleValidatePhone = async (lookupData) => {
+  if (lookupData.length == 0) {
     return {
       error: validationErrors.phone_length,
       validated: false,
-      message: "invalid phone length.",
+      message: "Phone field cannot be empty.",
     };
   }
+  return validatePhone(lookupData);
+};
 
-  if (lookupData.length > 20) {
-    console.log("invalid phone length");
-    return {
-      error: validationErrors.phone_length,
-      validated: false,
-      message: "Exceeded phone number length.",
-    };
-  }
-  if (lookupData.length > 0 && !/^\d{10}$/.test(lookupData)) {
-    console.log("Invalid phone");
-    return {
-      error: validationErrors.phone_regex,
-      validated: false,
-      message: "Invalid phone number.",
-    };
-  }
-  console.log("Registration Validated");
-  return {
-    error: null,
-    message: null,
-    validated: true,
-  };
-}
+const handleValidateUsername = async (lookupData) => {
+  return validateEmail(lookupData);
+};
 
-const peopleLookupValidationByUsername = async (lookupData) => {
-  if (lookupData === "") {
-    console.log("Username cannot be empty");
-    return {
-      error: validationErrors.name,
-      validated: false,
-      message: "Username cannot be empty.",
-    };
-  }
+const handleValidatePassword = async (password) => {
+  return validatePassword(password);
+};
 
-  if (lookupData.length > 100) {
-    console.log("Invalid uname length");
-    return {
-      error: validationErrors.email_length,
-      validated: false,
-      message: "email size exceeded.",
-    };
-  }
+const handleValidateName = async (name) => {
+  return validateName(name);
+};
 
-  if (
-    !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
-      lookupData
-    )
-  ) {
-    console.log("Invalid uname");
-    return {
-      error: validationErrors.email_regex,
-      message: "Invalid email.",
-      validated: false,
-    };
-  }
-  console.log("Registration Validated");
-  return {
-    error: null,
-    message: null,
-    validated: true,
-  };
-  
+const handleValidateLastName = async (lastName) => {
+  return validateLastName(lastName);
 };
 
 export {
   validationErrors,
   usernamePasswordValidation,
   registrationValidation,
-  peopleLookupValidationByUsername,
-  peopleLookupValidationByPhone,
+  handleValidateUsername,
+  handleValidatePhone,
+  handleValidatePassword,
+  handleValidateName,
+  handleValidateLastName,
 };

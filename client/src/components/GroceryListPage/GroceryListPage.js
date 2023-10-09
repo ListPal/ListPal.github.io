@@ -119,6 +119,9 @@ function GroceryListPage({
     if (modifiedIds.size > 0) {
       handleCheckItems();
     }
+    if (scope === groceryListScopes.private){
+      handlePushList(activeList?.groceryListItems, false, false)
+    }
     navigate(-1);
   };
 
@@ -214,12 +217,6 @@ function GroceryListPage({
       if (activeContainer.containerType === groceryContainerTypes.todo) {
         return todoWallpaper;
       }
-      // if (
-      //   activeContainer.containerType === groceryContainerTypes.whishlist &&
-      //   activeList?.listName?.toUpperCase().includes("CHRISTMAS")
-      // ) {
-      //   return christmasWallpaperPlus;
-      // }
     }
     if (containerId.includes(groceryContainerTypes.grocery)) {
       return groceryWallpaper;
@@ -349,14 +346,6 @@ function GroceryListPage({
     // Cache it in state
     if (res?.status === 200) {
       if (cache) setActiveList({...res?.body, groceryListItems: res?.body?.groceryListItems});
-      // TODO: Decide if this is useful or not
-      // Group by items by category (Default) 
-      // const activeListMap = await handleGroupByUsername(res?.body?.groceryListItems); // Map engineering: (username | category) => items
-      // const responseBody = await {
-      //   ...res?.body,
-      //   groceryListItems: [...activeListMap.values()].flat(),
-      // };
-      // if (cache) setActiveList(responseBody);
     } else if (res?.status === 401) {
       setAlertMessage(messages.unauthorizedAccess);
     } else if (res?.status === 403) {

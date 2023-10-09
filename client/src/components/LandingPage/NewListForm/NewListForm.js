@@ -191,9 +191,9 @@ function NewListForm({
               display: "flex",
               justifyContent: "center",
               direction: "column",
-              top: "45vh",
+              top: "25vh",
               left: "50vw",
-              transform: "translate(-50%, -50%)",
+              transform: "translate(-50%)",
               borderRadius: 5,
               width: '85vw',
               maxWidth: mobileWidth,
@@ -205,8 +205,11 @@ function NewListForm({
               className="alert-slide"
               in={alertMessage && true}
               sx={{
+                top: '-25vh',
+                left: 0,
                 position: "fixed",
                 maxWidth: `calc(${mobileWidth} - 10px`,
+
               }}
             >
               <Alert
