@@ -151,7 +151,6 @@ const LandingPage = ({
       navigate("/");
     } else if (res?.status === 400) {
       console.log(res);
-      
     } else {
       showAlert("error", messages.genericError);
     }
@@ -302,12 +301,21 @@ const LandingPage = ({
                     <IconButton size={"small"} disableRipple onClick={handleBack}>
                       <ArrowBackIosIcon />
                     </IconButton>
-                    <Avatar
-                      sx={{ width: 56, height: 56 }}
-                      alt={user?.name}
-                      src="[enter path here]"
+                    <div
                       onClick={() => navigate("/profile")}
-                    />
+                      style={{
+                        width: 56,
+                        height: 56,
+                        background: "lightgray",
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: 'white'
+                      }}
+                    >
+                      {user?.name[0] || "U"}
+                    </div>
                     <span style={{ width: "10px" }} />
                     {user?.name && truncateString(user?.name)}
                   </Typography>
@@ -490,8 +498,8 @@ const LandingPage = ({
               alt="decorative-background"
               src={handleContainerImg()}
               loading="lazy"
-              height={400}
-              width={400}
+              height={310}
+              width={310}
             />
           </Grid>
         )}

@@ -76,12 +76,22 @@ const Containers = ({
                 color: "white",
               }}
             >
-              <Avatar
+              <div
                 onClick={() => navigate("/profile")}
-                sx={{ width: 56, height: 56 }}
-                alt={user?.name}
-                src="[enter path here]"
-              />
+                style={{
+                  fontFamily: 'Urbanist',
+                  width: 56,
+                  height: 56,
+                  background: "lightgray",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "white",
+                }}
+              >
+                {user?.name[0] || "U"}
+              </div>
               <span style={{ width: "10px" }} />
               {user?.name ? truncateString(user.name) : "Unknown"}
             </Typography>

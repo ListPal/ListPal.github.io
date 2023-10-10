@@ -86,7 +86,7 @@ const ChangeName = ({ user, setUser }) => {
       const res = await checkSession();
       if (res?.status === 200) {
         // Success
-        setUser(res?.body);
+        setUser(res?.user);
       } else {
         navigate("/");
       }

@@ -73,7 +73,7 @@ const ChangePhone = ({ user, setUser }) => {
       const res = await checkSession();
       if (res?.status === 200) {
         // Success
-        setUser(res?.body);
+        setUser(res?.user);
       } else if (res?.status === 403) {
         navigate("/");
       } else {

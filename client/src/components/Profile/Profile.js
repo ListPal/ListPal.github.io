@@ -21,10 +21,12 @@ const Profile = ({ user, setUser }) => {
 
   const handleCheckAuth = async () => {
     if (!user) {
+      console.log('no user')
       const res = await checkSession();
       if (res?.status === 200) {
         // Success
-        setUser(res?.body);
+        console.log(res)
+        setUser(res?.user);
       } else {
         navigate("/");
       }
