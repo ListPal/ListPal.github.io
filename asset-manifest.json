@@ -1,30 +1,24 @@
 {
   "files": {
     "main.css": "/static/css/main.5b99bbdc.css",
-    "main.js": "/static/js/main.ef7f03b9.js",
+    "main.js": "/static/js/main.101c6c42.js",
     "static/js/787.28cb0dcd.chunk.js": "/static/js/787.28cb0dcd.chunk.js",
-    "static/media/shoppingStrip.jpg": "/static/media/shoppingStrip.6152731151f1aafe6972.jpg",
-    "static/media/todo.jpg": "/static/media/todo.6bebf24b9b8b3b7e1d96.jpg",
-    "static/media/todoWallpaperPlus.jpg": "/static/media/todoWallpaperPlus.1dc90f21a293891f9fff.jpg",
-    "static/media/groceryWallpaperPlus.jpg": "/static/media/groceryWallpaperPlus.cd2f592517d99faa0928.jpg",
+    "static/media/todo.jpg": "/static/media/todo.61ba1dc09f55b6f198da.jpg",
     "static/media/christmasWallpaper.jpg": "/static/media/christmasWallpaper.1e805d169ac87324dc4f.jpg",
-    "static/media/shoppingWallpaperPlus.jpg": "/static/media/shoppingWallpaperPlus.dc1bdd1aa8c436d465ee.jpg",
     "static/media/shoppingWallpaper.jpg": "/static/media/shoppingWallpaper.a6d944c69cd95c4f6e48.jpg",
     "static/media/thanksGivingWallpaper.jpg": "/static/media/thanksGivingWallpaper.5ba68690b64e7b3cb715.jpg",
-    "static/media/shop.jpg": "/static/media/shop.3587716dc30ac81de519.jpg",
-    "static/media/grocery.jpg": "/static/media/grocery.42c6dea99d5925de3237.jpg",
     "static/media/login.jpg": "/static/media/login.04fb1701e7b4302d2523.jpg",
+    "static/media/shop.jpg": "/static/media/shop.3697eab6122248b1b5e4.jpg",
+    "static/media/grocery.jpg": "/static/media/grocery.85ed883f1ee42cb918cf.jpg",
     "static/media/todoWallpaper.jpg": "/static/media/todoWallpaper.ec03c10b313d53a83bed.jpg",
-    "static/media/groceryStrip.jpg": "/static/media/groceryStrip.ded1345f143a3900122d.jpg",
-    "static/media/todoStrip.jpg": "/static/media/todoStrip.f15263b4997b4e4b26a9.jpg",
     "static/media/groceryWallpaper.jpg": "/static/media/groceryWallpaper.07d0b38adfac88cdbfb4.jpg",
     "index.html": "/index.html",
     "main.5b99bbdc.css.map": "/static/css/main.5b99bbdc.css.map",
-    "main.ef7f03b9.js.map": "/static/js/main.ef7f03b9.js.map",
+    "main.101c6c42.js.map": "/static/js/main.101c6c42.js.map",
     "787.28cb0dcd.chunk.js.map": "/static/js/787.28cb0dcd.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5b99bbdc.css",
-    "static/js/main.ef7f03b9.js"
+    "static/js/main.101c6c42.js"
   ]
 }
