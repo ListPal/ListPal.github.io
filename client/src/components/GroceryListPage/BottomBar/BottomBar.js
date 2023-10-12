@@ -49,13 +49,14 @@ const BottomBar = ({
         zIndex={100}
         direction={"row"}
         justifyContent={"center"}
+        alignItems={'center'}
         sx={{
           boxShadow:
             "0 11px 15px -7px rgb(0 0 0 / 20%), 0 24px 38px 3px rgb(0 0 0 / 14%), 0 9px 46px 8px rgb(0 0 0 / 12%)",
-          borderRadius: "50px 50px 0px 0px",
+          // borderRadius: "50px 50px 0px 0px",
           position: "fixed",
           bottom: 0,
-          background: handleDeriveThemeColor().low,
+          background: "white",
           width: "100%",
           maxWidth: mobileWidth,
           height: "6vh",
@@ -67,53 +68,29 @@ const BottomBar = ({
           sx={{ mr: 2.5 }}
           onClick={() => handleSync(true)}
         >
-          <SyncIcon sx={{ color: handleDeriveThemeColor().bold }} />
+          <SyncIcon />
         </IconButton>
 
         {/* Send/Receive $*/}
         <IconButton sx={{ mr: 2.5 }} onClick={() => setOpenDialogue(dialogues.sendMoney)}>
-          <AttachMoneyOutlinedIcon sx={{ color: handleDeriveThemeColor().bold }} />
+          <AttachMoneyOutlinedIcon />
         </IconButton>
 
         {/* Add Item */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-around",
-            alignItems: "center",
-            borderRadius: "50%",
-            position: "relative",
-            bottom: "3vh",
-            background: handleDeriveThemeColor().low,
-            width: 70,
-            height: 65,
-          }}
-        >
-          <Fab
-            sx={{
-              background: handleDeriveThemeColor().bold,
-              color: "white",
-              "&:hover": {
-                background: handleDeriveThemeColor().bold,
-                border: `2px solid ${handleDeriveThemeColor().bold}`,
-              },
-            }}
-            onClick={() => setOpenDialogue(dialogues.addItem)}
-          >
-            <AddIcon />
-          </Fab>
-        </div>
+        <IconButton size={'large'} onClick={() => setOpenDialogue(dialogues.addItem)}>
+          <AddIcon fontSize={'large'} sx={{ color: "black" }}></AddIcon>
+        </IconButton>
 
         {/*  Move checked */}
         <IconButton sx={{ ml: 2.5 }} onClick={() => setShowDone(!showDone)}>
-          {showDone && <TaskAltOutlinedIcon sx={{ color: handleDeriveThemeColor().bold }} />}
-          {!showDone && <UnpublishedOutlinedIcon sx={{ color: handleDeriveThemeColor().bold }} />}
+          {showDone && <TaskAltOutlinedIcon />}
+          {!showDone && <UnpublishedOutlinedIcon />}
         </IconButton>
 
         {/* Share List */}
         {scope === groceryListScopes.public ? (
           <IconButton sx={{ ml: 2.5 }} onClick={() => setOpenShareTray(!openShareTray)}>
-            <IosShareIcon sx={{ color: handleDeriveThemeColor().bold }} />
+            <IosShareIcon />
           </IconButton>
         ) : (
           <IconButton
@@ -123,7 +100,7 @@ const BottomBar = ({
             variant="contained"
             onClick={() => setOpenDialogue(dialogues.resetList)}
           >
-            <AutoDeleteOutlinedIcon sx={{ color: handleDeriveThemeColor().bold }} />
+            <AutoDeleteOutlinedIcon />
           </IconButton>
         )}
       </Stack>

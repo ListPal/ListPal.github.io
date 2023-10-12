@@ -1,4 +1,4 @@
-import { Button, Alert, Typography, Slide, IconButton, List } from "@mui/material";
+import { Button, Alert, Typography, Slide, IconButton, List, Fab } from "@mui/material";
 import { useState, useEffect } from "react";
 import { getAllLists, logout, postRequest, checkSession } from "../../utils/rest";
 import {
@@ -13,7 +13,6 @@ import "./LandingPage.scss";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
-import Avatar from "@mui/material/Avatar";
 import AddIcon from "@mui/icons-material/Add";
 import GroceryListCard from "./GroceryListCard/GroceryListCard";
 import NewListForm from "./NewListForm/NewListForm";
@@ -21,13 +20,9 @@ import { mobileWidth } from "../../utils/enum";
 import { useLocation, useNavigate } from "react-router-dom";
 import { truncateString } from "../../utils/helper";
 // ICONS
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import PublicIcon from "@mui/icons-material/Public";
-import KeyIcon from "@mui/icons-material/Key";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import Skeleton from "@mui/material/Skeleton";
-import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import PullToRefresh from "pulltorefreshjs";
 
@@ -38,9 +33,6 @@ const LandingPage = ({
   setUser,
   activeContainer,
   setActiveContainer,
-  groceryStrip,
-  shoppingStrip,
-  todoStrip,
   grocery,
   todo,
   shop,
@@ -93,18 +85,6 @@ const LandingPage = ({
   const showAlert = (severity, message) => {
     setAlertMessage(message);
     setSeverity(severity);
-  };
-
-  const handleDeriveStrip = () => {
-    if (activeContainer?.containerType === groceryContainerTypes.grocery) {
-      return groceryStrip;
-    } else if (activeContainer?.containerType === groceryContainerTypes.todo) {
-      return todoStrip;
-    } else if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
-      return shoppingStrip;
-    } else {
-      return todoStrip;
-    }
   };
 
   const handleLogout = async () => {
@@ -248,15 +228,17 @@ const LandingPage = ({
       <Grid spacing={1} container sx={{ maxWidth: mobileWidth, alignItems: "center" }}>
         <Grid item>
           <Paper
-            elevation={1}
+            elevation={0}
             sx={{
+              paddingTop: 2,
+              paddingBottom: 3,
               borderRadius: 0,
-              height: "25vh",
               width: "100vmin",
               maxWidth: mobileWidth,
               display: "flex",
-              flexDirection: "column",
               alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
             }}
           >
             {loading && (
@@ -271,183 +253,65 @@ const LandingPage = ({
             {/* User Info Menu Bar */}
             {!loading && (
               <Stack
-                direction="column"
+                direction={"row"}
                 padding={1}
-                sx={{ height: "100%", justifyContent: "space-between", alignItems: "center" }}
+                sx={{
+                  width: "90vw",
+                  maxWidth: `calc(0.9 * ${mobileWidth})`,
+                  // backgroundColor: "black",
+                  // backgroundColor: handleDeriveBodyColor(),
+                  backgroundColor: handleDeriveHeadingColor(),
+                  borderRadius: 5,
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
               >
-                <Stack
-                  direction={"row"}
+                <Typography
                   padding={1}
-                  spacing={2}
+                  color={"black"}
+                  fontFamily={"Urbanist"}
+                  fontWeight={500}
+                  variant="h5"
                   sx={{
-                    width: "90vw",
-                    maxWidth: `calc(0.9 * ${mobileWidth})`,
-                    backgroundColor: handleDeriveHeadingColor(),
-                    borderRadius: 5,
+                    display: "flex",
                     alignItems: "center",
-                    justifyContent: "space-between",
+                    // color:'white',
                   }}
                 >
-                  <Typography
-                    fontFamily={"Urbanist"}
-                    fontWeight={500}
-                    variant="h5"
-                    gutterBottom
-                    sx={{
+                  {/*  Back Button */}
+                  <IconButton size={"small"} disableRipple onClick={handleBack}>
+                    <ArrowBackIosIcon sx={{ color: "black"}} />
+                  </IconButton>
+
+                  {/* Avatar */}
+                  <div
+                    onClick={() => navigate("/profile")}
+                    style={{
+                      width: 56,
+                      height: 56,
+                      background: "lightgray",
+                      borderRadius: "50%",
                       display: "flex",
                       alignItems: "center",
+                      justifyContent: "center",
+                      color: "white",
                     }}
                   >
-                    <IconButton size={"small"} disableRipple onClick={handleBack}>
-                      <ArrowBackIosIcon />
-                    </IconButton>
-                    <div
-                      onClick={() => navigate("/profile")}
-                      style={{
-                        width: 56,
-                        height: 56,
-                        background: "lightgray",
-                        borderRadius: "50%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: 'white'
-                      }}
-                    >
-                      {user?.name[0] || "U"}
-                    </div>
-                    <span style={{ width: "10px" }} />
-                    {user?.name && truncateString(user?.name)}
-                  </Typography>
+                    {user?.name[0] || "U"}
+                  </div>
+                  <span style={{ width: "10px" }} />
+                  {user?.name && truncateString(user?.name)}
+                </Typography>
 
-                  <Button
-                    disabled={loading}
-                    size="small"
-                    endIcon={<LogoutIcon />}
-                    onClick={() => {
-                      handleLogout();
-                    }}
-                    sx={{
-                      color: "black",
-                    }}
-                  />
-                </Stack>
-
-                <Stack
-                  direction={"column"}
-                  sx={{
-                    width: "100vw",
-                    maxWidth: mobileWidth,
-                    height: 40,
-                    backgroundImage: `url(${handleDeriveStrip()})`,
-                    backgroundSize: "cover",
-                  }}
-                />
+                <IconButton onClick={handleLogout}>
+                  <LogoutIcon fontSize={"small"} sx={{ color: "black" }} />
+                </IconButton>
               </Stack>
             )}
           </Paper>
         </Grid>
 
-        {/* Create List Menu */}
-        <Grid item>
-          {loading && (
-            <Skeleton
-              animation="wave"
-              variant="rectangular"
-              height={"35vmin"}
-              width={"100vmin"}
-              sx={{ maxWidth: mobileWidth }}
-            />
-          )}
-          {!loading && (
-            <Paper
-              elevation={0}
-              sx={{
-                display: "flex",
-                width: "100vw",
-                maxWidth: mobileWidth,
-                borderRadius: 0,
-                backgroundColor: handleDeriveBodyColor(),
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Stack direction="column" padding={5} spacing={2}>
-                <Button
-                  variant={"outlined"}
-                  onClick={handleOpenNewListForm}
-                  sx={{
-                    "&:hover": { border: "2px solid white" },
-                    borderRadius: 0,
-                    border: "2px solid white",
-                    color: "white",
-                  }}
-                >
-                  <Typography sx={{ color: "white" }}>Create New List</Typography>
-                  <AddIcon fontSize="large" sx={{ color: "white" }} />
-                </Button>
-              </Stack>
-            </Paper>
-          )}
-        </Grid>
-
-        {/* Filter options below */}
-        <Grid item>
-          {!loading && (
-            <Paper elevation={0}>
-              <Stack p spacing={1} width={"100%"} ml direction={"row"}>
-                <IconButton
-                  onClick={() => setFilter(filterCardsBy.public)}
-                  sx={{
-                    color: filter === filterCardsBy.public && handleDeriveBodyColor(),
-                    background: filter === filterCardsBy.public && handleDeriveHeadingColor(),
-                    "&:hover": {
-                      background: handleDeriveHeadingColor(),
-                    },
-                  }}
-                >
-                  <PublicIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => setFilter(filterCardsBy.all)}
-                  sx={{
-                    color: filter === filterCardsBy.all && handleDeriveBodyColor(),
-                    background: filter === filterCardsBy.all && handleDeriveHeadingColor(),
-                    "&:hover": {
-                      background: handleDeriveHeadingColor(),
-                    },
-                  }}
-                >
-                  <AllInclusiveIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => setFilter(filterCardsBy.private)}
-                  sx={{
-                    color: filter === filterCardsBy.private && handleDeriveBodyColor(),
-                    background: filter === filterCardsBy.private && handleDeriveHeadingColor(),
-                    "&:hover": {
-                      background: handleDeriveHeadingColor(),
-                    },
-                  }}
-                >
-                  <LockOutlinedIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => setFilter(filterCardsBy.restricted)}
-                  sx={{
-                    color: filter === filterCardsBy.restricted && handleDeriveBodyColor(),
-                    background: filter === filterCardsBy.restricted && handleDeriveHeadingColor(),
-                    "&:hover": {
-                      background: handleDeriveHeadingColor(),
-                    },
-                  }}
-                >
-                  <KeyIcon />
-                </IconButton>
-              </Stack>
-            </Paper>
-          )}
-        </Grid>
+        {/* Search Bar */}
 
         {/* ListCard below */}
         <Grid item>
@@ -460,13 +324,14 @@ const LandingPage = ({
                   ref={provided.innerRef}
                 >
                   {loading && (
-                    <Stack width={"100vw"} direction={"column"} mt={5}>
+                    <Stack width={"100vw"} direction={"column"} mt={5} spacing={2}>
+                      {[1, 2, 3].map(() => (
                       <Skeleton
                         animation={"wave"}
                         variant="rectangular"
                         sx={{ maxWidth: mobileWidth }}
                         height={150}
-                      />
+                      />))}
                     </Stack>
                   )}
 
@@ -480,6 +345,7 @@ const LandingPage = ({
                         setActiveContainer={setActiveContainer}
                         listInfo={e}
                         key={i}
+                        theme={handleDeriveHeadingColor()}
                       />
                     ))}
                   {provided.placeholder}
@@ -489,18 +355,35 @@ const LandingPage = ({
           </DragDropContext>
         </Grid>
 
-        {activeContainer?.collapsedLists.length === 0 && !loading && (
-          <Grid item sx={{ width: "100vw", maxWidth: mobileWidth }}>
-            <Slide className="alert-slide" in={true} direction="right" sx={{ width: "100%" }}>
-              <Alert severity={severity}>{alertMessage}</Alert>
-            </Slide>
+        {!loading && (
+          <Fab
+            onClick={handleOpenNewListForm}
+            sx={{
+              background: "black",
+              position: "fixed",
+              bottom: 40,
+              right: 40,
+              "&:hover": { background: "black", border: "2px solid black" },
+            }}
+          >
+            <AddIcon sx={{ color: "white" }} />
+          </Fab>
+        )}
+
+        {activeContainer?.collapsedLists.length < 1 && !loading && (
+          <Grid item sx={{width: "100vw", maxWidth: mobileWidth, justifyContent:'center', alignItems:'center' }}>
             <img
               alt="decorative-background"
               src={handleContainerImg()}
               loading="lazy"
-              height={310}
-              width={310}
+              height={'95%'}
+              width={'95%'}
             />
+            <Typography fontFamily={"Urbanist"} variant={"h5"} color={"GrayText"}>
+              No lists yet to display
+            </Typography>
+            {/* <Slide className="alert-slide" in={true} direction="right" sx={{ width: "100%" }}>
+            </Slide> */}
           </Grid>
         )}
       </Grid>

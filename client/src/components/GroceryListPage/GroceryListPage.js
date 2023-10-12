@@ -54,9 +54,6 @@ function GroceryListPage({
   setActiveContainer,
   user,
   setUser,
-  groceryWallpaper,
-  todoWallpaper,
-  shoppingWallpaper,
 }) {
   // States
   const location = useLocation();
@@ -119,8 +116,8 @@ function GroceryListPage({
     if (modifiedIds.size > 0) {
       handleCheckItems();
     }
-    if (scope === groceryListScopes.private){
-      handlePushList(activeList?.groceryListItems, false, false)
+    if (scope === groceryListScopes.private) {
+      handlePushList(activeList?.groceryListItems, false, false);
     }
     navigate(-1);
   };
@@ -209,24 +206,6 @@ function GroceryListPage({
     return borderColors[groupedByIdentifier.indexOf(identifier)];
   };
 
-  const handleDeriveWallpaper = () => {
-    if (activeContainer?.containerType) {
-      if (activeContainer.containerType === groceryContainerTypes.grocery) {
-        return groceryWallpaper;
-      }
-      if (activeContainer.containerType === groceryContainerTypes.todo) {
-        return todoWallpaper;
-      }
-    }
-    if (containerId.includes(groceryContainerTypes.grocery)) {
-      return groceryWallpaper;
-    }
-    if (containerId.includes(groceryContainerTypes.todo)) {
-      return todoWallpaper;
-    }
-    return shoppingWallpaper;
-  };
-
   const handleDeriveThemeColor = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
       return {
@@ -270,7 +249,11 @@ function GroceryListPage({
         low: colors.shoppingColors.low,
       };
     }
-    return { bold: colors.fallbackColors.blod, medium: colors.fallbackColors.medium, low: colors.fallbackColors.low };
+    return {
+      bold: colors.fallbackColors.bold,
+      medium: colors.fallbackColors.medium,
+      low: colors.fallbackColors.low,
+    };
   };
 
   const handleFetchUserInfo = async () => {
@@ -345,7 +328,7 @@ function GroceryListPage({
 
     // Cache it in state
     if (res?.status === 200) {
-      if (cache) setActiveList({...res?.body, groceryListItems: res?.body?.groceryListItems});
+      if (cache) setActiveList({ ...res?.body, groceryListItems: res?.body?.groceryListItems });
     } else if (res?.status === 401) {
       setAlertMessage(messages.unauthorizedAccess);
     } else if (res?.status === 403) {
@@ -435,7 +418,8 @@ function GroceryListPage({
 
   return (
     <>
-      <meta name="theme-color" content={handleDeriveThemeColor().bold} />
+      <meta name="theme-color" content={"white"} />
+      {/* <meta name="theme-color" content={handleDeriveThemeColor().bold} /> */}
       {/* Alert messages*/}
       <Slide className="alert-slide" in={alertMessage && true}>
         <Alert severity={"error"} sx={{ position: "fixed", width: "96vw", top: "8vh", zIndex: 10 }}>
@@ -472,67 +456,32 @@ function GroceryListPage({
         </Box>
       )}
 
-      {/* Top bar with title and back button */}
-      <AppBar
-        component="nav"
-        sx={{
-          left: 0,
-          justifyContent: "center",
-          maxWidth: mobileWidth,
-          background: handleDeriveThemeColor().bold,
-        }}
+      {/* Back button */}
+      <IconButton
+        size="small"
+        onClick={handleBack}
+        sx={{ mt: 3, position: "fixed", left: "15px", zIndex: 11 }}
       >
-        <Toolbar>
-          <Stack direction={"row"} alignItems={"center"}>
-            <IconButton size="small" onClick={handleBack}>
-              <ArrowBackIosIcon sx={{ color: "white" }} />
-            </IconButton>
-            <Typography
-              padding={1}
-              fontSize={16}
-              variant={"overline"}
-              fontFamily={"Urbanist"}
-              fontWeight={400}
-              sx={{ color: "white", flexGrow: 1 }}
-            >
-              {listName}
-            </Typography>
-            {scope === groceryListScopes.public && <PublicIcon />}
-          </Stack>
-        </Toolbar>
-      </AppBar>
+        <ArrowBackIosIcon />
+      </IconButton>
 
       {/* List items */}
       <SwipeableViews disabled={showDone} index={slide} onChangeIndex={(slide) => setSlide(slide)}>
         {/* Active items */}
         <DragDropContext onDragEnd={handleOnDragEnd}>
-          <Droppable droppableId="list-items" >
+          <Droppable droppableId="list-items">
             {(provided, snapshot) => (
               <List
+                dense
                 {...provided.droppableProps}
                 ref={provided.innerRef}
                 sx={{
-                  pb: "10vh",
-                  mt: "8vh",
-                  minHeight: "50vh",
-                  maxHeight: "80vh",
                   overflowX: "hidden",
-                  width: "100vw",
                   maxWidth: mobileWidth,
+                  height: "88vh",
+                  pt:4,
                 }}
               >
-                {!showDone && (
-                  <Typography
-                    variant={"subtitle2"}
-                    fontFamily={"Urbanist"}
-                    fontWeight={400}
-                    color={"#374151"}
-                    sx={{ backdropFilter: "blur(3px)" }}
-                    maxWidth={`calc(${mobileWidth} - 20px)`}
-                  >
-                    {"Swipe Left To See Checked Items"}
-                  </Typography>
-                )}
                 {!loading &&
                   activeList?.groceryListItems.map((e, i) => {
                     if (!e.checked || showDone)
@@ -574,26 +523,14 @@ function GroceryListPage({
         {/* Checked items */}
         {!showDone ? (
           <List
-          sx={{
-            pb: "10vh",
-            mt: "8vh",
-            minHeight: "50vh",
-            maxHeight: "80vh",
-            overflowX: "hidden",
-            width: "100vw",
-            maxWidth: mobileWidth,
-          }}
+            dense
+            sx={{
+              overflowX: "hidden",
+              maxWidth: mobileWidth,
+              height: "88vh",
+              pt:4,
+            }}
           >
-            <Typography
-              variant={"subtitle2"}
-              fontFamily={"Urbanist"}
-              fontWeight={400}
-              color={"#374151"}
-              sx={{ backdropFilter: "blur(3px)" }}
-              maxWidth={`calc(${mobileWidth} - 20px)`}
-            >
-              {"Swipe Right To See Active Items"}
-            </Typography>
             {activeList?.groceryListItems.map((e, i) => {
               if (e.checked)
                 return (
@@ -626,7 +563,7 @@ function GroceryListPage({
         )}
       </SwipeableViews>
 
-      {/* Bottom Bar with buttons */}
+      {/* Bottom Bar */}
       <BottomBar
         scope={scope}
         handleSync={handleSync}
@@ -636,9 +573,55 @@ function GroceryListPage({
         showDone={showDone}
         setShowDone={setShowDone}
       />
+      {!showDone && (
+        <Stack
+          direction={"row"}
+          position={"fixed"}
+          left={"calc(50% - 15px)"}
+          top={"90vh"}
+          bottom={10}
+          justifyContent={"space-around"}
+          width={"30px"}
+        >
+          <div
+            onClick={() => setSlide(0)}
+            style={{
+              height: "8px",
+              width: "8px",
+              borderRadius: "50%",
+              background: slide === 0 ? "black" : "lightgray",
+            }}
+          />
+          <div
+            onClick={() => setSlide(1)}
+            style={{
+              height: "8px",
+              width: "8px",
+              borderRadius: "50%",
+              background: slide === 1 ? "black" : "lightgray",
+            }}
+          />
+        </Stack>
+      )}
+
+      {activeList?.groceryListItems.length === 0 && !loading && (
+        <Typography
+          variant={"subtitle1"}
+          fontFamily={"Urbanist"}
+          color={"GrayText"}
+          sx={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          No items to display
+        </Typography>
+      )}
 
       {/* Background Wallpaper */}
-      <div
+      {/* <div
         id="background-image"
         style={{
           position: "fixed",
@@ -647,12 +630,12 @@ function GroceryListPage({
           width: "100vw",
           maxWidth: mobileWidth,
           zIndex: "-1",
-          backgroundImage: `url(${handleDeriveWallpaper()})`,
+          // backgroundImage: `url(${handleDeriveWallpaper()})`,
           backdropFilter:'',
           backgroundSize: "60%",
           overflowX: "hidden",
         }}
-      />
+      /> */}
     </>
   );
 }

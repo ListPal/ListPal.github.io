@@ -112,7 +112,7 @@ const ChangePhone = ({ user, setUser }) => {
         {/*  Textfield(s) */}
         <Stack direction={"column"} spacing={2} pt={4} width={"100%"}>
           <Typography textAlign={"left"} fontFamily={"Urbanist"}>
-            Manage your contact info by updating you current phone <strong>{user?.phone}</strong>
+            Manage your contact info by updating your current phone <strong>{user?.phone}</strong>
           </Typography>
           <CssTextField
             type={"tel"}

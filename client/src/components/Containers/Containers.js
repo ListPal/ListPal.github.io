@@ -66,10 +66,10 @@ const Containers = ({
             }}
           >
             <Typography
+              padding={1}
               fontFamily={"Urbanist"}
               fontWeight={500}
               variant="h5"
-              gutterBottom
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -79,7 +79,7 @@ const Containers = ({
               <div
                 onClick={() => navigate("/profile")}
                 style={{
-                  fontFamily: 'Urbanist',
+                  fontFamily: "Urbanist",
                   width: 56,
                   height: 56,
                   background: "lightgray",
@@ -108,30 +108,27 @@ const Containers = ({
             />
           </Stack>
         </Grid>
-
         <Stack
           sx={{
             width: "100vw",
             height: "5vh",
           }}
         />
-
-        <Grid item>
-          {user &&
-            ["Shopping Lists", "Grocery Lists", "Productivity Lists"].map((e, i) => {
-              return (
-                <Container
-                  key={i}
-                  id={user[containerIds[i]]}
-                  heading={e}
-                  imgSrc={imgSources[i]}
-                  grocery={grocery}
-                  todo={todo}
-                  shop={shop}
-                />
-              );
-            })}
-        </Grid>
+        {/* Cards */}
+        {user &&
+          ["Shopping Lists", "Grocery Lists", "Other Lists"].map((e, i) => {
+            return (
+              <Container
+                key={i}
+                id={user[containerIds[i]]}
+                heading={e}
+                imgSrc={imgSources[i]}
+                grocery={grocery}
+                todo={todo}
+                shop={shop}
+              />
+            );
+          })}
       </Grid>
     </>
   );

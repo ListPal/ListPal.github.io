@@ -37,10 +37,11 @@ const newListFormHelperText = {
 };
 
 const borderColors = [
-  "#7b9370",
+  "black",
   "#F0B323",
   "#30C8C9",
   "#CC801F",
+  "#7b9370",
   "#13707e",
   "#ff9466",
   "#133857",

@@ -118,8 +118,7 @@ const ChangeName = ({ user, setUser }) => {
         {/*  Textfield(s) */}
         <Stack direction={"column"} spacing={2} pt={4} width={"100%"}>
           <Typography textAlign={"left"} fontFamily={"Urbanist"}>
-            Manage your name <strong>{user?.name + " " + user?.lastName}</strong> by updating it if
-            you need to
+            Manage your name <strong>{user?.name + " " + user?.lastName}</strong> 
           </Typography>
           <CssTextField
             error={error?.error === validationErrors.name}

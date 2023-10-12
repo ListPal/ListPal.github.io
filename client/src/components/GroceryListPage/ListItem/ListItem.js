@@ -17,6 +17,7 @@ import {
   ListItemText,
   IconButton,
   ListItemIcon,
+  Divider,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { deleteItem, deletePublicItem } from "../../../utils/rest";
@@ -72,7 +73,7 @@ const Listitem = ({
   };
 
   const handleCheck = () => {
-    setLoading(true)
+    setLoading(true);
     // Mark items checked/unchecked
     let listItems = activeList?.groceryListItems || [];
     const updatedItems = listItems.map((e) =>
@@ -98,7 +99,7 @@ const Listitem = ({
       groceryListItems: listItems,
     });
 
-    setLoading(false)
+    setLoading(false);
   };
 
   const openEditItemDialogue = () => {
@@ -113,7 +114,7 @@ const Listitem = ({
   };
 
   const handleDeleteItem = async () => {
-    setLoading(true)
+    setLoading(true);
     // Construct data to be sent
     const data = {
       containerId: activeList?.containerId,
@@ -139,7 +140,7 @@ const Listitem = ({
     } else {
       setAlertMessage(messages.genericError);
     }
-    setLoading(false)
+    setLoading(false);
   };
 
   const onClicks = [handleDeleteItem, openEditItemDialogue, openSendMoneyDialogue];
@@ -147,16 +148,16 @@ const Listitem = ({
   return (
     <>
       <ListItem
+        alignItems={"flex-start"}
         sx={{
-          mt: 1,
-          ml: '10px',
-          background: item?.checked ? "#F3F4F6" : "white",
-          // borderLeft: `5px solid ${borderColor || colors.fallbackColors.blod}`,
+          // mt: 1,
+          // background: item?.checked ? "#F3F4F6" : "white",
+          // boxShadow: "0 6.4px 14.4px 0 rgb(0 0 0 / 13%), 0 1.2px 3.6px 0 rgb(0 0 0 / 11%)",
           height: 80,
+          ml: "20px",
           borderRadius: 1,
-          boxShadow: "0 6.4px 14.4px 0 rgb(0 0 0 / 13%), 0 1.2px 3.6px 0 rgb(0 0 0 / 11%)",
-          maxWidth: `calc(${mobileWidth} - 20px)`,
-          width: 'calc(100vw - 20px)'
+          maxWidth: `calc(${mobileWidth} - 40px)`,
+          width: "calc(100vw - 40px)",
         }}
         ref={provided?.innerRef}
         {...provided?.draggableProps}
@@ -177,7 +178,7 @@ const Listitem = ({
                 tooltipTitle={action.name}
                 onClick={onClicks[i]}
                 FabProps={{
-                  disabled: loading
+                  disabled: loading,
                 }}
               />
             ))}
@@ -204,24 +205,30 @@ const Listitem = ({
           </IconButton>
         </ListItemIcon>
         <ListItemText
+          primary={
+            <>
+              <Typography
+                fontFamily={"Urbanist"}
+                fontWeight={500}
+                color={item?.checked ? "gray" : "#3D4F58"}
+                sx={{ textDecorationLine: item?.checked && "line-through" }}
+              >
+                {item?.name && truncateString(item?.name, 28)}
+              </Typography>
+            </>
+          }
           secondary={
-            <Typography fontSize={12} fontFamily={"Urbanist"} color={"#9CA3AF"}>
-              {identifier}
+            <>
+              <Typography fontSize={12} fontFamily={"Urbanist"} color={"#9CA3AF"}>
+                {identifier}
+              </Typography>
               {item?.name.length >= 28 && <NotesIcon fontSize={"12"} color={"action"} />}
-            </Typography>
+            </>
           }
           onClick={handleOpenItemDescription}
-        >
-          <Typography
-            fontFamily={"Urbanist"}
-            fontWeight={500}
-            color={item?.checked ? "gray" : "#374151"}
-            sx={{ textDecorationLine: item?.checked && "line-through" }}
-          >
-            {item?.name && truncateString(item?.name, 28)}
-          </Typography>
-        </ListItemText>
+        />
       </ListItem>
+      <Divider variant="inset" component="li" />
 
       {openItemDescrition && (
         <ItemDescription

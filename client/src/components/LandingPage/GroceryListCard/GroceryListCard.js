@@ -1,4 +1,5 @@
 import {
+  colors,
   groceryContainerTypes,
   groceryListScopes,
   mobileWidth,
@@ -20,7 +21,7 @@ import christmasWallpaper from "../../../assets/christmasWallpaper.jpg";
 import thanksGivingWallpaper from "../../../assets/thanksGivingWallpaper.jpg";
 import { Draggable } from "react-beautiful-dnd";
 
-const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContainer, index }) => {
+const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContainer, index, theme }) => {
   // States
   const [alertMessage, setAlertMessage] = useState(null);
   const [severity, setSeverity] = useState("info");
@@ -99,11 +100,12 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
-            elevation={3}
+            elevation={0}
             sx={{
               maxWidth: mobileWidth,
               borderRadius: 0,
               width: "100vw",
+              boxShadow: "0 6.4px 14.4px 0 rgb(0 0 0 / 13%), 0 1.2px 3.6px 0 rgb(0 0 0 / 11%)",
             }}
           >
             <Slide
@@ -136,6 +138,7 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
                 style={{
                   display: "flex",
                   flexDirection: "column",
+                  background: theme,
                   backgroundImage: `url(${handleDeriveWallpaper()})`,
                   backgroundSize: "cover",
                   width: "100%",

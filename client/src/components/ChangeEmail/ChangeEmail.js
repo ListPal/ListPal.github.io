@@ -111,7 +111,7 @@ const ChangeEmail = ({ user, setUser }) => {
         {/*  Textfield(s) */}
         <Stack direction={"column"} spacing={2} pt={4} width={"100%"}>
           <Typography textAlign={"left"} fontFamily={"Urbanist"}>
-            Manage your username <strong>{user?.email}</strong> by updating you current email
+            Manage your username <strong>{user?.email}</strong> by updating your current email
           </Typography>
           <CssTextField
             error={error && true}
