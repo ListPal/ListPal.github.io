@@ -1,21 +1,13 @@
 import { useState, useRef, useEffect } from "react";
-import {
-  Button,
-  Typography,
-  Grid,
-  Stack,
-  TextField,
-  Divider,
-} from "@mui/material";
+import { Button, Typography, Grid, Stack, TextField, Divider, styled } from "@mui/material";
 import { postRequest, checkSession } from "../../utils/rest";
 import { URLS, colors, mobileWidth } from "../../utils/enum";
 import { Link, useNavigate } from "react-router-dom";
-import vector from "../../assets/login.jpg";
-import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import { usernamePasswordValidation } from "../../utils/inputValidation";
+import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import LoadingButton from "@mui/lab/LoadingButton";
 
-const Login = ({ setActiveContainer, setUser }) => {
+const Login = ({ setActiveContainer, setUser, theme }) => {
   const [validation, setValidation] = useState({
     validated: true,
     message: null,
@@ -24,6 +16,31 @@ const Login = ({ setActiveContainer, setUser }) => {
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
   const navigate = useNavigate();
+
+  const CssTextField = styled(TextField)({
+    "& label.Mui-focused": {
+      color: colors[theme].generalColors.helperTextFontColor,
+    },
+    "& label": {
+      fontFamily: "Urbanist",
+      color: colors[theme].generalColors.helperTextFontColor,
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: colors[theme].generalColors.fontColor,
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        border: `1px solid ${colors[theme].generalColors.fontColor}`,
+        borderRadius: 0,
+      },
+      "&:hover fieldset": {
+        borderColor: colors[theme].generalColors.fontColor,
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: colors[theme].generalColors.fontColor,
+      },
+    },
+  });
 
   const handleLogin = async (username, password) => {
     setLoading(true);
@@ -89,14 +106,7 @@ const Login = ({ setActiveContainer, setUser }) => {
         maxWidth: mobileWidth,
       }}
     >
-      <meta name="theme-color" content="white" />
-      <img
-        alt="login-decoration"
-        src={vector}
-        loading="lazy"
-        height={250}
-        width={300}
-      />
+      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
       <Stack
         direction={"column"}
         spacing={2}
@@ -109,6 +119,8 @@ const Login = ({ setActiveContainer, setUser }) => {
         }}
       >
         <Typography
+          color={colors[theme].generalColors.fontColor}
+          fontFamily={"Urbanist"}
           variant="h4"
           sx={{
             width: "100vw",
@@ -120,8 +132,7 @@ const Login = ({ setActiveContainer, setUser }) => {
           Login
           <Divider sx={{ mt: 1, width: "90vw", maxWidth: mobileWidth }} />{" "}
         </Typography>
-        <TextField
-          color="success"
+        <CssTextField
           required
           error={!validation?.validated}
           id="username-input"
@@ -130,9 +141,14 @@ const Login = ({ setActiveContainer, setUser }) => {
           variant="outlined"
           inputRef={usernameRef}
           sx={{ width: "80vw", maxWidth: mobileWidth }}
+          InputProps={{
+            style: {
+              fontFamily: "Urbanist",
+              color: colors[theme].generalColors.helperTextFontColor,
+            },
+          }}
         />
-        <TextField
-          color="success"
+        <CssTextField
           error={!validation?.validated}
           required
           id="password-input"
@@ -143,23 +159,27 @@ const Login = ({ setActiveContainer, setUser }) => {
           inputRef={passwordRef}
           helperText={!validation?.validated && validation?.message}
           sx={{ width: "80vw", maxWidth: mobileWidth }}
+          InputProps={{
+            style: {
+              color: colors[theme].generalColors.helperTextFontColor,
+            },
+          }}
         />
         <LoadingButton
           loading={loading}
           endIcon={<></>}
           loadingPosition="end"
           variant="contained"
-          onClick={() =>
-            handleLogin(usernameRef.current.value, passwordRef.current.value)
-          }
+          onClick={() => handleLogin(usernameRef.current.value, passwordRef.current.value)}
           sx={{
+            fontFamily: "Urbanist",
             height: "50px",
             width: "80vw",
             maxWidth: mobileWidth,
-            background: colors.fallbackColors.bold,
+            background: colors[theme].fallbackColors.bold,
             "&:hover": {
-              background: colors.fallbackColors.bold,
-              border: `2px solid ${colors.fallbackColors.bold}`,
+              background: colors[theme].fallbackColors.bold,
+              border: `2px solid ${colors[theme].fallbackColors.bold}`,
             },
           }}
         >
@@ -171,14 +191,15 @@ const Login = ({ setActiveContainer, setUser }) => {
           endIcon={<ElectricBoltIcon />}
           onClick={() => navigate("/quick-list")}
           sx={{
+            fontFamily: "Urbanist",
             height: "50px",
             width: "80vw",
             maxWidth: mobileWidth,
-            borderRadius:'20px 0px 20px 0px',
-            background: colors.quickListColors.bold,
+            borderRadius: "20px 0px 20px 0px",
+            background: colors[theme].quickListColors.bold,
             "&:hover": {
-              background: colors.quickListColors.bold,
-              border: `2px solid ${colors.quickListColors.bold}`,
+              background: colors[theme].quickListColors.bold,
+              border: `2px solid ${colors[theme].quickListColors.bold}`,
             },
           }}
           variant="contained"
@@ -186,10 +207,19 @@ const Login = ({ setActiveContainer, setUser }) => {
           Quick List
         </Button>
         <Stack direction={"row"}>
-          <Typography sx={{ color: "gray" }}>Dont have an account?</Typography>
+          <Typography
+            fontFamily={"Urbanist"}
+            sx={{ color: colors[theme].generalColors.helperTextFontColor }}
+          >
+            Dont have an account?
+          </Typography>
           <Link to="/register" style={{ textDecoration: "none" }}>
-            <Typography sx={{ ml: 1, color: "#1F2937", fontWeight: "570" }}>
-              Sign Up
+            <Typography
+              color={colors[theme].generalColors.fontColor}
+              fontFamily={"Urbanist"}
+              sx={{ ml: 1, fontWeight: "570" }}
+            >
+              <strong>Sign Up</strong>
             </Typography>
           </Link>
         </Stack>

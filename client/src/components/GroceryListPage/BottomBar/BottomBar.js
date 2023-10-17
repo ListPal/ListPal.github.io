@@ -1,7 +1,6 @@
 import { useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
-import Fab from "@mui/material/Fab";
-import { dialogues, groceryListScopes, mobileWidth } from "../../../utils/enum";
+import { colors, dialogues, groceryListScopes, mobileWidth } from "../../../utils/enum";
 import { Stack } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import SyncIcon from "@mui/icons-material/Sync";
@@ -24,6 +23,7 @@ const BottomBar = ({
   isEmptyList,
   showDone,
   setShowDone,
+  theme,
 }) => {
   const [openShareTray, setOpenShareTray] = useState(false);
 
@@ -48,59 +48,57 @@ const BottomBar = ({
         pb
         zIndex={100}
         direction={"row"}
-        justifyContent={"center"}
-        alignItems={'center'}
+        justifyContent={"flex-end"}
+        alignItems={"center"}
         sx={{
           boxShadow:
             "0 11px 15px -7px rgb(0 0 0 / 20%), 0 24px 38px 3px rgb(0 0 0 / 14%), 0 9px 46px 8px rgb(0 0 0 / 12%)",
           // borderRadius: "50px 50px 0px 0px",
           position: "fixed",
           bottom: 0,
-          background: "white",
+          backgroundColor: colors[theme].generalColors.innerBackground,
           width: "100%",
           maxWidth: mobileWidth,
           height: "6vh",
         }}
       >
-        {/* Sync List */}
-        <IconButton
-          disabled={scope === groceryListScopes.private}
-          sx={{ mr: 2.5 }}
-          onClick={() => handleSync(true)}
-        >
-          <SyncIcon />
+        {/* Add Item */}
+        <IconButton onClick={() => setOpenDialogue(dialogues.addItem)}>
+          <AddIcon
+            fontSize={"large"}
+            sx={{ color: colors[theme].generalColors.fontColor }}
+          ></AddIcon>
         </IconButton>
 
         {/* Send/Receive $*/}
-        <IconButton sx={{ mr: 2.5 }} onClick={() => setOpenDialogue(dialogues.sendMoney)}>
-          <AttachMoneyOutlinedIcon />
+        <IconButton sx={{ ml: 1 }} onClick={() => setOpenDialogue(dialogues.sendMoney)}>
+          <AttachMoneyOutlinedIcon sx={{ color: colors[theme].generalColors.fontColor }} />
         </IconButton>
 
-        {/* Add Item */}
-        <IconButton size={'large'} onClick={() => setOpenDialogue(dialogues.addItem)}>
-          <AddIcon fontSize={'large'} sx={{ color: "black" }}></AddIcon>
-        </IconButton>
-
-        {/*  Move checked */}
-        <IconButton sx={{ ml: 2.5 }} onClick={() => setShowDone(!showDone)}>
-          {showDone && <TaskAltOutlinedIcon />}
-          {!showDone && <UnpublishedOutlinedIcon />}
+        {/*  Show/Hide checked */}
+        <IconButton sx={{ ml: 2 }} onClick={() => setShowDone(!showDone)}>
+          {showDone && (
+            <TaskAltOutlinedIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+          )}
+          {!showDone && (
+            <UnpublishedOutlinedIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+          )}
         </IconButton>
 
         {/* Share List */}
         {scope === groceryListScopes.public ? (
-          <IconButton sx={{ ml: 2.5 }} onClick={() => setOpenShareTray(!openShareTray)}>
-            <IosShareIcon />
+          <IconButton sx={{ ml: 2, mr: 2 }} onClick={() => setOpenShareTray(!openShareTray)}>
+            <IosShareIcon sx={{ color: colors[theme].generalColors.fontColor }} />
           </IconButton>
         ) : (
           <IconButton
             disabled={isEmptyList}
-            sx={{ ml: 2.5 }}
+            sx={{ ml: 2, mr: 2 }}
             size="small"
             variant="contained"
             onClick={() => setOpenDialogue(dialogues.resetList)}
           >
-            <AutoDeleteOutlinedIcon />
+            <AutoDeleteOutlinedIcon sx={{ color: colors[theme].generalColors.fontColor }} />
           </IconButton>
         )}
       </Stack>
@@ -114,7 +112,10 @@ const BottomBar = ({
           onClose={() => setOpenShareTray(false)}
         >
           <List sx={{ height: "15vh" }}>
-            <Link to={handleSareWhatsappLink()} style={{ textDecoration: "none", color: "black" }}>
+            <Link
+              to={handleSareWhatsappLink()}
+              style={{ textDecoration: "none", color: colors[theme].generalColors.fontColor }}
+            >
               <ListItemButton>
                 <ListItemAvatar>
                   <WhatsAppIcon color="success" />
@@ -123,7 +124,10 @@ const BottomBar = ({
               </ListItemButton>
             </Link>
 
-            <Link to={handleMessageLink()} style={{ textDecoration: "none", color: "black" }}>
+            <Link
+              to={handleMessageLink()}
+              style={{ textDecoration: "none", color: colors[theme].generalColors.fontColor }}
+            >
               <ListItemButton>
                 <ListItemAvatar>
                   <MapsUgcIcon />

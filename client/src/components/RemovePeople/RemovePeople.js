@@ -7,9 +7,10 @@ import {
   ListItemAvatar,
   ListItemButton,
   ListItemText,
+  Typography,
 } from "@mui/material";
 import { postRequest } from "../../utils/rest";
-import { URLS } from "../../utils/enum";
+import { URLS, colors } from "../../utils/enum";
 import { useNavigate } from "react-router-dom";
 
 const RemovePeople = ({
@@ -19,6 +20,7 @@ const RemovePeople = ({
   peopleToDelete,
   setPeopleToDelete,
   activeContainer,
+  theme,
 }) => {
   const [currentPeople, setCurrentPeople] = useState([]);
   const navigate = useNavigate();
@@ -70,7 +72,7 @@ const RemovePeople = ({
     <List
       dense
       sx={{
-        bgcolor: "background.paper",
+        bgcolor: colors[theme].generalColors.innerBackground,
         overflow: "scroll",
         maxHeight: "40vh",
       }}
@@ -94,7 +96,7 @@ const RemovePeople = ({
               <ListItemAvatar>
                 <Avatar alt={`${user}`} src={`/static/images/avatar/${user}.jpg`} />
               </ListItemAvatar>
-              <ListItemText id={labelId} primary={`${user.split("@")[0]}`} />
+              <ListItemText id={labelId} primary={<Typography fontFamily={'Urbanist'} color={colors[theme].generalColors.fontColor}>{user.split("@")[0]}</Typography>} />
             </ListItemButton>
           </ListItem>
         );

@@ -1,4 +1,12 @@
-import { Typography, CircularProgress, Grid, Stack, TextField, IconButton } from "@mui/material";
+import {
+  Typography,
+  CircularProgress,
+  Grid,
+  Stack,
+  TextField,
+  IconButton,
+  styled,
+} from "@mui/material";
 import { registrationValidation, validationErrors } from "../../utils/inputValidation";
 import { useState, useRef } from "react";
 import { postRequest, logout } from "../../utils/rest";
@@ -9,7 +17,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LoadingButton from "@mui/lab/LoadingButton";
 
-const Register = ({ setUser, setActiveList }) => {
+const Register = ({ setUser, setActiveList, theme }) => {
   const [isPasswordVisibile, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisibile, setIsConfirmPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -25,6 +33,31 @@ const Register = ({ setUser, setActiveList }) => {
   const confirmPasswordRef = useRef(null);
   const phoneRef = useRef(null);
   const navigate = useNavigate();
+
+  const CssTextField = styled(TextField)({
+    "& label.Mui-focused": {
+      color: colors[theme].generalColors.helperTextFontColor,
+    },
+    "& label": {
+      fontFamily: "Urbanist",
+      color: colors[theme].generalColors.helperTextFontColor,
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: colors[theme].generalColors.fontColor,
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        border: `1px solid ${colors[theme].generalColors.fontColor}`,
+        borderRadius: 0,
+      },
+      "&:hover fieldset": {
+        borderColor: colors[theme].generalColors.fontColor,
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: colors[theme].generalColors.fontColor,
+      },
+    },
+  });
 
   const handleDuplicatedAccountError = async () => {
     return {
@@ -45,11 +78,11 @@ const Register = ({ setUser, setActiveList }) => {
   const handleRegister = async (name, lastName, username, password, phone) => {
     setLoading(true);
     const data = {
-      name: name.trim() || '',
-      lastName: lastName.trim() || '',
-      phone: phone.trim() || '',
-      email: username.toLowerCase().trim() || '',
-      password: password || '',
+      name: name.trim() || "",
+      lastName: lastName.trim() || "",
+      phone: phone.trim() || "",
+      email: username.toLowerCase().trim() || "",
+      password: password || "",
     };
 
     // Validate regisration input on client side
@@ -107,7 +140,7 @@ const Register = ({ setUser, setActiveList }) => {
 
   return (
     <>
-      <meta name="theme-color" content={'black'} />
+      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
       {loading && (
         <>
           <CircularProgress
@@ -132,16 +165,14 @@ const Register = ({ setUser, setActiveList }) => {
         <div
           style={{
             padding: 10,
-            borderRadius: "0px 0px 40px 0px",
             display: "flex",
             alignItems: "center",
             textAlign: "left",
             width: "100vw",
-            background: colors.fallbackColors.bold,
           }}
         >
-          <ArrowBackIosIcon sx={{ color: "white" }} onClick={() => navigate("/")} />
-          <Typography sx={{ color: "white" }} variant="h4">
+          <ArrowBackIosIcon sx={{ color: colors[theme].generalColors.fontColor }} onClick={() => navigate("/")} />
+          <Typography sx={{ color: colors[theme].generalColors.fontColor }} variant="h4">
             Create Account
           </Typography>
         </div>
@@ -152,11 +183,10 @@ const Register = ({ setUser, setActiveList }) => {
           sx={{
             width: "100vw",
             maxWidth: mobileWidth,
-            // boxShadow: "-1px -1px 8px lightgray",
             alignItems: "center",
           }}
         >
-          <TextField
+          <CssTextField
             autoFocus
             error={validation.error === validationErrors.name}
             helperText={validation.error === validationErrors.name && validation?.message}
@@ -166,11 +196,14 @@ const Register = ({ setUser, setActiveList }) => {
             variant="filled"
             sx={{ width: "80vw", maxWidth: mobileWidth }}
             inputRef={nameRef}
+            InputProps={{
+              style: { fontFamily: "Urbanist", color: colors[theme].generalColors.fontColor },
+            }}
             inputProps={{
               maxLength: 20,
             }}
           />
-          <TextField
+          <CssTextField
             error={validation.error === validationErrors.lastName}
             helperText={validation.error === validationErrors.lastName && validation?.message}
             required
@@ -179,11 +212,14 @@ const Register = ({ setUser, setActiveList }) => {
             variant="filled"
             sx={{ width: "80vw", maxWidth: mobileWidth }}
             inputRef={lastnameRef}
+            InputProps={{
+              style: { fontFamily: "Urbanist", color: colors[theme].generalColors.fontColor },
+            }}
             inputProps={{
               maxLength: 40,
             }}
           />
-          <TextField
+          <CssTextField
             error={
               validation.error === validationErrors.email_regex ||
               validation.error === validationErrors.email_length
@@ -201,11 +237,14 @@ const Register = ({ setUser, setActiveList }) => {
             variant="filled"
             sx={{ width: "80vw", maxWidth: mobileWidth }}
             inputRef={usernameRef}
+            InputProps={{
+              style: { fontFamily: "Urbanist", color: colors[theme].generalColors.fontColor },
+            }}
             inputProps={{
               maxLength: 100,
             }}
           />
-          <TextField
+          <CssTextField
             error={
               validation.error === validationErrors.password_regex ||
               validation.error === validationErrors.password_length
@@ -219,7 +258,7 @@ const Register = ({ setUser, setActiveList }) => {
             id="password-input"
             label="Password"
             type={isPasswordVisibile ? "text" : "password"}
-            autoComplete="current-password"
+            autoComplete="new-password"
             variant="filled"
             sx={{ width: "80vw", maxWidth: mobileWidth }}
             inputRef={passwordRef}
@@ -227,6 +266,9 @@ const Register = ({ setUser, setActiveList }) => {
               maxLength: 50,
             }}
             InputProps={{
+              style: {
+                color: colors[theme].generalColors.fontColor,
+              },
               endAdornment: (
                 <IconButton
                   size="small"
@@ -239,7 +281,7 @@ const Register = ({ setUser, setActiveList }) => {
               ),
             }}
           />
-          <TextField
+          <CssTextField
             error={validation.error === validationErrors.password_mismatch}
             helperText={
               validation.error === validationErrors.password_mismatch && validation?.message
@@ -248,7 +290,7 @@ const Register = ({ setUser, setActiveList }) => {
             id="password-input2"
             label="Confirm Password"
             type={isConfirmPasswordVisibile ? "text" : "password"}
-            autoComplete="current-password"
+            autoComplete="new-password"
             variant="filled"
             sx={{ width: "80vw", maxWidth: mobileWidth }}
             inputRef={confirmPasswordRef}
@@ -256,6 +298,9 @@ const Register = ({ setUser, setActiveList }) => {
               maxLength: 50,
             }}
             InputProps={{
+              style: {
+                color: colors[theme].generalColors.fontColor,
+              },
               endAdornment: (
                 <IconButton
                   size="small"
@@ -271,7 +316,7 @@ const Register = ({ setUser, setActiveList }) => {
               ),
             }}
           />
-          <TextField
+          <CssTextField
             error={
               validation.error === validationErrors.phone_regex ||
               validation.error === validationErrors.phone_length
@@ -288,6 +333,9 @@ const Register = ({ setUser, setActiveList }) => {
             variant="filled"
             sx={{ width: "80vw", maxWidth: mobileWidth }}
             inputRef={phoneRef}
+            InputProps={{
+              style: { fontFamily: "Urbanist", color: colors[theme].generalColors.fontColor },
+            }}
             inputProps={{
               maxLength: 10,
             }}
@@ -303,10 +351,10 @@ const Register = ({ setUser, setActiveList }) => {
               height: "50px",
               width: "80vw",
               maxWidth: mobileWidth,
-              background: colors.fallbackColors.bold,
+              background: colors[theme].fallbackColors.bold,
               "&:hover": {
-                background: colors.fallbackColors.bold,
-                border: `2px solid ${colors.fallbackColors.bold}`,
+                background: colors[theme].fallbackColors.bold,
+                border: `2px solid ${colors[theme].fallbackColors.bold}`,
               },
             }}
             variant="contained"

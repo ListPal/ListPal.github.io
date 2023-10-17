@@ -1,13 +1,6 @@
 import { useState } from "react";
 import { truncateString } from "../../../utils/helper";
-import {
-  Button,
-  Typography,
-  Grid,
-  Paper,
-  Stack,
-  SpeedDial,
-} from "@mui/material";
+import { Button, Typography, Grid, Paper, Stack, SpeedDial } from "@mui/material";
 import { mobileWidth, dialogues, dialogueObject, colors } from "../../../utils/enum";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
@@ -19,11 +12,6 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import QuickDialogue from "../QuickDialogue/QuickDialogue";
 import ItemDescription from "../../ItemDescription/ItemDescription";
 
-const actions = [
-  { icon: <DeleteIcon sx={{ color: "red" }} />, name: "Copy" },
-  { icon: <EditIcon sx={{ color: colors.quickListColors.bold }} />, name: "Save" },
-];
-
 const QuickListItem = ({
   itemsArray,
   setItemsArray,
@@ -31,13 +19,21 @@ const QuickListItem = ({
   openDialogue,
   setOpenDialogue,
   borderColor,
+  theme,
 }) => {
   const [openItemDescrition, setOpenItemDescription] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [checked, setChecked] = useState(item?.checked);
   const [moreOrCloseButton, setMoreOrCloseButton] = useState(
-    <MoreHorizIcon sx={{ color: colors.quickListColors.bold, position: "relative", right: 18 }} />
+    <MoreHorizIcon
+      sx={{ color: colors[theme].quickListColors.bold, position: "relative", right: 18 }}
+    />
   );
+
+  const actions = [
+    { icon: <DeleteIcon sx={{ color: "red" }} />, name: "Copy" },
+    { icon: <EditIcon sx={{ color: colors[theme].quickListColors.bold }} />, name: "Save" },
+  ];
 
   const handleOpenItemDescription = () => {
     if (item?.name.length > 30) {
@@ -87,20 +83,20 @@ const QuickListItem = ({
             <Stack direction={"row"} sx={{ alignItems: "center" }}>
               {checked ? (
                 <Button disableRipple onClick={handleCheck}>
-                  <CheckCircleIcon fontSize="large" sx={{ color: colors.quickListColors.bold }} />
+                  <CheckCircleIcon
+                    fontSize="large"
+                    sx={{ color: colors[theme].quickListColors.bold }}
+                  />
                 </Button>
               ) : (
                 <Button disableRipple onClick={handleCheck}>
                   <RadioButtonUncheckedIcon
                     fontSize="large"
-                    sx={{ color: colors.quickListColors.bold }}
+                    sx={{ color: colors[theme].quickListColors.bold }}
                   />
                 </Button>
               )}
-              <Typography
-                fontFamily={"Urbanist"}
-                onClick={handleOpenItemDescription}
-              >
+              <Typography fontFamily={"Urbanist"} onClick={handleOpenItemDescription}>
                 {item?.name && truncateString(item?.name, 30)}
               </Typography>
             </Stack>
@@ -112,14 +108,22 @@ const QuickListItem = ({
               onClose={() =>
                 setMoreOrCloseButton(
                   <MoreHorizIcon
-                    sx={{ color: colors.quickListColors.bold, position: "relative", right: 18 }}
+                    sx={{
+                      color: colors[theme].quickListColors.bold,
+                      position: "relative",
+                      right: 18,
+                    }}
                   />
                 )
               }
               onOpen={() =>
                 setMoreOrCloseButton(
                   <CloseIcon
-                    sx={{ color: colors.quickListColors.bold, position: "relative", right: 18 }}
+                    sx={{
+                      color: colors[theme].quickListColors.bold,
+                      position: "relative",
+                      right: 18,
+                    }}
                   />
                 )
               }
@@ -134,7 +138,11 @@ const QuickListItem = ({
             >
               {actions.map((action, i) => (
                 <SpeedDialAction
-                  sx={{ color: colors.quickListColors.bold, position: "relative", right: 18 }}
+                  sx={{
+                    color: colors[theme].quickListColors.bold,
+                    position: "relative",
+                    right: 18,
+                  }}
                   key={action.name}
                   icon={action.icon}
                   onClick={onClicks[i]}

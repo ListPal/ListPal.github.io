@@ -13,28 +13,59 @@ import AddPeopleList from "./components/AddPeopleList/AddPeopleList";
 import grocery from "./assets/grocery.jpg";
 import shop from "./assets/shop.jpg";
 import todo from "./assets/todo.jpg";
+//
 import Profile from "./components/Profile/Profile";
 import ChangeEmail from "./components/ChangeEmail/ChangeEmail";
 import ChangeName from "./components/ChangeName/ChangeName";
 import ChangePassword from "./components/ChangePassword/ChangePassword";
 import ChangePhone from "./components/ChangePhone/ChangePhone";
+import AuthPage from "./components/AuthPage/AuthPage";
+
+import { themes } from "./utils/enum";
 
 function App() {
+  const [theme, setTheme] = useState(themes.lightTheme);
   const [user, setUser] = useState(null);
   const [activeList, setActiveList] = useState({ groceryListItems: [] });
   const [activeContainer, setActiveContainer] = useState({
     collapsedLists: [],
   });
 
+
   return (
-    <div className="App">
+    <div className={user?.userPreferences?.theme || theme}>
       <HashRouter>
         <ScrollToTop />
         <Routes>
+        <Route
+            path="/"
+            element={
+              <AuthPage
+                theme={user?.userPreferences?.theme || theme}
+                user={user}
+                setUser={setUser}
+              />
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <Login
+                theme={user?.userPreferences?.theme || theme}
+                user={user}
+                setUser={setUser}
+                activeList={activeList}
+                setActiveList={setActiveList}
+                activeContainer={activeContainer}
+                setActiveContainer={setActiveContainer}
+              />
+            }
+          />
           <Route
             path="/containers"
             element={
               <Containers
+                theme={user?.userPreferences?.theme || theme}
                 grocery={grocery}
                 todo={todo}
                 shop={shop}
@@ -48,22 +79,10 @@ function App() {
             }
           />
           <Route
-            path="/"
-            element={
-              <Login
-                user={user}
-                setUser={setUser}
-                activeList={activeList}
-                setActiveList={setActiveList}
-                activeContainer={activeContainer}
-                setActiveContainer={setActiveContainer}
-              />
-            }
-          />
-          <Route
             path="/register"
             element={
               <Register
+                theme={user?.userPreferences?.theme || theme}
                 setUser={setUser}
                 activeList={activeList}
                 setActiveList={setActiveList}
@@ -76,6 +95,7 @@ function App() {
             path="/container"
             element={
               <LandingPage
+                theme={user?.userPreferences?.theme || theme}
                 grocery={grocery}
                 todo={todo}
                 shop={shop}
@@ -92,6 +112,7 @@ function App() {
             path="/list"
             element={
               <GroceryListPage
+                theme={user?.userPreferences?.theme || theme}
                 activeContainer={activeContainer}
                 setActiveContainer={setActiveContainer}
                 user={user}
@@ -105,6 +126,7 @@ function App() {
             path="/addPeople"
             element={
               <AddPeopleList
+                theme={user?.userPreferences?.theme || theme}
                 activeContainer={activeContainer}
                 setActiveContainer={setActiveContainer}
                 user={user}
@@ -114,25 +136,63 @@ function App() {
               />
             }
           />
-          <Route path="/profile" element={<Profile user={user} setUser={setUser} />} />
+          <Route
+            path="/profile"
+            element={
+              <Profile
+                setTheme={setTheme}
+                theme={user?.userPreferences?.theme || theme}
+                user={user}
+                setUser={setUser}
+              />
+            }
+          />
           <Route
             path="/profile/change-name"
-            element={<ChangeName user={user} setUser={setUser} />}
+            element={
+              <ChangeName
+                theme={user?.userPreferences?.theme || theme}
+                user={user}
+                setUser={setUser}
+              />
+            }
           />
           <Route
             path="/profile/change-email"
-            element={<ChangeEmail user={user} setUser={setUser} />}
+            element={
+              <ChangeEmail
+                theme={user?.userPreferences?.theme || theme}
+                user={user}
+                setUser={setUser}
+              />
+            }
           />
           <Route
             path="/profile/change-phone"
-            element={<ChangePhone user={user} setUser={setUser} />}
+            element={
+              <ChangePhone
+                theme={user?.userPreferences?.theme || theme}
+                user={user}
+                setUser={setUser}
+              />
+            }
           />
           <Route
             path="/profile/change-password"
-            element={<ChangePassword user={user} setUser={setUser} />}
+            element={
+              <ChangePassword
+                theme={user?.userPreferences?.theme || theme}
+                user={user}
+                setUser={setUser}
+              />
+            }
           />
 
-          <Route path="/quick-list" element={<QuickList />} />
+          <Route
+            path="/quick-list"
+            theme={user?.userPreferences?.theme || theme}
+            element={<QuickList />}
+          />
         </Routes>
       </HashRouter>
     </div>

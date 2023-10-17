@@ -1,7 +1,15 @@
-.App {
+.lightTheme {
+  height: 100vh;
   text-align: center;
   overflow-x: hidden;
+  background-color: white;
+  overflow-y: visible;
 }
 
-
-
+.darkTheme {
+  height: 100vh;
+  text-align: center;
+  overflow-x: hidden;
+  background-color: #2D2D2D;
+  overflow-y: visible;
+}

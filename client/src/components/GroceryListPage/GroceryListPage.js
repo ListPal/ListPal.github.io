@@ -7,23 +7,13 @@ import SwipeableViews from "react-swipeable-views";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 // MUI imports
-import {
-  Typography,
-  Toolbar,
-  AppBar,
-  Slide,
-  Alert,
-  Stack,
-  Box,
-  CircularProgress,
-  List,
-} from "@mui/material";
+import { Typography, Toolbar, AppBar, Slide, Alert, Stack, List, Fab } from "@mui/material";
 
 // MUI Icons
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
-import PublicIcon from "@mui/icons-material/Public";
+import AddIcon from "@mui/icons-material/Add";
 
 // My imports
 import {
@@ -43,9 +33,8 @@ import { mergeArrays } from "../../utils/helper";
 import Listitem from "./ListItem/ListItem";
 import BottomBar from "./BottomBar/BottomBar";
 import Dialogue from "./Dialogues/Dialogue";
-
-// Other imports
-import PullToRefresh from "pulltorefreshjs";
+import PullToRefresh from "../PullToRefresh/PullToRefresh";
+import Loading from "../Loading/Loading";
 
 function GroceryListPage({
   activeList,
@@ -54,9 +43,9 @@ function GroceryListPage({
   setActiveContainer,
   user,
   setUser,
+  theme,
 }) {
   // States
-  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const [alertMessage, setAlertMessage] = useState(null);
@@ -65,8 +54,11 @@ function GroceryListPage({
   const [showDone, setShowDone] = useState(false);
   const [modifiedIds, setModifiedIds] = useState(new Set());
   const [slide, setSlide] = useState(0);
+  const [isRefarctored, setisRefarctored] = useState(false);
 
   // Other globals
+  const navigate = useNavigate();
+  const location = useLocation();
   let groupedByCurrentIdx = 0; // global var that keeps the idx count to decide when to display the identifier in the lis item
   const urlParams = new URLSearchParams(location.search);
   const state = location?.state || {};
@@ -74,7 +66,6 @@ function GroceryListPage({
   const listId = state.listId || urlParams.get("listId");
   const listName = state.listName || urlParams.get("name");
   const scope = state.scope || urlParams.get("scope");
-  const navigate = useNavigate();
 
   // Handlers
   const handleCheckItems = async () => {
@@ -130,6 +121,7 @@ function GroceryListPage({
     const [reorderedItem] = listItems.splice(result.source.index, 1);
     listItems.splice(result.destination.index, 0, reorderedItem);
     setActiveList({ ...activeList, groceryListItems: listItems });
+    setisRefarctored(true);
   };
 
   const handleGroupByUsername = async (items) => {
@@ -185,7 +177,7 @@ function GroceryListPage({
     // Cache
     if (cache === true) setActiveList({ ...activeList, groceryListItems: mergedArray });
     // Reset relevant states
-    setLoading(false);
+    setTimeout(() => setLoading(false), 900);
   };
 
   const handleBorderColor = (identifier) => {
@@ -209,50 +201,50 @@ function GroceryListPage({
   const handleDeriveThemeColor = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
       return {
-        bold: colors.landingPageColors.bold,
-        medium: colors.landingPageColors.medium,
-        low: colors.landingPageColors.low,
+        bold: colors[theme].landingPageColors.bold,
+        medium: colors[theme].landingPageColors.medium,
+        low: colors[theme].landingPageColors.low,
       };
     }
     if (activeContainer?.containerType === groceryContainerTypes.todo) {
       return {
-        bold: colors.todoColors.bold,
-        medium: colors.todoColors.medium,
-        low: colors.todoColors.low,
+        bold: colors[theme].todoColors.bold,
+        medium: colors[theme].todoColors.medium,
+        low: colors[theme].todoColors.low,
       };
     }
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
       return {
-        bold: colors.shoppingColors.bold,
-        medium: colors.shoppingColors.medium,
-        low: colors.shoppingColors.low,
+        bold: colors[theme].shoppingColors.bold,
+        medium: colors[theme].shoppingColors.medium,
+        low: colors[theme].shoppingColors.low,
       };
     }
     if (containerId.includes(groceryContainerTypes.grocery)) {
       return {
-        bold: colors.landingPageColors.bold,
-        medium: colors.landingPageColors.medium,
-        low: colors.landingPageColors.low,
+        bold: colors[theme].landingPageColors.bold,
+        medium: colors[theme].landingPageColors.medium,
+        low: colors[theme].landingPageColors.low,
       };
     }
     if (containerId.includes(groceryContainerTypes.todo)) {
       return {
-        bold: colors.todoColors.bold,
-        medium: colors.todoColors.medium,
-        low: colors.todoColors.low,
+        bold: colors[theme].todoColors.bold,
+        medium: colors[theme].todoColors.medium,
+        low: colors[theme].todoColors.low,
       };
     }
     if (containerId.includes(groceryContainerTypes.whishlist)) {
       return {
-        bold: colors.shoppingColors.bold,
-        medium: colors.shoppingColors.medium,
-        low: colors.shoppingColors.low,
+        bold: colors[theme].shoppingColors.bold,
+        medium: colors[theme].shoppingColors.medium,
+        low: colors[theme].shoppingColors.low,
       };
     }
     return {
-      bold: colors.fallbackColors.bold,
-      medium: colors.fallbackColors.medium,
-      low: colors.fallbackColors.low,
+      bold: colors[theme].fallbackColors.bold,
+      medium: colors[theme].fallbackColors.medium,
+      low: colors[theme].fallbackColors.low,
     };
   };
 
@@ -353,6 +345,11 @@ function GroceryListPage({
       return;
     }
 
+    if (!isRefarctored) {
+      console.debug("No items to reorder");
+      return;
+    }
+
     if (loadingControl) setLoading(true);
     setAlertMessage(null);
     const data = {
@@ -367,6 +364,8 @@ function GroceryListPage({
     if (res?.status === 200) {
       // Success
       if (cache) setActiveList(res?.body);
+      // Reset isRefactored
+      setisRefarctored(false)
     } else if (res?.status === 401) {
       setAlertMessage(messages.unauthorizedAccess);
       setTimeout(() => setLoading(false), 900);
@@ -385,6 +384,10 @@ function GroceryListPage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeList]);
 
+  useMemo(() => {
+    // TODO: Recompute checked/unchecked
+  }, [activeList]);
+
   useEffect(() => {
     if (showDone) {
       setSlide(0);
@@ -392,9 +395,6 @@ function GroceryListPage({
   }, [showDone]);
 
   useEffect(() => {
-    // No pull to refresh in this component to avoid a bug when dragging and dropping
-    PullToRefresh.destroyAll();
-
     // Fetch user and container if not a public list
     if (scope !== groceryListScopes.public && !user) {
       handleAtomicUserAndContainerFetch();
@@ -417,12 +417,15 @@ function GroceryListPage({
   }, []);
 
   return (
-    <>
-      <meta name="theme-color" content={"white"} />
-      {/* <meta name="theme-color" content={handleDeriveThemeColor().bold} /> */}
+    <PullToRefresh onRefresh={handleSync}>
+      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
+
+      {/* Loading progress */}
+      {loading && <Loading color={handleDeriveThemeColor().bold} />}
+
       {/* Alert messages*/}
       <Slide className="alert-slide" in={alertMessage && true}>
-        <Alert severity={"error"} sx={{ position: "fixed", width: "96vw", top: "8vh", zIndex: 10 }}>
+        <Alert severity={"error"} sx={{ position: "fixed", width: "96vw", top: 0, zIndex: 20 }}>
           {alertMessage}
         </Alert>
       </Slide>
@@ -430,6 +433,7 @@ function GroceryListPage({
       {/* Dialogue (absolute positioned) */}
       {openDialogue && (
         <Dialogue
+          theme={theme}
           item={activeItem}
           containerId={containerId}
           activeList={activeList}
@@ -439,30 +443,13 @@ function GroceryListPage({
         />
       )}
 
-      {/* Loading progress */}
-      {loading && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: "calc(50% - 10px)",
-            left: "calc(50% - 10px)",
-            zIndex: 10,
-          }}
-        >
-          <CircularProgress sx={{ color: handleDeriveThemeColor().bold, position: "absolute" }} />
-          <IconButton>
-            <CheckCircleRoundedIcon sx={{ color: handleDeriveThemeColor().bold }} />
-          </IconButton>
-        </Box>
-      )}
-
       {/* Back button */}
       <IconButton
         size="small"
         onClick={handleBack}
         sx={{ mt: 3, position: "fixed", left: "15px", zIndex: 11 }}
       >
-        <ArrowBackIosIcon />
+        <ArrowBackIosIcon sx={{ color: colors[theme].generalColors.fontColor }} />
       </IconButton>
 
       {/* List items */}
@@ -479,7 +466,7 @@ function GroceryListPage({
                   overflowX: "hidden",
                   maxWidth: mobileWidth,
                   height: "88vh",
-                  pt:4,
+                  pt: 4,
                 }}
               >
                 {!loading &&
@@ -489,6 +476,7 @@ function GroceryListPage({
                         <Draggable draggableId={`${i}`} index={i} key={i}>
                           {(provided) => (
                             <Listitem
+                              theme={theme}
                               provided={provided}
                               borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
                               identifier={e?.user?.username.split("@")[0]}
@@ -528,35 +516,37 @@ function GroceryListPage({
               overflowX: "hidden",
               maxWidth: mobileWidth,
               height: "88vh",
-              pt:4,
+              pt: 4,
             }}
           >
-            {activeList?.groceryListItems.map((e, i) => {
-              if (e.checked)
-                return (
-                  <Listitem
-                    borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
-                    identifier={e?.user?.username.split("@")[0]}
-                    setOpenDialogue={setOpenDialogue}
-                    setActiveList={setActiveList}
-                    openDialogue={openDialogue}
-                    activeContainer={activeContainer}
-                    setActiveContainer={setActiveContainer}
-                    activeList={activeList}
-                    listId={listId}
-                    item={e}
-                    setItem={setActiveItem}
-                    user={user}
-                    setUser={setUser}
-                    key={i}
-                    index={i}
-                    containerId={containerId}
-                    setAlertMessage={setAlertMessage}
-                    modifiedIds={modifiedIds}
-                    setModifiedIds={setModifiedIds}
-                  />
-                );
-            })}
+            {!loading &&
+              activeList?.groceryListItems.map((e, i) => {
+                if (e.checked)
+                  return (
+                    <Listitem
+                      theme={theme}
+                      borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
+                      identifier={e?.user?.username.split("@")[0]}
+                      setOpenDialogue={setOpenDialogue}
+                      setActiveList={setActiveList}
+                      openDialogue={openDialogue}
+                      activeContainer={activeContainer}
+                      setActiveContainer={setActiveContainer}
+                      activeList={activeList}
+                      listId={listId}
+                      item={e}
+                      setItem={setActiveItem}
+                      user={user}
+                      setUser={setUser}
+                      key={i}
+                      index={i}
+                      containerId={containerId}
+                      setAlertMessage={setAlertMessage}
+                      modifiedIds={modifiedIds}
+                      setModifiedIds={setModifiedIds}
+                    />
+                  );
+              })}
           </List>
         ) : (
           <></>
@@ -565,6 +555,7 @@ function GroceryListPage({
 
       {/* Bottom Bar */}
       <BottomBar
+        theme={theme}
         scope={scope}
         handleSync={handleSync}
         setOpenDialogue={setOpenDialogue}
@@ -589,7 +580,10 @@ function GroceryListPage({
               height: "8px",
               width: "8px",
               borderRadius: "50%",
-              background: slide === 0 ? "black" : "lightgray",
+              background:
+                slide === 0
+                  ? colors[theme].generalColors.slideSelector.active
+                  : colors[theme].generalColors.slideSelector.inactive,
             }}
           />
           <div
@@ -598,7 +592,10 @@ function GroceryListPage({
               height: "8px",
               width: "8px",
               borderRadius: "50%",
-              background: slide === 1 ? "black" : "lightgray",
+              background:
+                slide === 1
+                  ? colors[theme].generalColors.slideSelector.active
+                  : colors[theme].generalColors.slideSelector.inactive,
             }}
           />
         </Stack>
@@ -608,7 +605,7 @@ function GroceryListPage({
         <Typography
           variant={"subtitle1"}
           fontFamily={"Urbanist"}
-          color={"GrayText"}
+          color={colors[theme].generalColors.helperTextFontColor}
           sx={{
             position: "absolute",
             left: "50%",
@@ -636,7 +633,7 @@ function GroceryListPage({
           overflowX: "hidden",
         }}
       /> */}
-    </>
+    </PullToRefresh>
   );
 }
 

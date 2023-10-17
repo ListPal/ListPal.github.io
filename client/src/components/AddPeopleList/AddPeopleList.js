@@ -25,11 +25,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { addPeopleToList, postRequest } from "../../utils/rest";
 import { lookupUser } from "../../utils/rest";
 import { handleValidatePhone, handleValidateUsername } from "../../utils/inputValidation";
-import { URLS } from "../../utils/enum";
+import { URLS, colors, mobileWidth } from "../../utils/enum";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { fontFamily, styled } from "@mui/system";
+import { styled } from "@mui/system";
+import Loading from "../Loading/Loading";
 
-const AddPeopleList = () => {
+const AddPeopleList = ({ theme }) => {
   // States
   const [loading, setLoading] = useState(false);
   const [textfieldMessage, setTextfieldMessage] = useState(null);
@@ -41,6 +42,31 @@ const AddPeopleList = () => {
   const navigate = useNavigate();
   const textFieldUserRef = useRef();
   const location = useLocation();
+
+  const CssTextField = styled(TextField)({
+    "& label.Mui-focused": {
+      color: colors[theme].generalColors.helperTextFontColor,
+    },
+    "& label": {
+      fontFamily: "Urbanist",
+      color: colors[theme].generalColors.helperTextFontColor,
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: colors[theme].generalColors.fontColor,
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        border: `1px solid ${colors[theme].generalColors.fontColor}`,
+        borderRadius: 0,
+      },
+      "&:hover fieldset": {
+        borderColor: colors[theme].generalColors.fontColor,
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: colors[theme].generalColors.fontColor,
+      },
+    },
+  });
 
   // Handlers
   const handleSwitch = () => {
@@ -195,25 +221,25 @@ const AddPeopleList = () => {
   }, []);
   return (
     <Grid container spacing={4} p>
-      <meta name="theme-color" content="white" />
+      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
       <Grid item sx={{ width: "100vw" }}>
         <Stack direction={"column"} spacing={1}>
           <Stack direction={"row"} alignItems={"center"}>
             <IconButton onClick={() => navigate(-1)}>
-              <ArrowBackIosIcon />
+              <ArrowBackIosIcon sx={{ color: colors[theme].generalColors.fontColor }} />
             </IconButton>
             <Switch checked={!lookupByPhone} onChange={handleSwitch} />
             <Typography
               variant="button"
               fontSize={16}
               fontFamily={"Urbanist"}
-              sx={{ color: "#4B5563" }}
+              color={colors[theme].generalColors.helperTextFontColor}
             >{`Toggle lookup option`}</Typography>
           </Stack>
           <Stack sx={{ width: "95vw" }}>
             {lookupByPhone && (
               <CssTextField
-                error={textfieldMessage?.error && true}
+                // error={textfieldMessage?.error && true}
                 inputRef={textFieldUserRef}
                 label={"Lookup user by phone"}
                 type="tel"
@@ -242,7 +268,7 @@ const AddPeopleList = () => {
             {!lookupByPhone && (
               <CssTextField
                 type="email"
-                error={textfieldMessage?.error && true}
+                // error={textfieldMessage?.error && true}
                 inputRef={textFieldUserRef}
                 label={"Lookup user by email"}
                 helperText={
@@ -272,13 +298,18 @@ const AddPeopleList = () => {
       </Grid>
 
       <Grid item sx={{ width: "100vw" }}>
-        <Typography variant="h5" textAlign={"left"} fontFamily={"Urbanist"}>
+        <Typography
+          variant="h5"
+          textAlign={"left"}
+          fontFamily={"Urbanist"}
+          color={colors[theme].generalColors.fontColor}
+        >
           Recents
         </Typography>
         <List
           dense
           sx={{
-            bgcolor: "background.paper",
+            bgcolor: colors[theme].generalColors.outerBackground,
             overflow: "scroll",
             maxHeight: "65vh",
           }}
@@ -306,7 +337,11 @@ const AddPeopleList = () => {
                   <ListItemText
                     id={labelId}
                     primary={`${user?.name} ${user?.lastName}`}
-                    primaryTypographyProps={{ fontFamily: "Urbanist", fontSize: 16 }}
+                    primaryTypographyProps={{
+                      fontFamily: "Urbanist",
+                      fontSize: 16,
+                      color: colors[theme].generalColors.fontColor,
+                    }}
                   />
                 </ListItemButton>
               </ListItem>
@@ -338,18 +373,19 @@ const AddPeopleList = () => {
         )}
       </Grid>
 
-      {loading && (
-        <CircularProgress
-          sx={{
-            position: "absolute",
-            top: "calc(50% - 10px)",
-            left: "calc(50% - 10px)",
-            zIndex: 10,
-          }}
-        />
-      )}
+      {loading && <Loading color={"black"} />}
 
-      <Slide sx={{ position: "fixed", top: 0, left: 0 }} in={alert}>
+      <Slide
+        sx={{
+          padding: "8px",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          minWidth: "98%",
+          maxWidth: mobileWidth,
+        }}
+        in={alert}
+      >
         <Alert severity={alert?.severity}>
           <Typography variant="subtitle2" textAlign={"left"}>
             {alert?.message}
@@ -359,25 +395,5 @@ const AddPeopleList = () => {
     </Grid>
   );
 };
-
-const CssTextField = styled(TextField)({
-  "& label.Mui-focused": {
-    color: "#A0AAB4",
-  },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: "black",
-  },
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      border: "1px solid black",
-    },
-    "&:hover fieldset": {
-      borderColor: "black",
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: "black",
-    },
-  },
-});
 
 export default AddPeopleList;

@@ -3,7 +3,7 @@ import { Grid, Button, Stack, Typography, Avatar } from "@mui/material";
 import Container from "./Container/Container";
 import { truncateString } from "../../utils/helper";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { mobileWidth } from "../../utils/enum";
+import { colors, mobileWidth, themes } from "../../utils/enum";
 import { logout } from "../../utils/rest";
 import { useNavigate } from "react-router-dom";
 
@@ -17,6 +17,7 @@ const Containers = ({
   grocery,
   shop,
   todo,
+  theme,
 }) => {
   const imgSources = [shop, grocery, todo];
   const containerIds = ["wishlistContainerId", "groceryContainerId", "todoContainerId"];
@@ -41,7 +42,7 @@ const Containers = ({
   }, []);
   return (
     <>
-      <meta name="theme-color" content="white" />
+      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
       <Grid
         sx={{
           display: "flex",
@@ -59,7 +60,7 @@ const Containers = ({
               mt: 2,
               width: "90vw",
               maxWidth: mobileWidth,
-              backgroundColor: "black",
+              backgroundColor: colors[theme].generalColors.userTopMenu,
               borderRadius: 5,
               alignItems: "center",
               justifyContent: "space-between",
@@ -82,7 +83,7 @@ const Containers = ({
                   fontFamily: "Urbanist",
                   width: 56,
                   height: 56,
-                  background: "lightgray",
+                  background: theme === themes.lightTheme ? 'lightgray' : "#707070",
                   borderRadius: "50%",
                   display: "flex",
                   alignItems: "center",
@@ -119,6 +120,7 @@ const Containers = ({
           ["Shopping Lists", "Grocery Lists", "Other Lists"].map((e, i) => {
             return (
               <Container
+                theme={theme}
                 key={i}
                 id={user[containerIds[i]]}
                 heading={e}

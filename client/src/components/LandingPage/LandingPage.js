@@ -1,4 +1,4 @@
-import { Button, Alert, Typography, Slide, IconButton, List, Fab } from "@mui/material";
+import { Typography, IconButton, List, Fab } from "@mui/material";
 import { useState, useEffect } from "react";
 import { getAllLists, logout, postRequest, checkSession } from "../../utils/rest";
 import {
@@ -7,6 +7,7 @@ import {
   groceryContainerTypes,
   groceryListScopes,
   messages,
+  themes,
   URLS,
 } from "../../utils/enum";
 import "./LandingPage.scss";
@@ -19,12 +20,14 @@ import NewListForm from "./NewListForm/NewListForm";
 import { mobileWidth } from "../../utils/enum";
 import { useLocation, useNavigate } from "react-router-dom";
 import { truncateString } from "../../utils/helper";
+import PullToRefresh from "../PullToRefresh/PullToRefresh";
 // ICONS
 import LogoutIcon from "@mui/icons-material/Logout";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import Skeleton from "@mui/material/Skeleton";
+import BlurOnOutlinedIcon from "@mui/icons-material/BlurOnOutlined";
+
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
-import PullToRefresh from "pulltorefreshjs";
 
 const LandingPage = ({
   activeList,
@@ -36,13 +39,14 @@ const LandingPage = ({
   grocery,
   todo,
   shop,
+  theme,
 }) => {
   // States
   const [filter, setFilter] = useState(filterCardsBy.all);
-  const [severity, setSeverity] = useState("info");
   const [newListFormOpen, setNewListFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [wasRefactored, setWasRefactored] = useState(false);
+  const [severity, setSeverity] = useState("info");
   const [alertMessage, setAlertMessage] = useState(
     "No lists yet to display. Create your first list 🥳"
   );
@@ -52,9 +56,16 @@ const LandingPage = ({
   const location = useLocation();
 
   // Handlers
+  const handleRefresh = () => {
+    // Add your data fetching logic here
+    // window.location.reload()
+    pullLists();
+  };
+
   const handleOpenNewListForm = () => {
     setNewListFormOpen(!newListFormOpen);
   };
+
   const handleBack = async () => {
     if (wasRefactored) {
       // Set the new order
@@ -67,13 +78,10 @@ const LandingPage = ({
         setWasRefactored(false);
         navigate(-1);
       } else if (res?.status === 401) {
-        setWasRefactored(false);
         navigate("/");
       } else if (res?.status === 403) {
-        setWasRefactored(false);
         navigate("/");
       } else {
-        setWasRefactored(false);
         console.debug(res);
         navigate(-1);
       }
@@ -139,25 +147,25 @@ const LandingPage = ({
 
   const handleDeriveHeadingColor = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
-      return colors.landingPageColors.low;
+      return colors[theme].landingPageColors.low;
     } else if (activeContainer?.containerType === groceryContainerTypes.todo) {
-      return colors.todoColors.low;
+      return colors[theme].todoColors.low;
     } else if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
-      return colors.shoppingColors.low;
+      return colors[theme].shoppingColors.low;
     } else {
-      return colors.fallbackColors.low;
+      return colors[theme].fallbackColors.low;
     }
   };
 
-  const handleDeriveBodyColor = () => {
+  const handleDeriveCardBackgroundColor = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
-      return colors.landingPageColors.bold;
+      return colors[theme].landingPageColors.medium;
     } else if (activeContainer?.containerType === groceryContainerTypes.todo) {
-      return colors.todoColors.bold;
+      return colors[theme].todoColors.medium;
     } else if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
-      return colors.shoppingColors.bold;
+      return colors[theme].shoppingColors.medium;
     } else {
-      return colors.fallbackColors.bold;
+      return colors[theme].fallbackColors.medium;
     }
   };
 
@@ -204,27 +212,19 @@ const LandingPage = ({
   };
 
   useEffect(() => {
-    // Initialize pull to refresh component
-    PullToRefresh.init({
-      mainElement: "body",
-      onRefresh() {
-        window.location.reload();
-      },
-    });
-
     // Fetch only if lists are not cached
     if (activeContainer?.id !== location?.state?.containerId) {
       pullLists();
     } else {
       // console.debug("Lists are cached. No need to fetch");
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <>
-      <meta name="theme-color" content={"white"} />
+    // margin -40px and padding +40px avoids an issue with the pull to refresh
+    <PullToRefresh onRefresh={handleRefresh}>
+      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
       <Grid spacing={1} container sx={{ maxWidth: mobileWidth, alignItems: "center" }}>
         <Grid item>
           <Paper
@@ -239,6 +239,7 @@ const LandingPage = ({
               alignItems: "center",
               justifyContent: "center",
               flexDirection: "column",
+              backgroundColor: colors[theme].generalColors.outerBackground,
             }}
           >
             {loading && (
@@ -258,29 +259,26 @@ const LandingPage = ({
                 sx={{
                   width: "90vw",
                   maxWidth: `calc(0.9 * ${mobileWidth})`,
-                  // backgroundColor: "black",
-                  // backgroundColor: handleDeriveBodyColor(),
                   backgroundColor: handleDeriveHeadingColor(),
                   borderRadius: 5,
                   alignItems: "center",
                   justifyContent: "space-between",
+                  color: colors[theme].generalColors.fontColor,
                 }}
               >
                 <Typography
                   padding={1}
-                  color={"black"}
                   fontFamily={"Urbanist"}
                   fontWeight={500}
                   variant="h5"
                   sx={{
                     display: "flex",
                     alignItems: "center",
-                    // color:'white',
                   }}
                 >
                   {/*  Back Button */}
                   <IconButton size={"small"} disableRipple onClick={handleBack}>
-                    <ArrowBackIosIcon sx={{ color: "black"}} />
+                    <ArrowBackIosIcon sx={{ color: colors[theme].generalColors.fontColor }} />
                   </IconButton>
 
                   {/* Avatar */}
@@ -289,7 +287,7 @@ const LandingPage = ({
                     style={{
                       width: 56,
                       height: 56,
-                      background: "lightgray",
+                      background: theme === themes.lightTheme ? "lightgray" : "#707070",
                       borderRadius: "50%",
                       display: "flex",
                       alignItems: "center",
@@ -303,15 +301,19 @@ const LandingPage = ({
                   {user?.name && truncateString(user?.name)}
                 </Typography>
 
+                {/* Log out button */}
                 <IconButton onClick={handleLogout}>
-                  <LogoutIcon fontSize={"small"} sx={{ color: "black" }} />
+                  <LogoutIcon
+                    fontSize={"small"}
+                    sx={{ color: colors[theme].generalColors.fontColor }}
+                  />
                 </IconButton>
               </Stack>
             )}
           </Paper>
         </Grid>
 
-        {/* Search Bar */}
+        {/* TODO:Search Bar */}
 
         {/* ListCard below */}
         <Grid item>
@@ -325,13 +327,15 @@ const LandingPage = ({
                 >
                   {loading && (
                     <Stack width={"100vw"} direction={"column"} mt={5} spacing={2}>
-                      {[1, 2, 3].map(() => (
-                      <Skeleton
-                        animation={"wave"}
-                        variant="rectangular"
-                        sx={{ maxWidth: mobileWidth }}
-                        height={150}
-                      />))}
+                      {[1, 2, 3].map((e, i) => (
+                        <Skeleton
+                          key={i}
+                          animation={"wave"}
+                          variant="rectangular"
+                          sx={{ maxWidth: mobileWidth }}
+                          height={150}
+                        />
+                      ))}
                     </Stack>
                   )}
 
@@ -345,7 +349,8 @@ const LandingPage = ({
                         setActiveContainer={setActiveContainer}
                         listInfo={e}
                         key={i}
-                        theme={handleDeriveHeadingColor()}
+                        theme={handleDeriveCardBackgroundColor()}
+                        themes={theme}
                       />
                     ))}
                   {provided.placeholder}
@@ -355,6 +360,7 @@ const LandingPage = ({
           </DragDropContext>
         </Grid>
 
+        {/* Add button */}
         {!loading && (
           <Fab
             onClick={handleOpenNewListForm}
@@ -370,32 +376,48 @@ const LandingPage = ({
           </Fab>
         )}
 
+        {/*  Decorative background */}
         {activeContainer?.collapsedLists.length < 1 && !loading && (
-          <Grid item sx={{width: "100vw", maxWidth: mobileWidth, justifyContent:'center', alignItems:'center' }}>
+          <Grid
+            item
+            sx={{
+              width: "100vw",
+              maxWidth: mobileWidth,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <img
               alt="decorative-background"
               src={handleContainerImg()}
               loading="lazy"
-              height={'95%'}
-              width={'95%'}
+              height={"95%"}
+              width={"95%"}
             />
-            <Typography fontFamily={"Urbanist"} variant={"h5"} color={"GrayText"}>
+
+            <Typography
+              fontFamily={"Urbanist"}
+              variant={"h5"}
+              color={
+                theme === themes.darkTheme ? colors.darkTheme.generalColors.fontColor : "GrayText"
+              }
+            >
               No lists yet to display
             </Typography>
-            {/* <Slide className="alert-slide" in={true} direction="right" sx={{ width: "100%" }}>
-            </Slide> */}
           </Grid>
         )}
       </Grid>
 
+      {/* New list form dialog */}
       <NewListForm
         activeContainer={activeContainer}
         setActiveContainer={setActiveContainer}
         user={user}
         open={newListFormOpen}
         setOpen={setNewListFormOpen}
+        theme={theme}
       />
-    </>
+    </PullToRefresh>
   );
 };
 

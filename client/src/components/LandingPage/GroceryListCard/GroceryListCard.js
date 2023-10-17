@@ -1,9 +1,4 @@
-import {
-  colors,
-  groceryContainerTypes,
-  groceryListScopes,
-  mobileWidth,
-} from "../../../utils/enum";
+import { colors, groceryContainerTypes, groceryListScopes, mobileWidth } from "../../../utils/enum";
 import Paper from "@mui/material/Paper";
 import { useLocation, useNavigate } from "react-router-dom";
 import MoreOptions from "./MoreOptions/MoreOptions";
@@ -18,10 +13,21 @@ import groceryWallpaper from "../../../assets/groceryWallpaper.jpg";
 import shoppingWallpaper from "../../../assets/shoppingWallpaper.jpg";
 import todoWallpaper from "../../../assets/todoWallpaper.jpg";
 import christmasWallpaper from "../../../assets/christmasWallpaper.jpg";
-import thanksGivingWallpaper from "../../../assets/thanksGivingWallpaper.jpg";
+import thanksGivingWallpaper from "../../../assets/thanksgiving.jpg";
+
+import shoppingWallpaperDarkTheme from "../../../assets/shoppingWallpaperDark.jpg";
+import christmasWallpaperDarkTheme from "../../../assets/christmasWallpaperDark.jpg";
 import { Draggable } from "react-beautiful-dnd";
 
-const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContainer, index, theme }) => {
+const GroceryListCard = ({
+  username,
+  listInfo,
+  activeContainer,
+  setActiveContainer,
+  index,
+  theme,
+  themes,
+}) => {
   // States
   const [alertMessage, setAlertMessage] = useState(null);
   const [severity, setSeverity] = useState("info");
@@ -86,9 +92,15 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
       return todoWallpaper;
     }
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
-      return listInfo?.listName.toUpperCase().includes("CHRISTMAS")
-        ? christmasWallpaper
-        : shoppingWallpaper;
+      if (themes === "darkTheme") {
+        return listInfo?.listName.toUpperCase().includes("CHRISTMAS")
+          ? christmasWallpaperDarkTheme
+          : shoppingWallpaperDarkTheme;
+      } else {
+        return listInfo?.listName.toUpperCase().includes("CHRISTMAS")
+          ? christmasWallpaper
+          : shoppingWallpaper;
+      }
     }
   };
 
@@ -103,9 +115,10 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
             elevation={0}
             sx={{
               maxWidth: mobileWidth,
-              borderRadius: 0,
+              borderRadius: themes === "lightTheme" ? 0 : 2,
               width: "100vw",
               boxShadow: "0 6.4px 14.4px 0 rgb(0 0 0 / 13%), 0 1.2px 3.6px 0 rgb(0 0 0 / 11%)",
+              backgroundColor: colors[themes].generalColors.innerBackground,
             }}
           >
             <Slide
@@ -126,6 +139,7 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
             <Stack p direction={"column"} sx={{ alignItems: "center" }}>
               <Stack width={"100%"} alignItems={"flex-end"}>
                 <MoreOptions
+                  theme={themes}
                   username={username}
                   listInfo={listInfo}
                   activeContainer={activeContainer}
@@ -142,8 +156,8 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
                   backgroundImage: `url(${handleDeriveWallpaper()})`,
                   backgroundSize: "cover",
                   width: "100%",
-                  height: '20vh',
-                  maxHeight: 150,
+                  height: "20vh",
+                  // maxHeight: 150,
                   borderRadius: "5px",
                   justifyContent: "center",
                   alignItems: "center",
@@ -151,19 +165,18 @@ const GroceryListCard = ({ username, listInfo, activeContainer, setActiveContain
               >
                 <Typography
                   padding={1}
+                  variant="overline"
                   fontFamily={"Urbanist"}
                   sx={{
                     display: "flex",
-                    zIndex: 1,
-                    border: "1px solid #4B5563",
-                    color: "#4B5563",
+                    border: `1px solid ${colors[themes].generalColors.fontColor}`,
+                    color: colors[themes].generalColors.fontColor,
                     backdropFilter: "blur(5px)",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
-                  variant="overline"
                 >
-                  {listInfo?.listName ? listInfo?.listName : "New List"}
+                  {listInfo?.listName ? listInfo?.listName : "Unknown List"}
                   {handleDeriveListScopeIcon()}
                 </Typography>
               </div>

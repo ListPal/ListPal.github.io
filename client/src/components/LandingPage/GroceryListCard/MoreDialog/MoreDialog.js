@@ -31,6 +31,7 @@ import {
   groceryListScopes,
   messages,
   mobileWidth,
+  colors,
 } from "../../../../utils/enum";
 import { removePeopleFromList, deleteList, postRequest } from "../../../../utils/rest";
 import { useNavigate } from "react-router-dom";
@@ -40,6 +41,7 @@ import RemovePeople from "../../../RemovePeople/RemovePeople";
 import KeyIcon from "@mui/icons-material/Key";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PublicIcon from "@mui/icons-material/Public";
+import Loading from "../../../Loading/Loading";
 
 const MoreDialog = ({
   listInfo,
@@ -47,6 +49,7 @@ const MoreDialog = ({
   setActiveContainer,
   openDialogue,
   setOpenDialogue,
+  theme,
 }) => {
   // States
   const [severity, setSeverity] = useState("info");
@@ -59,6 +62,31 @@ const MoreDialog = ({
   // Other locals
   const textFieldRef = useRef(null);
   const navigate = useNavigate();
+
+  const CssTextField = styled(TextField)({
+    "& label.Mui-focused": {
+      color: colors[theme].generalColors.helperTextFontColor,
+    },
+    "& label": {
+      fontFamily: "Urbanist",
+      color: colors[theme].generalColors.helperTextFontColor,
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: colors[theme].generalColors.fontColor,
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        border: `1px solid ${colors[theme].generalColors.fontColor}`,
+        borderRadius: 0,
+      },
+      "&:hover fieldset": {
+        borderColor: colors[theme].generalColors.fontColor,
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: colors[theme].generalColors.fontColor,
+      },
+    },
+  });
 
   // Handlers
   const handleRadioGroupHelperText = () => {
@@ -315,6 +343,7 @@ const MoreDialog = ({
               borderRadius: 5,
               width: "85vw",
               maxWidth: mobileWidth,
+              backgroundColor: colors[theme].generalColors.innerBackground,
               p: 2,
               pt: 5,
               pb: 5,
@@ -327,7 +356,11 @@ const MoreDialog = ({
                 alignItems: "center",
               }}
             >
-              <Typography variant="h4" fontFamily={"Urbanist"}>
+              <Typography
+                variant="h4"
+                fontFamily={"Urbanist"}
+                color={colors[theme].generalColors.fontColor}
+              >
                 {dialogueObject[openDialogue]?.header}
               </Typography>
 
@@ -337,7 +370,7 @@ const MoreDialog = ({
                     !textField.hidden && (
                       <CssTextField
                         fullWidth
-                        error={errorMessage && true}
+                        // error={errorMessage && true}
                         required
                         key={`${textField.text}${i}`}
                         inputRef={textFieldRef}
@@ -345,7 +378,12 @@ const MoreDialog = ({
                         label={textField.text}
                         helperText={errorMessage ? errorMessage : textField.helperText}
                         defaultValue={textField.defaultValue ? listInfo?.listName : null}
-                        InputProps={{ style: { fontFamily: "Urbanist" } }}
+                        InputProps={{
+                          style: {
+                            fontFamily: "Urbanist",
+                            color: colors[theme].generalColors.fontColor,
+                          },
+                        }}
                         inputProps={{
                           maxLength: 30,
                           required: true,
@@ -361,7 +399,7 @@ const MoreDialog = ({
                     defaultValue={listInfo?.scope}
                     name="radio-buttons-group"
                     onChange={handleListScopeSelection}
-                    sx={{ justifyContent: "center" }}
+                    sx={{ justifyContent: "center", color: colors[theme].generalColors.fontColor }}
                   >
                     <FormControlLabel value="PUBLIC" control={<Radio />} label="Public" />
                     <FormControlLabel value="PRIVATE" control={<Radio />} label="Private" />
@@ -373,6 +411,7 @@ const MoreDialog = ({
 
               {openDialogue === dialogues.deletePeople && (
                 <RemovePeople
+                  theme={theme}
                   listInfo={listInfo}
                   setLoading={setLoading}
                   peopleToDelete={peopleToDelete}
@@ -409,11 +448,11 @@ const MoreDialog = ({
                       width: "90%",
                       height: 50,
                       "&:hover": {
-                        background: button.color,
+                        background: button.color[theme],
                       },
-                      background: button.color,
+                      background: button.color[theme],
                       borderRadius: 0,
-                      color: button.textColor,
+                      color: button.textColor[theme],
                     }}
                   >
                     {button.text}
@@ -421,24 +460,20 @@ const MoreDialog = ({
                 );
               })}
             </Stack>
+
             {loading && openDialogue === dialogues.deletePeople && (
-              <CircularProgress
-                color={"inherit"}
-                sx={{
-                  position: "absolute",
-                  top: "calc(50% - 10px)",
-                  left: "calc(50% - 10px)",
-                  zIndex: 10,
-                }}
-              />
+              <Loading icon={<PeopleAltIcon sx={{ color: "black" }} />} color={"black"} />
             )}
+
             <Slide
               className="alert-slide"
               in={alertMessage && true}
               sx={{
+                top: "-25vh",
+                left: '-8px', // offset the padding
                 position: "fixed",
-                top: '-25vh',
-                left: 0,
+                minWidth:'95%',
+                maxWidth: `calc(${mobileWidth} - 10px`,
               }}
             >
               <Alert severity={severity}>
@@ -451,26 +486,5 @@ const MoreDialog = ({
     </>
   );
 };
-
-const CssTextField = styled(TextField)({
-  "& label.Mui-focused": {
-    color: "#A0AAB4",
-  },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: "black",
-  },
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      border: "2px solid black",
-      borderRadius: 0,
-    },
-    "&:hover fieldset": {
-      borderColor: "black",
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: "black",
-    },
-  },
-});
 
 export default MoreDialog;

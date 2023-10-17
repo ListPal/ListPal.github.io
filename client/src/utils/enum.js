@@ -1,3 +1,10 @@
+const DARK_OUTER = "#2D2D2D";
+const DARK_INNER = "#414141";
+const DARK_TEXT = "#CECECE";
+const DARK_BOLD = "#9F9F9F";
+
+const LIGHT_TEXT = "#3D4F58";
+
 const mobileWidth = "480px";
 
 // Enum to display cards in landing page
@@ -50,31 +57,89 @@ const borderColors = [
   "#FF6969",
 ];
 
+const themes = {
+  darkTheme: "darkTheme",
+  lightTheme: "lightTheme",
+};
+
 const colors = {
-  fallbackColors: {
-    low: "#e8faff",
-    medium: "#b9efff",
-    bold: "black",
+  darkTheme: {
+    generalColors: {
+      userTopMenu: DARK_INNER,
+      fontColor: DARK_TEXT,
+      helperTextFontColor: DARK_TEXT,
+      // helperTextFontColor: "#d6cec2",
+      outerBackground: DARK_OUTER,
+      innerBackground: DARK_INNER,
+      slideSelector: {
+        active: "lightgray",
+        inactive: "black",
+      },
+    },
+    fallbackColors: {
+      low: DARK_INNER,
+      medium: DARK_INNER,
+      bold: DARK_BOLD,
+    },
+    landingPageColors: {
+      low: DARK_INNER,
+      medium: DARK_INNER,
+      bold: DARK_BOLD,
+    },
+    todoColors: {
+      low: DARK_INNER,
+      medium: DARK_INNER,
+      bold: DARK_BOLD,
+    },
+    shoppingColors: {
+      low: DARK_INNER,
+      medium: DARK_INNER,
+      bold: DARK_BOLD,
+    },
+    quickListColors: {
+      low: DARK_INNER,
+      medium: DARK_INNER,
+      bold: DARK_BOLD,
+    },
   },
-  landingPageColors: {
-    low: "#eaf6e4",
-    medium: "#b9efff",
-    bold: "#7b9370",
-  },
-  todoColors: {
-    low: "#F3F4F6",
-    medium: "#b9efff",
-    bold: "#9CA3AF",
-  },
-  shoppingColors: {
-    low: "#E1F2F6",
-    medium: "#79c0ff",
-    bold: "#007CAD",
-  },
-  quickListColors: {
-    low: "#E1F2F6",
-    medium: "#b9efff",
-    bold: "black",
+
+  lightTheme: {
+    generalColors: {
+      userTopMenu: "black",
+      fontColor: LIGHT_TEXT,
+      helperTextFontColor: "rgba(0, 0, 0, 0.6)",
+      outerBackground: "white",
+      innerBackground: "white",
+      slideSelector: {
+        active: "black",
+        inactive: "lightgray",
+      },
+    },
+    fallbackColors: {
+      low: "#e8faff",
+      medium: "#b9efff",
+      bold: "black",
+    },
+    landingPageColors: {
+      low: "#eaf6e4",
+      medium: "#FFF5EB",
+      bold: "#7b9370",
+    },
+    todoColors: {
+      low: "#F3F4F6",
+      medium: "#F3F4F6",
+      bold: "#9CA3AF",
+    },
+    shoppingColors: {
+      low: "#E1F2F6",
+      medium: "#ffff",
+      bold: "#007CAD",
+    },
+    quickListColors: {
+      low: "#E1F2F6",
+      medium: "#b9efff",
+      bold: "black",
+    },
   },
 };
 
@@ -108,8 +173,14 @@ const dialogueObject = {
     ],
     button: [
       {
-        textColor: "black",
-        color: "#fed59a",
+        textColor: {
+          lightTheme: LIGHT_TEXT,
+          darkTheme: DARK_TEXT,
+        },
+        color: {
+          lightTheme: "#fed59a",
+          darkTheme: DARK_OUTER,
+        },
         text: "Add Item",
         icon: "addIcon",
       },
@@ -125,20 +196,11 @@ const dialogueObject = {
         helperText: "Enter a different name for your item",
       },
     ],
-    radioButtons: [
-      // {category: 'Produce'},
-      // {category: 'Frozen'},
-      // {category: 'Snacks'},
-      // {category: 'Beverage'},
-      // {category: 'Home Care'},
-      // {category: 'Personal Care'},
-      // {category: 'None'},
-    ],
     button: [
       {
         defaultValue: true,
-        textColor: "black",
-        color: "#fed59a",
+        textColor: { lightTheme: LIGHT_TEXT, darkTheme: DARK_TEXT },
+        color: { lightTheme: "#fed59a", darkTheme: DARK_OUTER },
         text: "Edit Now",
         icon: "editIcon",
       },
@@ -154,11 +216,10 @@ const dialogueObject = {
         helperText: "Are you sure you want to delete this item?",
       },
     ],
-    radioButtons: [],
     button: [
       {
-        textColor: "black",
-        color: "red",
+        textColor: { lightTheme: LIGHT_TEXT, darkTheme: DARK_TEXT },
+        color: { lightTheme: "red", darkTheme: DARK_OUTER },
         text: "Delete item",
         icon: "deleteIcon",
       },
@@ -174,11 +235,10 @@ const dialogueObject = {
         helperText: "You agree to delete the list",
       },
     ],
-    radioButtons: [],
     button: [
       {
-        textColor: "black",
-        color: "red",
+        textColor: { lightTheme: 'black', darkTheme: DARK_TEXT },
+        color: { lightTheme: "red", darkTheme: DARK_OUTER },
         text: "Delete Entire List",
         icon: "deleteIcon",
       },
@@ -194,11 +254,10 @@ const dialogueObject = {
         helperText: null,
       },
     ],
-    radioButtons: [],
     button: [
       {
-        textColor: "black",
-        color: "#fed59a",
+        textColor: { lightTheme: LIGHT_TEXT, darkTheme: DARK_TEXT },
+        color: { lightTheme: "#fed59a", darkTheme: DARK_OUTER },
         text: "Edit Now",
         icon: "editIcon",
       },
@@ -214,7 +273,6 @@ const dialogueObject = {
         helperText: "Name your list item",
       },
     ],
-    radioButtons: [],
     button: [
       {
         textColor: "white",
@@ -234,23 +292,22 @@ const dialogueObject = {
         helperText: "",
       },
     ],
-    radioButtons: [],
     button: [
       {
-        textColor: "#1F2937",
-        color: "#f5f5f7",
+        textColor: { lightTheme: LIGHT_TEXT, darkTheme: DARK_TEXT },
+        color: { lightTheme: "#f5f5f7", darkTheme: DARK_OUTER },
         text: "Apple Wallet",
         icon: "appleIcon",
       },
       {
-        textColor: "white",
-        color: "#378fe9",
+        textColor: { lightTheme: "white", darkTheme: DARK_TEXT },
+        color: { lightTheme: "#378fe9", darkTheme: DARK_OUTER },
         text: "Open Venmo",
         icon: "venmoIcon",
       },
       {
-        textColor: "white",
-        color: "#3fb950",
+        textColor: { lightTheme: "white", darkTheme: DARK_TEXT },
+        color: { lightTheme: "#3fb950", darkTheme: DARK_OUTER },
         text: "Open Cash App",
         icon: "cashappIcon",
       },
@@ -259,11 +316,10 @@ const dialogueObject = {
   deletePeople: {
     header: "Remove People",
     textFields: [],
-    radioButtons: [],
     button: [
       {
-        textColor: "#1F2937",
-        color: "red",
+        textColor: { lightTheme: 'black', darkTheme: DARK_TEXT },
+        color: { lightTheme: "red", darkTheme: DARK_OUTER },
         text: "Delete Checked",
         icon: "deletePeople",
       },
@@ -279,17 +335,16 @@ const dialogueObject = {
         helperText: "Erase items permanently, preserving the list",
       },
     ],
-    radioButtons: [],
     button: [
       {
-        textColor: "black",
-        color: "#fed59a",
+        textColor: { lightTheme: LIGHT_TEXT, darkTheme: DARK_TEXT },
+        color: { lightTheme: "#fed59a", darkTheme: DARK_OUTER },
         text: "Erase All Items",
         icon: "deleteIcon",
       },
       {
-        textColor: "black",
-        color: "#fed59a",
+        textColor: { lightTheme: LIGHT_TEXT, darkTheme: DARK_TEXT },
+        color: { lightTheme: "#fed59a", darkTheme: DARK_OUTER },
         text: "Erase Checked",
         icon: "removeDoneIcon",
       },
@@ -331,6 +386,7 @@ const URLS = {
   updateName: `${engine}/server/update-name`,
   updatePhone: `${engine}/server/update-phone`,
   updatePassword: `${engine}/server/update-password`,
+  updateUserPreferences: `${engine}/server/update-user-preferences`,
 
   // Public endpoints
   createPublicListItemUri: `${engine}/public/shared/create-list-item`,
@@ -355,4 +411,5 @@ export {
   colors,
   newListFormHelperText,
   dialogueObject,
+  themes,
 };

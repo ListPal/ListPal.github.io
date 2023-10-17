@@ -20,7 +20,7 @@ import { styled } from "@mui/material/styles";
 import { postRequest } from "../../../utils/rest";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
-import KeyIcon from '@mui/icons-material/Key';
+import KeyIcon from "@mui/icons-material/Key";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PublicIcon from "@mui/icons-material/Public";
 import LoadingButton from "@mui/lab/LoadingButton/LoadingButton";
@@ -35,13 +35,7 @@ import {
   newListFormHelperText,
 } from "../../../utils/enum";
 
-function NewListForm({
-  open,
-  setOpen,
-  user,
-  setActiveContainer,
-  activeContainer,
-}) {
+function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer, theme }) {
   // States
   const [listScope, setListScope] = useState(groceryListScopes.private);
   const [severity, setSeverity] = useState("info");
@@ -56,11 +50,26 @@ function NewListForm({
   // Handlers
   const handleRadioGroupHelperText = () => {
     if (listScope === groceryListScopes.public) {
-      return <Typography variant="subtitle4"> <PublicIcon sx={{ fontSize: "15px" }} /> Everyone with a link to this list has access</Typography>;
+      return (
+        <Typography variant="subtitle4">
+          {" "}
+          <PublicIcon sx={{ fontSize: "15px" }} /> Everyone with a link to this list has access
+        </Typography>
+      );
     } else if (listScope === groceryListScopes.private) {
-      return <Typography variant="subtitle4"> <LockOutlinedIcon sx={{ fontSize: "15px" }} /> Only you have access to this list</Typography>;
+      return (
+        <Typography variant="subtitle4">
+          {" "}
+          <LockOutlinedIcon sx={{ fontSize: "15px" }} /> Only you have access to this list
+        </Typography>
+      );
     } else if (listScope === groceryListScopes.restricted) {
-      return <Typography variant="subtitle4"> <KeyIcon sx={{ fontSize: "15px" }} /> You, and people you add have access to this list.</Typography>;
+      return (
+        <Typography variant="subtitle4">
+          {" "}
+          <KeyIcon sx={{ fontSize: "15px" }} /> You, and people you add have access to this list.
+        </Typography>
+      );
     }
   };
 
@@ -91,9 +100,7 @@ function NewListForm({
   const handleHelperText = () => {
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
       return newListFormHelperText.shopping;
-    } else if (
-      activeContainer?.containerType === groceryContainerTypes.grocery
-    ) {
+    } else if (activeContainer?.containerType === groceryContainerTypes.grocery) {
       return newListFormHelperText.grocery;
     } else if (activeContainer?.containerType === groceryContainerTypes.todo) {
       return newListFormHelperText.todo;
@@ -104,17 +111,17 @@ function NewListForm({
 
   const handleThemeColor = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
-      return colors.landingPageColors.bold;
+      return colors[theme].landingPageColors.bold;
     }
     if (activeContainer?.containerType === groceryContainerTypes.todo) {
-      return colors.todoColors.bold;
+      return colors[theme].todoColors.bold;
     }
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
-      return colors.shoppingColors.bold;
+      return colors[theme].shoppingColors.bold;
     }
-    return colors.fallbackColors.blod
+    return colors[theme].fallbackColors.bold;
   };
-  
+
   const handleCreateList = async (name) => {
     setLoading(true);
     setErrorMessage(null);
@@ -130,7 +137,7 @@ function NewListForm({
     const data = {
       userId: user?.id,
       containerId: activeContainer?.id,
-      listName: name,
+      listName: name.trim(),
       scope: listScope,
     };
 
@@ -151,16 +158,21 @@ function NewListForm({
     }
   };
 
+
   const CssTextField = styled(TextField)({
     "& label.Mui-focused": {
-      color: "#A0AAB4",
+      color: colors[theme].generalColors.helperTextFontColor,
+    },
+    "& label": {
+      fontFamily: "Urbanist",
+      color: colors[theme].generalColors.helperTextFontColor,
     },
     "& .MuiInput-underline:after": {
       borderBottomColor: handleThemeColor(),
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `2px solid ${handleThemeColor()}`,
+        border: `1px solid ${handleThemeColor()}`,
         borderRadius: 0,
       },
       "&.Mui-focused fieldset": {
@@ -195,32 +207,28 @@ function NewListForm({
               left: "50vw",
               transform: "translate(-50%)",
               borderRadius: 5,
-              width: '85vw',
+              width: "85vw",
               maxWidth: mobileWidth,
               p: 2,
-              pb:4,
+              pb: 4,
+              backgroundColor: colors[theme].generalColors.innerBackground,
             }}
           >
             <Slide
               className="alert-slide"
               in={alertMessage && true}
               sx={{
-                top: '-25vh',
-                left: 0,
+                top: "-25vh",
+                left: '-8px', // offset the padding
                 position: "fixed",
+                minWidth:'95%',
                 maxWidth: `calc(${mobileWidth} - 10px`,
-
               }}
             >
               <Alert
                 severity={severity}
                 action={
-                  <IconButton
-                    aria-label="close"
-                    color="inherit"
-                    size="small"
-                    onClick={hideAlert}
-                  >
+                  <IconButton aria-label="close" color="inherit" size="small" onClick={hideAlert}>
                     <CloseIcon fontSize="inherit" />
                   </IconButton>
                 }
@@ -238,18 +246,20 @@ function NewListForm({
                 justifyContent: "center",
               }}
             >
-              <Typography variant="h3" fontFamily={'Urbanist'}>Create List</Typography>
+              <Typography variant="h3" fontFamily={"Urbanist"} color={colors[theme].generalColors.fontColor}>
+                Create List
+              </Typography>
 
               <FormControl>
                 <CssTextField
                   fullWidth
                   required
-                  error={errorMessage && true}
+                  // error={errorMessage && true}
                   inputRef={listNameRef}
                   id="custom-css-outlined-input"
                   label="Give your List a name"
                   helperText={errorMessage ? errorMessage : handleHelperText()}
-                  InputProps={{ style: { fontFamily: "Urbanist" } }}
+                  InputProps={{ style: { fontFamily: "Urbanist", color: colors[theme].generalColors.fontColor } }}
                   inputProps={{
                     maxLength: 30,
                   }}
@@ -263,23 +273,24 @@ function NewListForm({
                   onChange={handleListScopeSelection}
                 >
                   <FormControlLabel
+                    sx={{ color: colors[theme].generalColors.fontColor }}
                     value="PUBLIC"
                     control={<Radio sx={{ color: handleThemeColor() }} />}
                     label="Public"
                   />
                   <FormControlLabel
+                    sx={{ color: colors[theme].generalColors.fontColor }}
                     value="PRIVATE"
                     control={<Radio sx={{ color: handleThemeColor() }} />}
                     label="Private"
                   />
                   <FormControlLabel
+                    sx={{ color: colors[theme].generalColors.fontColor }}
                     value="RESTRICTED"
                     control={<Radio sx={{ color: handleThemeColor() }} />}
                     label="Restricted"
                   />
-                  <FormHelperText>
-                    {handleRadioGroupHelperText()}
-                  </FormHelperText>
+                  <FormHelperText>{handleRadioGroupHelperText()}</FormHelperText>
                 </RadioGroup>
               </FormControl>
               <LoadingButton

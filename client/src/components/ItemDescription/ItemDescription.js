@@ -13,6 +13,7 @@ const ItemDescription = ({
   borderColor,
   openItemDescription,
   setOpenItemDescription,
+  theme,
 }) => {
   const handleClose = () => {
     setOpenItemDescription(false);
@@ -44,8 +45,8 @@ const ItemDescription = ({
             width: "85vw",
             minHeight: 60,
             padding: 2,
-            borderLeft: `5px solid ${borderColor ? borderColor : colors.quickListColors.bold}`,
-            borderRight: `5px solid ${borderColor ? borderColor : colors.quickListColors.bold}`,
+            borderLeft: `5px solid ${borderColor ? borderColor : colors[theme].quickListColors.bold}`,
+            borderRight: `5px solid ${borderColor ? borderColor : colors[theme].quickListColors.bold}`,
           }}
         >
           <Stack>

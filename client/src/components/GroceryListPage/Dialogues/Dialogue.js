@@ -17,14 +17,29 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AppleIcon from "@mui/icons-material/Apple";
 import RemoveDoneIcon from "@mui/icons-material/RemoveDone";
 import { styled } from "@mui/material/styles";
-import { URLS, dialogueObject, dialogues, groceryListScopes, messages } from "../../../utils/enum";
+import {
+  URLS,
+  colors,
+  dialogueObject,
+  dialogues,
+  groceryListScopes,
+  messages,
+  themes,
+} from "../../../utils/enum";
 import { postRequest, deleteRequest } from "../../../utils/rest";
 import { useLocation, useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../utils/dialoguesValidation";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { fontFamily } from "@mui/system";
 
-function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList, setActiveList }) {
+function Dialogue({
+  containerId,
+  item,
+  openDialogue,
+  setOpenDialogue,
+  activeList,
+  setActiveList,
+  theme,
+}) {
   // States
   const [severity, setSeverity] = useState("info");
   const [alertMessage, setAlertMessage] = useState(null);
@@ -82,6 +97,31 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
     setLoading(false);
     setTimeout(() => setLoading(false), 1000);
   };
+
+  const CssTextField = styled(TextField)({
+    "& label.Mui-focused": {
+      color: colors[theme].generalColors.helperTextFontColor,
+    },
+    "& label": {
+      fontFamily: "Urbanist",
+      color: colors[theme].generalColors.helperTextFontColor,
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: colors[theme].generalColors.fontColor,
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        border: `1px solid ${colors[theme].generalColors.fontColor}`,
+        borderRadius: 0,
+      },
+      "&:hover fieldset": {
+        borderColor: colors[theme].generalColors.fontColor,
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: colors[theme].generalColors.fontColor,
+      },
+    },
+  });
 
   const handleAddItem = async (name, quantity = 1) => {
     // Disable add item button until add op is done
@@ -306,6 +346,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
               borderRadius: 5,
               width: 300,
               minHeight: 300,
+              backgroundColor: colors[theme].generalColors.innerBackground,
             }}
           >
             <Slide
@@ -329,7 +370,11 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
                 justifyContent: "center",
               }}
             >
-              <Typography variant="h4" fontFamily={"Urbanist"}>
+              <Typography
+                variant="h4"
+                fontFamily={"Urbanist"}
+                color={colors[theme].generalColors.fontColor}
+              >
                 {dialogueObject[openDialogue]?.header}
               </Typography>
 
@@ -345,12 +390,12 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
                         required={textField?.required}
                         id="custom-css-outlined-input"
                         key={`${textField.text}${i}`}
-                        error={errorMessage && true}
+                        // error={errorMessage && true}
                         inputRef={textFieldRef}
                         label={textField.text}
                         helperText={errorMessage ? errorMessage : textField.helperText}
                         defaultValue={deriveDefaultText()}
-                        InputProps={{style: {fontFamily: 'Urbanist'}}}
+                        InputProps={{ style: { fontFamily: "Urbanist", color: colors[theme].generalColors.fontColor } }}
                         inputProps={{
                           maxLength: textField?.maxLength || 100,
                         }}
@@ -381,10 +426,10 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
                     sx={{
                       fontFamily: "Urbanist",
                       height: 50,
-                      "&:hover": { background: button.color },
-                      background: button.color,
+                      "&:hover": { background: button.color[theme] },
+                      background: button.color[theme],
                       borderRadius: 0,
-                      color: button.textColor,
+                      color: button.textColor[theme],
                     }}
                   >
                     {button.text}
@@ -400,25 +445,3 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
 }
 
 export default Dialogue;
-
-const CssTextField = styled(TextField)({
-  "& label.Mui-focused": {
-    color: "#A0AAB4",
-    // marginTop: 5
-  },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: "black",
-  },
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      border: "1px solid black",
-      borderRadius: 0,
-    },
-    "&:hover fieldset": {
-      borderColor: "black",
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: "black",
-    },
-  },
-});

@@ -10,19 +10,44 @@ import {
   Divider,
 } from "@mui/material";
 import { useRef, useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { URLS, colors, messages, mobileWidth } from "../../utils/enum";
 import LoadingButton from "@mui/lab/LoadingButton/LoadingButton";
 import { checkSession, postRequest } from "../../utils/rest";
 import { handleValidateUsername } from "../../utils/inputValidation";
 
-const ChangeEmail = ({ user, setUser }) => {
+const ChangeEmail = ({ user, setUser, theme }) => {
   const usernameRef = useRef(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState({ severity: "success", message: null });
+
+  const CssTextField = styled(TextField)({
+    "& label.Mui-focused": {
+      color: colors[theme].generalColors.helperTextFontColor,
+    },
+    "& label": {
+      fontFamily: "Urbanist",
+      color: colors[theme].generalColors.helperTextFontColor,
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: colors[theme].generalColors.fontColor,
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        border: `1px solid ${colors[theme].generalColors.fontColor}`,
+        borderRadius: 0,
+      },
+      "&:hover fieldset": {
+        borderColor: colors[theme].generalColors.fontColor,
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: colors[theme].generalColors.fontColor,
+      },
+    },
+  });
 
   const handleShowHideAlert = (severity, message) => {
     setAlert({ severity: severity, message: message });
@@ -87,7 +112,7 @@ const ChangeEmail = ({ user, setUser }) => {
   }, []);
   return (
     <>
-      <meta name="theme-color" content="white" />
+      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
       <Slide
         severity={alert?.severity || "info"}
         in={alert?.message && true}
@@ -99,9 +124,14 @@ const ChangeEmail = ({ user, setUser }) => {
         {/* Top buttons / title */}
         <Stack direction={"row"} width={"100%"}>
           <IconButton onClick={() => navigate(-1)}>
-            <ArrowBackIosIcon />
+            <ArrowBackIosIcon sx={{color: colors[theme].generalColors.fontColor}}/>
           </IconButton>
-          <Typography variant="h4" fontFamily={"Urbanist"} textAlign={"left"}>
+          <Typography
+            variant="h4"
+            fontFamily={"Urbanist"}
+            textAlign={"left"}
+            color={colors[theme].generalColors.fontColor}
+          >
             Change Email
           </Typography>
         </Stack>
@@ -110,7 +140,11 @@ const ChangeEmail = ({ user, setUser }) => {
 
         {/*  Textfield(s) */}
         <Stack direction={"column"} spacing={2} pt={4} width={"100%"}>
-          <Typography textAlign={"left"} fontFamily={"Urbanist"}>
+          <Typography
+            textAlign={"left"}
+            fontFamily={"Urbanist"}
+            color={colors[theme].generalColors.fontColor}
+          >
             Manage your username <strong>{user?.email}</strong> by updating your current email
           </Typography>
           <CssTextField
@@ -120,7 +154,7 @@ const ChangeEmail = ({ user, setUser }) => {
             fullWidth
             inputRef={usernameRef}
             label={"Enter New Email"}
-            InputProps={{ style: { fontFamily: "Urbanist" } }}
+            InputProps={{ style: { fontFamily: "Urbanist", color: colors[theme].generalColors.fontColor } }}
             inputProps={{
               maxLength: 100,
             }}
@@ -132,10 +166,10 @@ const ChangeEmail = ({ user, setUser }) => {
             variant={"contained"}
             onClick={() => handleOnSave(usernameRef.current.value)}
             sx={{
-              background: colors.fallbackColors.bold,
+              background: colors[theme].fallbackColors.bold,
               "&:hover": {
-                background: colors.fallbackColors.bold,
-                border: `2px solid ${colors.fallbackColors.bold}`,
+                background: colors[theme].fallbackColors.bold,
+                border: `2px solid ${colors[theme].fallbackColors.bold}`,
               },
             }}
           >
@@ -146,25 +180,5 @@ const ChangeEmail = ({ user, setUser }) => {
     </>
   );
 };
-
-const CssTextField = styled(TextField)({
-  "& label.Mui-focused": {
-    color: "#A0AAB4",
-  },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: colors.fallbackColors.bold,
-  },
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      border: `1px solid ${colors.fallbackColors.bold}`,
-    },
-    "&:hover fieldset": {
-      borderColor: colors.fallbackColors.bold,
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: colors.fallbackColors.bold,
-    },
-  },
-});
 
 export default ChangeEmail;

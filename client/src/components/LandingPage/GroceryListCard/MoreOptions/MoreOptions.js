@@ -2,17 +2,16 @@ import { useState } from "react";
 import Popover from "@mui/material/Popover";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import PaidIcon from "@mui/icons-material/Paid";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import IconButton from "@mui/material/Button";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import MoreOutlinedIcon from "@mui/icons-material/MoreOutlined";
-import { Alert, Slide, Stack, Typography } from "@mui/material";
-import { dialogues, groceryListScopes } from "../../../../utils/enum";
+import { Alert, Paper, Slide, Stack, Typography } from "@mui/material";
+import { colors, dialogues, groceryListScopes } from "../../../../utils/enum";
 import MoreDialog from "../MoreDialog/MoreDialog";
 import { useNavigate } from "react-router-dom";
 
-const MoreOptions = ({ listInfo, activeContainer, setActiveContainer, username }) => {
+const MoreOptions = ({ listInfo, activeContainer, setActiveContainer, username, theme }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
   const [alert, _] = useState(false);
@@ -36,7 +35,7 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer, username }
         onClick={handleClick}
         sx={{
           background: "none",
-          color: "#5a6b51",
+          color: colors[theme].generalColors.fontColor,
           borderRadius: "50%",
         }}
       >
@@ -53,57 +52,50 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer, username }
           horizontal: "left",
         }}
       >
-        <Stack direction={"row"}>
-          {listInfo?.scope === groceryListScopes.restricted && (
-            <IconButton
-              onClick={() => {
-                navigate("/addPeople", {
-                  state: {
-                    containerId: listInfo?.reference,
-                    listId: listInfo?.id,
-                    selfUsername: username,
-                  },
-                });
-              }}
-            >
-              <PersonAddIcon sx={{ color: "black" }} />
-            </IconButton>
-          )}
+        <Paper sx={{backgroundColor: colors[theme].generalColors.outerBackground, borderRadius: 0}}>
+          <Stack direction={"row"}>
+            {listInfo?.scope === groceryListScopes.restricted && (
+              <IconButton
+                onClick={() => {
+                  navigate("/addPeople", {
+                    state: {
+                      containerId: listInfo?.reference,
+                      listId: listInfo?.id,
+                      selfUsername: username,
+                    },
+                  });
+                }}
+              >
+                <PersonAddIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+              </IconButton>
+            )}
 
-          {listInfo?.scope === groceryListScopes.restricted && (
-            <IconButton
-              onClick={() => {
-                setOpenDialogue(dialogues.deletePeople);
-              }}
-            >
-              <PersonRemoveIcon sx={{ color: "black" }} />
-            </IconButton>
-          )}
+            {listInfo?.scope === groceryListScopes.restricted && (
+              <IconButton
+                onClick={() => {
+                  setOpenDialogue(dialogues.deletePeople);
+                }}
+              >
+                <PersonRemoveIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+              </IconButton>
+            )}
 
-          {/* {listInfo?.scope === groceryListScopes.restricted && (
             <IconButton
               onClick={() => {
-                setOpenDialogue(dialogues.sendMoney);
+                setOpenDialogue(dialogues.editList);
               }}
             >
-              <PaidIcon sx={{ color: "black" }} />
+              <EditIcon sx={{ color: colors[theme].generalColors.fontColor }} />
             </IconButton>
-          )} */}
-          <IconButton
-            onClick={() => {
-              setOpenDialogue(dialogues.editList);
-            }}
-          >
-            <EditIcon sx={{ color: "black" }} />
-          </IconButton>
-          <IconButton
-            onClick={() => {
-              setOpenDialogue(dialogues.deleteList);
-            }}
-          >
-            <DeleteIcon sx={{ color: "red" }} />
-          </IconButton>
-        </Stack>
+            <IconButton
+              onClick={() => {
+                setOpenDialogue(dialogues.deleteList);
+              }}
+            >
+              <DeleteIcon sx={{ color: "red" }} />
+            </IconButton>
+          </Stack>
+        </Paper>
       </Popover>
 
       <Slide
@@ -116,14 +108,13 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer, username }
         }}
       >
         <Alert severity={"info"}>
-          <Typography>
-            Coming soon. This feature is still on the works
-          </Typography>
+          <Typography>Coming soon. This feature is still on the works</Typography>
         </Alert>
       </Slide>
 
       {openDialogue && (
         <MoreDialog
+          theme={theme}
           listInfo={listInfo}
           activeContainer={activeContainer}
           setActiveContainer={setActiveContainer}

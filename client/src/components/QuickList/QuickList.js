@@ -10,7 +10,7 @@ import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import { useNavigate } from "react-router-dom";
 import { colors } from "../../utils/enum";
 
-const QuickList = () => {
+const QuickList = ({theme}) => {
   const [itemsArray, setItemsArray] = useState([]);
   const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const QuickList = () => {
         sx={{
           paddingLeft: "10px",
           width: "105vw",
-          background: colors.quickListColors.bold,
+          background: colors[theme].quickListColors.bold,
           alignItems: "space-between",
         }}
       >
@@ -73,6 +73,7 @@ const QuickList = () => {
         {itemsArray.length > 0 &&
           itemsArray.map((e, i) => (
             <QuickListItem
+              theme={theme}
               itemsArray={itemsArray}
               setItemsArray={setItemsArray}
               item={e}
@@ -85,6 +86,7 @@ const QuickList = () => {
 
       {openDialogue === dialogues.addQuickItem && (
         <QuickDialogue
+          theme={theme}
           itemsArray={itemsArray}
           setItemsArray={setItemsArray}
           openDialogue={openDialogue}
