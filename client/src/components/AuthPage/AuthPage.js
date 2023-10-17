@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import "./AuthPageStyle/AuthPage.scss";
 import BlurOnOutlinedIcon from "@mui/icons-material/BlurOnOutlined";
 import { Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { checkSession } from "../../utils/rest";
 import { colors } from "../../utils/enum";
+import "./AuthPageStyle/AuthPage.scss";
 
 const AuthPage = ({ setUser, user, theme }) => {
   const navigate = useNavigate();

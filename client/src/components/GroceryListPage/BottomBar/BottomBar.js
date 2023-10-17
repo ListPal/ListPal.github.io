@@ -3,7 +3,6 @@ import AddIcon from "@mui/icons-material/Add";
 import { colors, dialogues, groceryListScopes, mobileWidth } from "../../../utils/enum";
 import { Stack } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
-import SyncIcon from "@mui/icons-material/Sync";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import MapsUgcIcon from "@mui/icons-material/MapsUgc";

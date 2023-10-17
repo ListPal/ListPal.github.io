@@ -5,7 +5,6 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
-  CircularProgress,
   FormHelperText,
 } from "@mui/material";
 import { useState, useRef } from "react";

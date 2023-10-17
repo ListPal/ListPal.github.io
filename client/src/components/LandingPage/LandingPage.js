@@ -25,7 +25,6 @@ import PullToRefresh from "../PullToRefresh/PullToRefresh";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import Skeleton from "@mui/material/Skeleton";
-import BlurOnOutlinedIcon from "@mui/icons-material/BlurOnOutlined";
 
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 

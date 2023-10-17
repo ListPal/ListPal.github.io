@@ -10,7 +10,7 @@ import {
   Divider,
 } from "@mui/material";
 import { useRef, useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { URLS, colors, messages, mobileWidth } from "../../utils/enum";
 import LoadingButton from "@mui/lab/LoadingButton/LoadingButton";

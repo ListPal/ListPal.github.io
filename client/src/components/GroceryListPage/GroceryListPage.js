@@ -12,8 +12,6 @@ import { Typography, Toolbar, AppBar, Slide, Alert, Stack, List, Fab } from "@mu
 // MUI Icons
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
-import AddIcon from "@mui/icons-material/Add";
 
 // My imports
 import {

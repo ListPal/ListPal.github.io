@@ -24,7 +24,6 @@ import {
   dialogues,
   groceryListScopes,
   messages,
-  themes,
 } from "../../../utils/enum";
 import { postRequest, deleteRequest } from "../../../utils/rest";
 import { useLocation, useNavigate } from "react-router-dom";
