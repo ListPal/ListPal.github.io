@@ -26,11 +26,12 @@ const AuthPage = ({ setUser, user, theme }) => {
 
   return (
     <div>
+      <meta name="theme-color" content={colors[theme]?.generalColors.outerBackground} />
       <BlurOnOutlinedIcon
         className="rotation-element"
-        sx={{ mt: "calc(50vh - 50%)", width: 200, height: 200, color: colors[theme].generalColors.fontColor }}
+        sx={{ mt: "calc(50vh - 50%)", width: 200, height: 200, color: colors[theme]?.generalColors.fontColor }}
       />
-      <Typography color={colors[theme].generalColors.fontColor} fontFamily={"Urbanist"}>Checking Authentication...</Typography>
+      <Typography color={colors[theme]?.generalColors.fontColor} fontFamily={"Urbanist"}>Checking Authentication...</Typography>
     </div>
   );
 };

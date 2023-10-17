@@ -55,7 +55,7 @@ const BottomBar = ({
           // borderRadius: "50px 50px 0px 0px",
           position: "fixed",
           bottom: 0,
-          backgroundColor: colors[theme].generalColors.innerBackground,
+          backgroundColor: colors[theme]?.generalColors.innerBackground,
           width: "100%",
           maxWidth: mobileWidth,
           height: "6vh",
@@ -65,29 +65,29 @@ const BottomBar = ({
         <IconButton onClick={() => setOpenDialogue(dialogues.addItem)}>
           <AddIcon
             fontSize={"large"}
-            sx={{ color: colors[theme].generalColors.fontColor }}
+            sx={{ color: colors[theme]?.generalColors.fontColor }}
           ></AddIcon>
         </IconButton>
 
         {/* Send/Receive $*/}
         <IconButton sx={{ ml: 1 }} onClick={() => setOpenDialogue(dialogues.sendMoney)}>
-          <AttachMoneyOutlinedIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+          <AttachMoneyOutlinedIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />
         </IconButton>
 
         {/*  Show/Hide checked */}
         <IconButton sx={{ ml: 2 }} onClick={() => setShowDone(!showDone)}>
           {showDone && (
-            <TaskAltOutlinedIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+            <TaskAltOutlinedIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />
           )}
           {!showDone && (
-            <UnpublishedOutlinedIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+            <UnpublishedOutlinedIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />
           )}
         </IconButton>
 
         {/* Share List */}
         {scope === groceryListScopes.public ? (
           <IconButton sx={{ ml: 2, mr: 2 }} onClick={() => setOpenShareTray(!openShareTray)}>
-            <IosShareIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+            <IosShareIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />
           </IconButton>
         ) : (
           <IconButton
@@ -97,7 +97,7 @@ const BottomBar = ({
             variant="contained"
             onClick={() => setOpenDialogue(dialogues.resetList)}
           >
-            <AutoDeleteOutlinedIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+            <AutoDeleteOutlinedIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />
           </IconButton>
         )}
       </Stack>
@@ -113,7 +113,7 @@ const BottomBar = ({
           <List sx={{ height: "15vh" }}>
             <Link
               to={handleSareWhatsappLink()}
-              style={{ textDecoration: "none", color: colors[theme].generalColors.fontColor }}
+              style={{ textDecoration: "none", color: colors[theme]?.generalColors.fontColor }}
             >
               <ListItemButton>
                 <ListItemAvatar>
@@ -125,7 +125,7 @@ const BottomBar = ({
 
             <Link
               to={handleMessageLink()}
-              style={{ textDecoration: "none", color: colors[theme].generalColors.fontColor }}
+              style={{ textDecoration: "none", color: colors[theme]?.generalColors.fontColor }}
             >
               <ListItemButton>
                 <ListItemAvatar>

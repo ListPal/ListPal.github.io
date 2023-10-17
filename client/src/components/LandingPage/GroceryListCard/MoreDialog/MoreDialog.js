@@ -64,25 +64,25 @@ const MoreDialog = ({
 
   const CssTextField = styled(TextField)({
     "& label.Mui-focused": {
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& label": {
       fontFamily: "Urbanist",
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: colors[theme].generalColors.fontColor,
+      borderBottomColor: colors[theme]?.generalColors.fontColor,
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `1px solid ${colors[theme].generalColors.fontColor}`,
+        border: `1px solid ${colors[theme]?.generalColors.fontColor}`,
         borderRadius: 0,
       },
       "&:hover fieldset": {
-        borderColor: colors[theme].generalColors.fontColor,
+        borderColor: colors[theme]?.generalColors.fontColor,
       },
       "&.Mui-focused fieldset": {
-        borderColor: colors[theme].generalColors.fontColor,
+        borderColor: colors[theme]?.generalColors.fontColor,
       },
     },
   });
@@ -342,7 +342,7 @@ const MoreDialog = ({
               borderRadius: 5,
               width: "85vw",
               maxWidth: mobileWidth,
-              backgroundColor: colors[theme].generalColors.innerBackground,
+              backgroundColor: colors[theme]?.generalColors.innerBackground,
               p: 2,
               pt: 5,
               pb: 5,
@@ -358,7 +358,7 @@ const MoreDialog = ({
               <Typography
                 variant="h4"
                 fontFamily={"Urbanist"}
-                color={colors[theme].generalColors.fontColor}
+                color={colors[theme]?.generalColors.fontColor}
               >
                 {dialogueObject[openDialogue]?.header}
               </Typography>
@@ -380,7 +380,7 @@ const MoreDialog = ({
                         InputProps={{
                           style: {
                             fontFamily: "Urbanist",
-                            color: colors[theme].generalColors.fontColor,
+                            color: colors[theme]?.generalColors.fontColor,
                           },
                         }}
                         inputProps={{
@@ -398,7 +398,7 @@ const MoreDialog = ({
                     defaultValue={listInfo?.scope}
                     name="radio-buttons-group"
                     onChange={handleListScopeSelection}
-                    sx={{ justifyContent: "center", color: colors[theme].generalColors.fontColor }}
+                    sx={{ justifyContent: "center", color: colors[theme]?.generalColors.fontColor }}
                   >
                     <FormControlLabel value="PUBLIC" control={<Radio />} label="Public" />
                     <FormControlLabel value="PRIVATE" control={<Radio />} label="Private" />

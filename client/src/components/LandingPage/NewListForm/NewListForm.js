@@ -111,15 +111,15 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer,
 
   const handleThemeColor = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
-      return colors[theme].landingPageColors.bold;
+      return colors[theme]?.landingPageColors.bold;
     }
     if (activeContainer?.containerType === groceryContainerTypes.todo) {
-      return colors[theme].todoColors.bold;
+      return colors[theme]?.todoColors.bold;
     }
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
-      return colors[theme].shoppingColors.bold;
+      return colors[theme]?.shoppingColors.bold;
     }
-    return colors[theme].fallbackColors.bold;
+    return colors[theme]?.fallbackColors.bold;
   };
 
   const handleCreateList = async (name) => {
@@ -161,11 +161,11 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer,
 
   const CssTextField = styled(TextField)({
     "& label.Mui-focused": {
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& label": {
       fontFamily: "Urbanist",
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& .MuiInput-underline:after": {
       borderBottomColor: handleThemeColor(),
@@ -211,7 +211,7 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer,
               maxWidth: mobileWidth,
               p: 2,
               pb: 4,
-              backgroundColor: colors[theme].generalColors.innerBackground,
+              backgroundColor: colors[theme]?.generalColors.innerBackground,
             }}
           >
             <Slide
@@ -246,7 +246,7 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer,
                 justifyContent: "center",
               }}
             >
-              <Typography variant="h3" fontFamily={"Urbanist"} color={colors[theme].generalColors.fontColor}>
+              <Typography variant="h3" fontFamily={"Urbanist"} color={colors[theme]?.generalColors.fontColor}>
                 Create List
               </Typography>
 
@@ -259,7 +259,7 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer,
                   id="custom-css-outlined-input"
                   label="Give your List a name"
                   helperText={errorMessage ? errorMessage : handleHelperText()}
-                  InputProps={{ style: { fontFamily: "Urbanist", color: colors[theme].generalColors.fontColor } }}
+                  InputProps={{ style: { fontFamily: "Urbanist", color: colors[theme]?.generalColors.fontColor } }}
                   inputProps={{
                     maxLength: 30,
                   }}
@@ -273,19 +273,19 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer,
                   onChange={handleListScopeSelection}
                 >
                   <FormControlLabel
-                    sx={{ color: colors[theme].generalColors.fontColor }}
+                    sx={{ color: colors[theme]?.generalColors.fontColor }}
                     value="PUBLIC"
                     control={<Radio sx={{ color: handleThemeColor() }} />}
                     label="Public"
                   />
                   <FormControlLabel
-                    sx={{ color: colors[theme].generalColors.fontColor }}
+                    sx={{ color: colors[theme]?.generalColors.fontColor }}
                     value="PRIVATE"
                     control={<Radio sx={{ color: handleThemeColor() }} />}
                     label="Private"
                   />
                   <FormControlLabel
-                    sx={{ color: colors[theme].generalColors.fontColor }}
+                    sx={{ color: colors[theme]?.generalColors.fontColor }}
                     value="RESTRICTED"
                     control={<Radio sx={{ color: handleThemeColor() }} />}
                     label="Restricted"

@@ -199,50 +199,50 @@ function GroceryListPage({
   const handleDeriveThemeColor = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
       return {
-        bold: colors[theme].landingPageColors.bold,
-        medium: colors[theme].landingPageColors.medium,
-        low: colors[theme].landingPageColors.low,
+        bold: colors[theme]?.landingPageColors.bold,
+        medium: colors[theme]?.landingPageColors.medium,
+        low: colors[theme]?.landingPageColors.low,
       };
     }
     if (activeContainer?.containerType === groceryContainerTypes.todo) {
       return {
-        bold: colors[theme].todoColors.bold,
-        medium: colors[theme].todoColors.medium,
-        low: colors[theme].todoColors.low,
+        bold: colors[theme]?.todoColors.bold,
+        medium: colors[theme]?.todoColors.medium,
+        low: colors[theme]?.todoColors.low,
       };
     }
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
       return {
-        bold: colors[theme].shoppingColors.bold,
-        medium: colors[theme].shoppingColors.medium,
-        low: colors[theme].shoppingColors.low,
+        bold: colors[theme]?.shoppingColors.bold,
+        medium: colors[theme]?.shoppingColors.medium,
+        low: colors[theme]?.shoppingColors.low,
       };
     }
     if (containerId.includes(groceryContainerTypes.grocery)) {
       return {
-        bold: colors[theme].landingPageColors.bold,
-        medium: colors[theme].landingPageColors.medium,
-        low: colors[theme].landingPageColors.low,
+        bold: colors[theme]?.landingPageColors.bold,
+        medium: colors[theme]?.landingPageColors.medium,
+        low: colors[theme]?.landingPageColors.low,
       };
     }
     if (containerId.includes(groceryContainerTypes.todo)) {
       return {
-        bold: colors[theme].todoColors.bold,
-        medium: colors[theme].todoColors.medium,
-        low: colors[theme].todoColors.low,
+        bold: colors[theme]?.todoColors.bold,
+        medium: colors[theme]?.todoColors.medium,
+        low: colors[theme]?.todoColors.low,
       };
     }
     if (containerId.includes(groceryContainerTypes.whishlist)) {
       return {
-        bold: colors[theme].shoppingColors.bold,
-        medium: colors[theme].shoppingColors.medium,
-        low: colors[theme].shoppingColors.low,
+        bold: colors[theme]?.shoppingColors.bold,
+        medium: colors[theme]?.shoppingColors.medium,
+        low: colors[theme]?.shoppingColors.low,
       };
     }
     return {
-      bold: colors[theme].fallbackColors.bold,
-      medium: colors[theme].fallbackColors.medium,
-      low: colors[theme].fallbackColors.low,
+      bold: colors[theme]?.fallbackColors.bold,
+      medium: colors[theme]?.fallbackColors.medium,
+      low: colors[theme]?.fallbackColors.low,
     };
   };
 
@@ -416,7 +416,7 @@ function GroceryListPage({
 
   return (
     <PullToRefresh onRefresh={handleSync}>
-      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
+      <meta name="theme-color" content={colors[theme]?.generalColors.outerBackground} />
 
       {/* Loading progress */}
       {loading && <Loading color={handleDeriveThemeColor().bold} />}
@@ -447,7 +447,7 @@ function GroceryListPage({
         onClick={handleBack}
         sx={{ mt: 3, position: "fixed", left: "15px", zIndex: 11 }}
       >
-        <ArrowBackIosIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+        <ArrowBackIosIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />
       </IconButton>
 
       {/* List items */}
@@ -580,8 +580,8 @@ function GroceryListPage({
               borderRadius: "50%",
               background:
                 slide === 0
-                  ? colors[theme].generalColors.slideSelector.active
-                  : colors[theme].generalColors.slideSelector.inactive,
+                  ? colors[theme]?.generalColors.slideSelector.active
+                  : colors[theme]?.generalColors.slideSelector.inactive,
             }}
           />
           <div
@@ -592,8 +592,8 @@ function GroceryListPage({
               borderRadius: "50%",
               background:
                 slide === 1
-                  ? colors[theme].generalColors.slideSelector.active
-                  : colors[theme].generalColors.slideSelector.inactive,
+                  ? colors[theme]?.generalColors.slideSelector.active
+                  : colors[theme]?.generalColors.slideSelector.inactive,
             }}
           />
         </Stack>
@@ -603,7 +603,7 @@ function GroceryListPage({
         <Typography
           variant={"subtitle1"}
           fontFamily={"Urbanist"}
-          color={colors[theme].generalColors.helperTextFontColor}
+          color={colors[theme]?.generalColors.helperTextFontColor}
           sx={{
             position: "absolute",
             left: "50%",

@@ -68,7 +68,7 @@ const Profile = ({ user, setUser, theme, setTheme }) => {
 
   return (
     <>
-      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
+      <meta name="theme-color" content={colors[theme]?.generalColors.outerBackground} />
       <Slide
         severity={alert?.severity || "info"}
         in={alert?.message && true}
@@ -79,13 +79,13 @@ const Profile = ({ user, setUser, theme, setTheme }) => {
       <Grid container p={2} width={"100vw"} maxWidth={mobileWidth}>
         <Stack direction={"row"} width={"100%"}>
           <IconButton onClick={() => navigate(-1)}>
-            <ArrowBackIosIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+            <ArrowBackIosIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />
           </IconButton>
           <Typography
             variant="h4"
             fontFamily={"Urbanist"}
             textAlign={"left"}
-            color={colors[theme].generalColors.fontColor}
+            color={colors[theme]?.generalColors.fontColor}
           >
             Account Settings
           </Typography>
@@ -108,7 +108,7 @@ const Profile = ({ user, setUser, theme, setTheme }) => {
                   <Typography
                     variant={"subtitle2"}
                     fontFamily={"Urbanist"}
-                    color={colors[theme].generalColors.helperTextFontColor}
+                    color={colors[theme]?.generalColors.helperTextFontColor}
                   >
                     {"Update Name"}
                   </Typography>
@@ -117,14 +117,14 @@ const Profile = ({ user, setUser, theme, setTheme }) => {
                 <Typography
                   fontFamily={"Urbanist"}
                   fontSize={20}
-                  color={colors[theme].generalColors.fontColor}
+                  color={colors[theme]?.generalColors.fontColor}
                 >
                   {user?.name + " " + user?.lastName}
                 </Typography>
               </ListItemText>
               <ListItemIcon>
                 <ArrowBackIosIcon
-                  sx={{ transform: "rotate(180deg)", color: colors[theme].generalColors.fontColor }}
+                  sx={{ transform: "rotate(180deg)", color: colors[theme]?.generalColors.fontColor }}
                 />
               </ListItemIcon>
             </ListItemButton>
@@ -138,7 +138,7 @@ const Profile = ({ user, setUser, theme, setTheme }) => {
                   <Typography
                     variant={"subtitle2"}
                     fontFamily={"Urbanist"}
-                    color={colors[theme].generalColors.helperTextFontColor}
+                    color={colors[theme]?.generalColors.helperTextFontColor}
                   >
                     {"Update Email"}
                   </Typography>
@@ -147,14 +147,14 @@ const Profile = ({ user, setUser, theme, setTheme }) => {
                 <Typography
                   fontFamily={"Urbanist"}
                   fontSize={20}
-                  color={colors[theme].generalColors.fontColor}
+                  color={colors[theme]?.generalColors.fontColor}
                 >
                   {user?.email}
                 </Typography>
               </ListItemText>
               <ListItemIcon>
                 <ArrowBackIosIcon
-                  sx={{ transform: "rotate(180deg)", color: colors[theme].generalColors.fontColor }}
+                  sx={{ transform: "rotate(180deg)", color: colors[theme]?.generalColors.fontColor }}
                 />
               </ListItemIcon>
             </ListItemButton>
@@ -167,14 +167,14 @@ const Profile = ({ user, setUser, theme, setTheme }) => {
                 <Typography
                   fontFamily={"Urbanist"}
                   fontSize={20}
-                  color={colors[theme].generalColors.fontColor}
+                  color={colors[theme]?.generalColors.fontColor}
                 >
                   {"Update Phone"}
                 </Typography>
               </ListItemText>
               <ListItemIcon>
                 <ArrowBackIosIcon
-                  sx={{ transform: "rotate(180deg)", color: colors[theme].generalColors.fontColor }}
+                  sx={{ transform: "rotate(180deg)", color: colors[theme]?.generalColors.fontColor }}
                 />
               </ListItemIcon>
             </ListItemButton>
@@ -187,14 +187,14 @@ const Profile = ({ user, setUser, theme, setTheme }) => {
                 <Typography
                   fontFamily={"Urbanist"}
                   fontSize={20}
-                  color={colors[theme].generalColors.fontColor}
+                  color={colors[theme]?.generalColors.fontColor}
                 >
                   Change Password
                 </Typography>
               </ListItemText>
               <ListItemIcon>
                 <ArrowBackIosIcon
-                  sx={{ transform: "rotate(180deg)", color: colors[theme].generalColors.fontColor }}
+                  sx={{ transform: "rotate(180deg)", color: colors[theme]?.generalColors.fontColor }}
                 />
               </ListItemIcon>
             </ListItemButton>
@@ -203,13 +203,13 @@ const Profile = ({ user, setUser, theme, setTheme }) => {
                 <Typography
                   fontFamily={"Urbanist"}
                   fontSize={20}
-                  color={colors[theme].generalColors.fontColor}
+                  color={colors[theme]?.generalColors.fontColor}
                 >
                   Toggle Theme
                 </Typography>
               </ListItemText>
               <ListItemIcon>
-                <Brightness4Icon sx={{color: colors[theme].generalColors.fontColor}}/>
+                <Brightness4Icon sx={{color: colors[theme]?.generalColors.fontColor}}/>
               </ListItemIcon>
             </ListItemButton>
           </List>

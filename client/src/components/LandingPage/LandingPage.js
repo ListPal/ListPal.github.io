@@ -56,8 +56,7 @@ const LandingPage = ({
 
   // Handlers
   const handleRefresh = () => {
-    // Add your data fetching logic here
-    // window.location.reload()
+    // Data fetching logic
     pullLists();
   };
 
@@ -102,7 +101,7 @@ const LandingPage = ({
       setUser(null);
       setActiveContainer({ collapsedLists: [] });
       setActiveList({ groceryListItems: [] });
-      navigate("/");
+      navigate("/login");
     } else {
       showAlert("error", "Failed log you out. Please refresh the page and try again.");
     }
@@ -146,25 +145,25 @@ const LandingPage = ({
 
   const handleDeriveHeadingColor = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
-      return colors[theme].landingPageColors.low;
+      return colors[theme]?.landingPageColors.low;
     } else if (activeContainer?.containerType === groceryContainerTypes.todo) {
-      return colors[theme].todoColors.low;
+      return colors[theme]?.todoColors.low;
     } else if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
-      return colors[theme].shoppingColors.low;
+      return colors[theme]?.shoppingColors.low;
     } else {
-      return colors[theme].fallbackColors.low;
+      return colors[theme]?.fallbackColors.low;
     }
   };
 
   const handleDeriveCardBackgroundColor = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
-      return colors[theme].landingPageColors.medium;
+      return colors[theme]?.landingPageColors.medium;
     } else if (activeContainer?.containerType === groceryContainerTypes.todo) {
-      return colors[theme].todoColors.medium;
+      return colors[theme]?.todoColors.medium;
     } else if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
-      return colors[theme].shoppingColors.medium;
+      return colors[theme]?.shoppingColors.medium;
     } else {
-      return colors[theme].fallbackColors.medium;
+      return colors[theme]?.fallbackColors.medium;
     }
   };
 
@@ -223,7 +222,7 @@ const LandingPage = ({
   return (
     // margin -40px and padding +40px avoids an issue with the pull to refresh
     <PullToRefresh onRefresh={handleRefresh}>
-      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
+      <meta name="theme-color" content={colors[theme]?.generalColors.outerBackground} />
       <Grid spacing={1} container sx={{ maxWidth: mobileWidth, alignItems: "center" }}>
         <Grid item>
           <Paper
@@ -238,7 +237,7 @@ const LandingPage = ({
               alignItems: "center",
               justifyContent: "center",
               flexDirection: "column",
-              backgroundColor: colors[theme].generalColors.outerBackground,
+              backgroundColor: colors[theme]?.generalColors.outerBackground,
             }}
           >
             {loading && (
@@ -262,7 +261,7 @@ const LandingPage = ({
                   borderRadius: 5,
                   alignItems: "center",
                   justifyContent: "space-between",
-                  color: colors[theme].generalColors.fontColor,
+                  color: colors[theme]?.generalColors.fontColor,
                 }}
               >
                 <Typography
@@ -277,7 +276,7 @@ const LandingPage = ({
                 >
                   {/*  Back Button */}
                   <IconButton size={"small"} disableRipple onClick={handleBack}>
-                    <ArrowBackIosIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+                    <ArrowBackIosIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />
                   </IconButton>
 
                   {/* Avatar */}
@@ -304,7 +303,7 @@ const LandingPage = ({
                 <IconButton onClick={handleLogout}>
                   <LogoutIcon
                     fontSize={"small"}
-                    sx={{ color: colors[theme].generalColors.fontColor }}
+                    sx={{ color: colors[theme]?.generalColors.fontColor }}
                   />
                 </IconButton>
               </Stack>

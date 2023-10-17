@@ -19,25 +19,25 @@ const Login = ({ setActiveContainer, setUser, theme }) => {
 
   const CssTextField = styled(TextField)({
     "& label.Mui-focused": {
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& label": {
       fontFamily: "Urbanist",
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: colors[theme].generalColors.fontColor,
+      borderBottomColor: colors[theme]?.generalColors.fontColor,
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `1px solid ${colors[theme].generalColors.fontColor}`,
+        border: `1px solid ${colors[theme]?.generalColors.fontColor}`,
         borderRadius: 0,
       },
       "&:hover fieldset": {
-        borderColor: colors[theme].generalColors.fontColor,
+        borderColor: colors[theme]?.generalColors.fontColor,
       },
       "&.Mui-focused fieldset": {
-        borderColor: colors[theme].generalColors.fontColor,
+        borderColor: colors[theme]?.generalColors.fontColor,
       },
     },
   });
@@ -106,7 +106,7 @@ const Login = ({ setActiveContainer, setUser, theme }) => {
         maxWidth: mobileWidth,
       }}
     >
-      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
+      <meta name="theme-color" content={colors[theme]?.generalColors.outerBackground} />
       <Stack
         direction={"column"}
         spacing={2}
@@ -119,7 +119,7 @@ const Login = ({ setActiveContainer, setUser, theme }) => {
         }}
       >
         <Typography
-          color={colors[theme].generalColors.fontColor}
+          color={colors[theme]?.generalColors.fontColor}
           fontFamily={"Urbanist"}
           variant="h4"
           sx={{
@@ -144,7 +144,7 @@ const Login = ({ setActiveContainer, setUser, theme }) => {
           InputProps={{
             style: {
               fontFamily: "Urbanist",
-              color: colors[theme].generalColors.helperTextFontColor,
+              color: colors[theme]?.generalColors.helperTextFontColor,
             },
           }}
         />
@@ -161,7 +161,7 @@ const Login = ({ setActiveContainer, setUser, theme }) => {
           sx={{ width: "80vw", maxWidth: mobileWidth }}
           InputProps={{
             style: {
-              color: colors[theme].generalColors.helperTextFontColor,
+              color: colors[theme]?.generalColors.helperTextFontColor,
             },
           }}
         />
@@ -176,10 +176,10 @@ const Login = ({ setActiveContainer, setUser, theme }) => {
             height: "50px",
             width: "80vw",
             maxWidth: mobileWidth,
-            background: colors[theme].fallbackColors.bold,
+            background: colors[theme]?.fallbackColors.bold,
             "&:hover": {
-              background: colors[theme].fallbackColors.bold,
-              border: `2px solid ${colors[theme].fallbackColors.bold}`,
+              background: colors[theme]?.fallbackColors.bold,
+              border: `2px solid ${colors[theme]?.fallbackColors.bold}`,
             },
           }}
         >
@@ -196,10 +196,10 @@ const Login = ({ setActiveContainer, setUser, theme }) => {
             width: "80vw",
             maxWidth: mobileWidth,
             borderRadius: "20px 0px 20px 0px",
-            background: colors[theme].quickListColors.bold,
+            background: colors[theme]?.quickListColors.bold,
             "&:hover": {
-              background: colors[theme].quickListColors.bold,
-              border: `2px solid ${colors[theme].quickListColors.bold}`,
+              background: colors[theme]?.quickListColors.bold,
+              border: `2px solid ${colors[theme]?.quickListColors.bold}`,
             },
           }}
           variant="contained"
@@ -209,13 +209,13 @@ const Login = ({ setActiveContainer, setUser, theme }) => {
         <Stack direction={"row"}>
           <Typography
             fontFamily={"Urbanist"}
-            sx={{ color: colors[theme].generalColors.helperTextFontColor }}
+            sx={{ color: colors[theme]?.generalColors.helperTextFontColor }}
           >
             Dont have an account?
           </Typography>
           <Link to="/register" style={{ textDecoration: "none" }}>
             <Typography
-              color={colors[theme].generalColors.fontColor}
+              color={colors[theme]?.generalColors.fontColor}
               fontFamily={"Urbanist"}
               sx={{ ml: 1, fontWeight: "570" }}
             >

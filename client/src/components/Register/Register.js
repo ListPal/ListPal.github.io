@@ -36,25 +36,25 @@ const Register = ({ setUser, setActiveList, theme }) => {
 
   const CssTextField = styled(TextField)({
     "& label.Mui-focused": {
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& label": {
       fontFamily: "Urbanist",
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: colors[theme].generalColors.fontColor,
+      borderBottomColor: colors[theme]?.generalColors.fontColor,
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `1px solid ${colors[theme].generalColors.fontColor}`,
+        border: `1px solid ${colors[theme]?.generalColors.fontColor}`,
         borderRadius: 0,
       },
       "&:hover fieldset": {
-        borderColor: colors[theme].generalColors.fontColor,
+        borderColor: colors[theme]?.generalColors.fontColor,
       },
       "&.Mui-focused fieldset": {
-        borderColor: colors[theme].generalColors.fontColor,
+        borderColor: colors[theme]?.generalColors.fontColor,
       },
     },
   });
@@ -140,7 +140,7 @@ const Register = ({ setUser, setActiveList, theme }) => {
 
   return (
     <>
-      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
+      <meta name="theme-color" content={colors[theme]?.generalColors.outerBackground} />
       {loading && (
         <>
           <CircularProgress
@@ -171,8 +171,8 @@ const Register = ({ setUser, setActiveList, theme }) => {
             width: "100vw",
           }}
         >
-          <ArrowBackIosIcon sx={{ color: colors[theme].generalColors.fontColor }} onClick={() => navigate("/")} />
-          <Typography sx={{ color: colors[theme].generalColors.fontColor }} variant="h4">
+          <ArrowBackIosIcon sx={{ color: colors[theme]?.generalColors.fontColor }} onClick={() => navigate("/")} />
+          <Typography sx={{ color: colors[theme]?.generalColors.fontColor }} variant="h4">
             Create Account
           </Typography>
         </div>
@@ -197,7 +197,7 @@ const Register = ({ setUser, setActiveList, theme }) => {
             sx={{ width: "80vw", maxWidth: mobileWidth }}
             inputRef={nameRef}
             InputProps={{
-              style: { fontFamily: "Urbanist", color: colors[theme].generalColors.fontColor },
+              style: { fontFamily: "Urbanist", color: colors[theme]?.generalColors.fontColor },
             }}
             inputProps={{
               maxLength: 20,
@@ -213,7 +213,7 @@ const Register = ({ setUser, setActiveList, theme }) => {
             sx={{ width: "80vw", maxWidth: mobileWidth }}
             inputRef={lastnameRef}
             InputProps={{
-              style: { fontFamily: "Urbanist", color: colors[theme].generalColors.fontColor },
+              style: { fontFamily: "Urbanist", color: colors[theme]?.generalColors.fontColor },
             }}
             inputProps={{
               maxLength: 40,
@@ -238,7 +238,7 @@ const Register = ({ setUser, setActiveList, theme }) => {
             sx={{ width: "80vw", maxWidth: mobileWidth }}
             inputRef={usernameRef}
             InputProps={{
-              style: { fontFamily: "Urbanist", color: colors[theme].generalColors.fontColor },
+              style: { fontFamily: "Urbanist", color: colors[theme]?.generalColors.fontColor },
             }}
             inputProps={{
               maxLength: 100,
@@ -267,7 +267,7 @@ const Register = ({ setUser, setActiveList, theme }) => {
             }}
             InputProps={{
               style: {
-                color: colors[theme].generalColors.fontColor,
+                color: colors[theme]?.generalColors.fontColor,
               },
               endAdornment: (
                 <IconButton
@@ -299,7 +299,7 @@ const Register = ({ setUser, setActiveList, theme }) => {
             }}
             InputProps={{
               style: {
-                color: colors[theme].generalColors.fontColor,
+                color: colors[theme]?.generalColors.fontColor,
               },
               endAdornment: (
                 <IconButton
@@ -334,7 +334,7 @@ const Register = ({ setUser, setActiveList, theme }) => {
             sx={{ width: "80vw", maxWidth: mobileWidth }}
             inputRef={phoneRef}
             InputProps={{
-              style: { fontFamily: "Urbanist", color: colors[theme].generalColors.fontColor },
+              style: { fontFamily: "Urbanist", color: colors[theme]?.generalColors.fontColor },
             }}
             inputProps={{
               maxLength: 10,
@@ -351,10 +351,10 @@ const Register = ({ setUser, setActiveList, theme }) => {
               height: "50px",
               width: "80vw",
               maxWidth: mobileWidth,
-              background: colors[theme].fallbackColors.bold,
+              background: colors[theme]?.fallbackColors.bold,
               "&:hover": {
-                background: colors[theme].fallbackColors.bold,
-                border: `2px solid ${colors[theme].fallbackColors.bold}`,
+                background: colors[theme]?.fallbackColors.bold,
+                border: `2px solid ${colors[theme]?.fallbackColors.bold}`,
               },
             }}
             variant="contained"

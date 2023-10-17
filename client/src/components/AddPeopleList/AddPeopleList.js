@@ -44,25 +44,25 @@ const AddPeopleList = ({ theme }) => {
 
   const CssTextField = styled(TextField)({
     "& label.Mui-focused": {
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& label": {
       fontFamily: "Urbanist",
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: colors[theme].generalColors.fontColor,
+      borderBottomColor: colors[theme]?.generalColors.fontColor,
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `1px solid ${colors[theme].generalColors.fontColor}`,
+        border: `1px solid ${colors[theme]?.generalColors.fontColor}`,
         borderRadius: 0,
       },
       "&:hover fieldset": {
-        borderColor: colors[theme].generalColors.fontColor,
+        borderColor: colors[theme]?.generalColors.fontColor,
       },
       "&.Mui-focused fieldset": {
-        borderColor: colors[theme].generalColors.fontColor,
+        borderColor: colors[theme]?.generalColors.fontColor,
       },
     },
   });
@@ -220,19 +220,19 @@ const AddPeopleList = ({ theme }) => {
   }, []);
   return (
     <Grid container spacing={4} p>
-      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
+      <meta name="theme-color" content={colors[theme]?.generalColors.outerBackground} />
       <Grid item sx={{ width: "100vw" }}>
         <Stack direction={"column"} spacing={1}>
           <Stack direction={"row"} alignItems={"center"}>
             <IconButton onClick={() => navigate(-1)}>
-              <ArrowBackIosIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+              <ArrowBackIosIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />
             </IconButton>
             <Switch checked={!lookupByPhone} onChange={handleSwitch} />
             <Typography
               variant="button"
               fontSize={16}
               fontFamily={"Urbanist"}
-              color={colors[theme].generalColors.helperTextFontColor}
+              color={colors[theme]?.generalColors.helperTextFontColor}
             >{`Toggle lookup option`}</Typography>
           </Stack>
           <Stack sx={{ width: "95vw" }}>
@@ -301,14 +301,14 @@ const AddPeopleList = ({ theme }) => {
           variant="h5"
           textAlign={"left"}
           fontFamily={"Urbanist"}
-          color={colors[theme].generalColors.fontColor}
+          color={colors[theme]?.generalColors.fontColor}
         >
           Recents
         </Typography>
         <List
           dense
           sx={{
-            bgcolor: colors[theme].generalColors.outerBackground,
+            bgcolor: colors[theme]?.generalColors.outerBackground,
             overflow: "scroll",
             maxHeight: "65vh",
           }}
@@ -339,7 +339,7 @@ const AddPeopleList = ({ theme }) => {
                     primaryTypographyProps={{
                       fontFamily: "Urbanist",
                       fontSize: 16,
-                      color: colors[theme].generalColors.fontColor,
+                      color: colors[theme]?.generalColors.fontColor,
                     }}
                   />
                 </ListItemButton>

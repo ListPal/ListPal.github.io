@@ -32,25 +32,25 @@ const ChangePassword = ({ user, setUser, theme }) => {
 
   const CssTextField = styled(TextField)({
     "& label.Mui-focused": {
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& label": {
       fontFamily: "Urbanist",
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: colors[theme].generalColors.fontColor,
+      borderBottomColor: colors[theme]?.generalColors.fontColor,
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `1px solid ${colors[theme].generalColors.fontColor}`,
+        border: `1px solid ${colors[theme]?.generalColors.fontColor}`,
         borderRadius: 0,
       },
       "&:hover fieldset": {
-        borderColor: colors[theme].generalColors.fontColor,
+        borderColor: colors[theme]?.generalColors.fontColor,
       },
       "&.Mui-focused fieldset": {
-        borderColor: colors[theme].generalColors.fontColor,
+        borderColor: colors[theme]?.generalColors.fontColor,
       },
     },
   });
@@ -127,7 +127,7 @@ const ChangePassword = ({ user, setUser, theme }) => {
 
   return (
     <>
-      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
+      <meta name="theme-color" content={colors[theme]?.generalColors.outerBackground} />
       <Slide
         severity={alert?.severity || "info"}
         in={alert?.message && true}
@@ -139,13 +139,13 @@ const ChangePassword = ({ user, setUser, theme }) => {
         {/* Top buttons / title */}
         <Stack direction={"row"} width={"100%"}>
           <IconButton onClick={() => navigate(-1)}>
-            <ArrowBackIosIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+            <ArrowBackIosIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />
           </IconButton>
           <Typography
             variant="h4"
             fontFamily={"Urbanist"}
             textAlign={"left"}
-            color={colors[theme].generalColors.fontColor}
+            color={colors[theme]?.generalColors.fontColor}
           >
             Password
           </Typography>
@@ -158,7 +158,7 @@ const ChangePassword = ({ user, setUser, theme }) => {
           <Typography
             textAlign={"left"}
             fontFamily={"Urbanist"}
-            color={colors[theme].generalColors.fontColor}
+            color={colors[theme]?.generalColors.fontColor}
           >
             Manage your profile security by updating your current password
           </Typography>
@@ -175,7 +175,7 @@ const ChangePassword = ({ user, setUser, theme }) => {
               maxLength: 100,
             }}
             InputProps={{
-              style: { color: colors[theme].generalColors.fontColor },
+              style: { color: colors[theme]?.generalColors.fontColor },
               endAdornment: (
                 <IconButton
                   size="small"
@@ -223,10 +223,10 @@ const ChangePassword = ({ user, setUser, theme }) => {
               handleOnSave(currentPasswordRef.current.value, newPasswordRef.current.value)
             }
             sx={{
-              background: colors[theme].fallbackColors.bold,
+              background: colors[theme]?.fallbackColors.bold,
               "&:hover": {
-                background: colors[theme].fallbackColors.bold,
-                border: `2px solid ${colors[theme].fallbackColors.bold}`,
+                background: colors[theme]?.fallbackColors.bold,
+                border: `2px solid ${colors[theme]?.fallbackColors.bold}`,
               },
             }}
           >

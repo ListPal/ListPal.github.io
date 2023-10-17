@@ -45,8 +45,8 @@ const ItemDescription = ({
             width: "85vw",
             minHeight: 60,
             padding: 2,
-            borderLeft: `5px solid ${borderColor ? borderColor : colors[theme].quickListColors.bold}`,
-            borderRight: `5px solid ${borderColor ? borderColor : colors[theme].quickListColors.bold}`,
+            borderLeft: `5px solid ${borderColor ? borderColor : colors[theme]?.quickListColors.bold}`,
+            borderRight: `5px solid ${borderColor ? borderColor : colors[theme]?.quickListColors.bold}`,
           }}
         >
           <Stack>

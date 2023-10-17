@@ -35,7 +35,7 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer, username, 
         onClick={handleClick}
         sx={{
           background: "none",
-          color: colors[theme].generalColors.fontColor,
+          color: colors[theme]?.generalColors.fontColor,
           borderRadius: "50%",
         }}
       >
@@ -52,7 +52,7 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer, username, 
           horizontal: "left",
         }}
       >
-        <Paper sx={{backgroundColor: colors[theme].generalColors.outerBackground, borderRadius: 0}}>
+        <Paper sx={{backgroundColor: colors[theme]?.generalColors.outerBackground, borderRadius: 0}}>
           <Stack direction={"row"}>
             {listInfo?.scope === groceryListScopes.restricted && (
               <IconButton
@@ -66,7 +66,7 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer, username, 
                   });
                 }}
               >
-                <PersonAddIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+                <PersonAddIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />
               </IconButton>
             )}
 
@@ -76,7 +76,7 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer, username, 
                   setOpenDialogue(dialogues.deletePeople);
                 }}
               >
-                <PersonRemoveIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+                <PersonRemoveIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />
               </IconButton>
             )}
 
@@ -85,7 +85,7 @@ const MoreOptions = ({ listInfo, activeContainer, setActiveContainer, username, 
                 setOpenDialogue(dialogues.editList);
               }}
             >
-              <EditIcon sx={{ color: colors[theme].generalColors.fontColor }} />
+              <EditIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />
             </IconButton>
             <IconButton
               onClick={() => {

@@ -19,14 +19,14 @@ const Container = ({ heading, imgSrc, id, theme }) => {
           height: "30vh",
           width: "95vw",
           maxWidth: mobileWidth,
-          backgroundColor: colors[theme].generalColors.innerBackground,
+          backgroundColor: colors[theme]?.generalColors.innerBackground,
         }}
       >
         <CardActionArea onClick={handleClickContainer}>
           <CardContent>
             <Typography
               variant="h6"
-              color={colors[theme].generalColors.fontColor}
+              color={colors[theme]?.generalColors.fontColor}
               fontFamily={"Urbanist"}
               fontWeight={400}
               sx={{ position: "absolute" }}

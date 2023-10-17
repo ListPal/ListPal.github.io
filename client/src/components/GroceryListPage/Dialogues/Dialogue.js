@@ -99,25 +99,25 @@ function Dialogue({
 
   const CssTextField = styled(TextField)({
     "& label.Mui-focused": {
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& label": {
       fontFamily: "Urbanist",
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: colors[theme].generalColors.fontColor,
+      borderBottomColor: colors[theme]?.generalColors.fontColor,
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `1px solid ${colors[theme].generalColors.fontColor}`,
+        border: `1px solid ${colors[theme]?.generalColors.fontColor}`,
         borderRadius: 0,
       },
       "&:hover fieldset": {
-        borderColor: colors[theme].generalColors.fontColor,
+        borderColor: colors[theme]?.generalColors.fontColor,
       },
       "&.Mui-focused fieldset": {
-        borderColor: colors[theme].generalColors.fontColor,
+        borderColor: colors[theme]?.generalColors.fontColor,
       },
     },
   });
@@ -345,7 +345,7 @@ function Dialogue({
               borderRadius: 5,
               width: 300,
               minHeight: 300,
-              backgroundColor: colors[theme].generalColors.innerBackground,
+              backgroundColor: colors[theme]?.generalColors.innerBackground,
             }}
           >
             <Slide
@@ -372,7 +372,7 @@ function Dialogue({
               <Typography
                 variant="h4"
                 fontFamily={"Urbanist"}
-                color={colors[theme].generalColors.fontColor}
+                color={colors[theme]?.generalColors.fontColor}
               >
                 {dialogueObject[openDialogue]?.header}
               </Typography>
@@ -394,7 +394,7 @@ function Dialogue({
                         label={textField.text}
                         helperText={errorMessage ? errorMessage : textField.helperText}
                         defaultValue={deriveDefaultText()}
-                        InputProps={{ style: { fontFamily: "Urbanist", color: colors[theme].generalColors.fontColor } }}
+                        InputProps={{ style: { fontFamily: "Urbanist", color: colors[theme]?.generalColors.fontColor } }}
                         inputProps={{
                           maxLength: textField?.maxLength || 100,
                         }}

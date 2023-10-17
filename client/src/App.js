@@ -31,13 +31,12 @@ function App() {
     collapsedLists: [],
   });
 
-
   return (
     <div className={user?.userPreferences?.theme || theme}>
       <HashRouter>
         <ScrollToTop />
         <Routes>
-        <Route
+          <Route
             path="/"
             element={
               <AuthPage
@@ -190,8 +189,7 @@ function App() {
 
           <Route
             path="/quick-list"
-            theme={user?.userPreferences?.theme || theme}
-            element={<QuickList />}
+            element={<QuickList theme={user?.userPreferences?.theme || theme} />}
           />
         </Routes>
       </HashRouter>

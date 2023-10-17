@@ -45,7 +45,7 @@ const Listitem = ({
 
   const actions = [
     { icon: <DeleteIcon sx={{ color: "red" }} />, name: "Delete item" },
-    { icon: <EditIcon sx={{ color: colors[theme].generalColors.fontColor }} />, name: "Edit item" },
+    { icon: <EditIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />, name: "Edit item" },
   ];
 
   // Handlers
@@ -60,14 +60,14 @@ const Listitem = ({
       return (
         <CloseIcon
           onClick={() => setOpenSpeedDial(!openSpeedDial)}
-          sx={{ color: colors[theme].generalColors.fontColor, position: "relative", right: 18 }}
+          sx={{ color: colors[theme]?.generalColors.fontColor, position: "relative", right: 18 }}
         />
       );
     } else {
       return (
         <MoreHorizIcon
           onClick={() => setOpenSpeedDial(!openSpeedDial)}
-          sx={{ color: colors[theme].generalColors.fontColor, position: "relative", right: 18 }}
+          sx={{ color: colors[theme]?.generalColors.fontColor, position: "relative", right: 18 }}
         />
       );
     }
@@ -170,7 +170,7 @@ const Listitem = ({
           >
             {actions.map((action, i) => (
               <SpeedDialAction
-                sx={{ position: "relative", right: 18, background: colors[theme].generalColors.innerBackground }}
+                sx={{ position: "relative", right: 18, background: colors[theme]?.generalColors.innerBackground }}
                 key={action.name}
                 icon={action.icon}
                 tooltipTitle={action.name}
@@ -189,14 +189,14 @@ const Listitem = ({
               <CheckCircleIcon
                 fontSize="large"
                 sx={{
-                  color: borderColor ? borderColor : colors[theme].fallbackColors.bold,
+                  color: borderColor ? borderColor : colors[theme]?.fallbackColors.bold,
                 }}
               />
             ) : (
               <RadioButtonUncheckedIcon
                 fontSize="large"
                 sx={{
-                  color: borderColor ? borderColor : colors[theme].fallbackColors.bold,
+                  color: borderColor ? borderColor : colors[theme]?.fallbackColors.bold,
                 }}
               />
             )}
@@ -208,7 +208,7 @@ const Listitem = ({
               <Typography
                 fontFamily={"Urbanist"}
                 fontWeight={500}
-                color={item?.checked ? "gray" : colors[theme].generalColors.fontColor}
+                color={item?.checked ? "gray" : colors[theme]?.generalColors.fontColor}
                 sx={{ textDecorationLine: item?.checked && "line-through" }}
               >
                 {item?.name && truncateString(item?.name, 28)}

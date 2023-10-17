@@ -9,14 +9,14 @@ import {
   Paper,
   Stack,
   TextField,
-} from '@mui/material'
-import { useState, useRef } from 'react'
-import { dialogues } from '../../../utils/enum'
-import { styled } from '@mui/material/styles'
-import AddIcon from '@mui/icons-material/Add'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
-import { dialogueValidation } from '../../../utils/dialoguesValidation'
+} from "@mui/material";
+import { useState, useRef } from "react";
+import { colors, dialogues } from "../../../utils/enum";
+import { styled } from "@mui/material/styles";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { dialogueValidation } from "../../../utils/dialoguesValidation";
 
 const QuickDialogue = ({
   openDialogue,
@@ -26,105 +26,130 @@ const QuickDialogue = ({
   dialogueObject,
   itemsArray,
   setItemsArray,
+  theme,
 }) => {
+  const [alertMessage, setAlertMessage] = useState(null);
+  const [severity, setSeverity] = useState("info");
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
-  const [alertMessage, setAlertMessage] = useState(null)
-  const [severity, setSeverity] = useState('info')
-  const [loading, setLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState(null)
+  const textFieldRef = useRef(null);
 
-  const textFieldRef = useRef(null)
+  const CssTextField = styled(TextField)({
+    "& label.Mui-focused": {
+      color: colors[theme]?.generalColors.helperTextFontColor,
+    },
+    "& label": {
+      fontFamily: "Urbanist",
+      color: colors[theme]?.generalColors.helperTextFontColor,
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: colors[theme]?.generalColors.fontColor,
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        border: `1px solid ${colors[theme]?.generalColors.fontColor}`,
+        borderRadius: 0,
+      },
+      "&:hover fieldset": {
+        borderColor: colors[theme]?.generalColors.fontColor,
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: colors[theme]?.generalColors.fontColor,
+      },
+    },
+  });
 
   const deriveCorrectIcon = (header) => {
-    if (header === 'addIcon') return <AddIcon />
-    if (header === 'deleteIcon') return <DeleteIcon />
-    if (header === 'editIcon') return <EditIcon />
-  }
+    if (header === "addIcon") return <AddIcon />;
+    if (header === "deleteIcon") return <DeleteIcon />;
+    if (header === "editIcon") return <EditIcon />;
+  };
 
   const deriveDefaultText = () => {
-    if (openDialogue === dialogues.addItem) return ''
-    return item?.name
-  }
+    if (openDialogue === dialogues.addItem) return "";
+    return item?.name;
+  };
 
   const showAlert = (severity, msg) => {
-    setSeverity(severity)
-    setAlertMessage(msg)
-  }
+    setSeverity(severity);
+    setAlertMessage(msg);
+  };
 
   const hideAlert = () => {
-    setAlertMessage(null)
-  }
+    setAlertMessage(null);
+  };
 
   const closeDialogueWithoutDelay = () => {
-    setOpenDialogue(dialogues.closed)
-    hideAlert()
-    setTimeout(() => setLoading(false), 1000)
-  }
+    setOpenDialogue(dialogues.closed);
+    hideAlert();
+    setTimeout(() => setLoading(false), 1000);
+  };
 
   const handleAddItem = (itemName) => {
-    setLoading(true)
-    setErrorMessage(null)
+    setLoading(true);
+    setErrorMessage(null);
     // Validate input
-    const valid = dialogueValidation(itemName)
+    const valid = dialogueValidation(itemName);
     if (!valid?.validated) {
-      setErrorMessage(valid?.message)
-      setLoading(false)
-      return
+      setErrorMessage(valid?.message);
+      setLoading(false);
+      return;
     }
-    const duplicate = itemsArray.filter((i) => i.name === itemName)
+    const duplicate = itemsArray.filter((i) => i.name === itemName);
     if (duplicate.length > 0) {
-      showAlert('warning', 'Item already exists in this list.')
-      setLoading(false)
-      return
+      showAlert("warning", "Item already exists in this list.");
+      setLoading(false);
+      return;
     }
-    setItemsArray((items) => [...items, { name: itemName }])
-    closeDialogueWithoutDelay()
-    setLoading(false)
-  }
+    setItemsArray((items) => [...items, { name: itemName }]);
+    closeDialogueWithoutDelay();
+    setLoading(false);
+  };
 
   const handleEditItem = (itemName) => {
-    setLoading(true)
-    setErrorMessage(false)
+    setLoading(true);
+    setErrorMessage(false);
     // Validate input
-    const valid = dialogueValidation(itemName)
+    const valid = dialogueValidation(itemName);
     if (!valid?.validated) {
-      setErrorMessage(valid?.message)
-      setLoading(false)
-      return
+      setErrorMessage(valid?.message);
+      setLoading(false);
+      return;
     }
-    const duplicate = itemsArray.filter((i) => i.name === itemName)
+    const duplicate = itemsArray.filter((i) => i.name === itemName);
     if (duplicate.length > 0) {
-      showAlert('warning', 'Item already exists in this list.')
-      setLoading(false)
-      return
+      showAlert("warning", "Item already exists in this list.");
+      setLoading(false);
+      return;
     }
     const update = itemsArray.map((i) => {
       if (i.name === item?.name) {
-        return { ...i, name: itemName }
+        return { ...i, name: itemName };
       } else {
-        return i
+        return i;
       }
-    })
-    setItemsArray(update)
-    closeDialogueWithoutDelay()
-    setLoading(false)
-  }
+    });
+    setItemsArray(update);
+    closeDialogueWithoutDelay();
+    setLoading(false);
+  };
 
   const handleDeleteItem = (item) => {
-    setLoading(true)
-    setErrorMessage(null)
-    const update = itemsArray.filter((i) => i.name !== item?.name)
-    setItemsArray(update)
-    closeDialogueWithoutDelay()
-    setLoading(false)
-    setIsActive(false)
-  }
+    setLoading(true);
+    setErrorMessage(null);
+    const update = itemsArray.filter((i) => i.name !== item?.name);
+    setItemsArray(update);
+    closeDialogueWithoutDelay();
+    setLoading(false);
+    setIsActive(false);
+  };
 
   return (
     <>
       <Modal
-        aria-labelledby='transition-modal-title'
-        aria-describedby='transition-modal-description'
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
         open={openDialogue !== dialogues.closed}
         onClose={closeDialogueWithoutDelay}
         closeAfterTransition
@@ -138,113 +163,103 @@ const QuickDialogue = ({
         <Fade in={openDialogue !== dialogues.closed}>
           <Paper
             sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              direction: 'column',
-              position: 'absolute',
-              top: '25vh',
-              left: '50vw',
-              transform: 'translate(-50%)',
+              display: "flex",
+              justifyContent: "center",
+              direction: "column",
+              position: "absolute",
+              top: "25vh",
+              left: "50vw",
+              transform: "translate(-50%)",
               borderRadius: 5,
-              width: '80vw',
+              width: "80vw",
               height: 300,
+              backgroundColor: colors[theme].generalColors.innerBackground,
             }}
           >
             <Slide
-              className='alert-slide'
+              className="alert-slide"
               in={alertMessage && true}
               sx={{
-                position: 'fixed',
-                top: '-25vh',
-                width: '90vw',
+                position: "fixed",
+                top: "-25vh",
+                width: "90vw",
               }}
             >
               <Alert severity={severity}>{alertMessage && true}</Alert>
             </Slide>
 
             <Stack
-              direction={'column'}
+              direction={"column"}
               spacing={2}
               sx={{
-                height: '100%',
-                alignItems: 'center',
-                justifyContent: 'center',
+                height: "100%",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <Typography variant='h4' fontFamily={"Urbanist"}>{dialogueObject?.header}</Typography>
+              <Typography
+                color={colors[theme].generalColors.fontColor}
+                variant="h4"
+                fontFamily={"Urbanist"}
+              >
+                {dialogueObject?.header}
+              </Typography>
 
               {dialogueObject?.textFields.map((e, i) => (
                 <CssTextField
                   autoFocus={false}
                   fullWidth
-                  sx={{minWidth:'60vw'}}
+                  sx={{ minWidth: "60vw" }}
                   error={errorMessage && true}
                   required
                   key={`${e.text}${i}`}
                   inputRef={textFieldRef}
-                  id='custom-css-outlined-input'
+                  id="custom-css-outlined-input"
                   label={e.text}
                   helperText={errorMessage ? errorMessage : e.helperText}
                   defaultValue={deriveDefaultText()}
+                  InputProps={{style: {
+                    color: colors[theme]?.generalColors.fontColor
+                  }}}
                   inputProps={{
                     maxLength: 100,
                     required: true,
                   }}
                 />
               ))}
-              
+
               {dialogueObject?.button.map((button, i) => (
                 <Button
-                key={i}
-                fullWidth
-                disabled={loading}
-                onClick={() => {
-                  if (openDialogue === dialogues.addQuickItem) {
-                    handleAddItem(textFieldRef.current.value)
-                  } else if (openDialogue === dialogues.editItem) {
-                    handleEditItem(textFieldRef.current.value)
-                  } else if (openDialogue === dialogues.deleteItem) {
-                    handleDeleteItem(item)
-                  }
-                }}
-                sx={{
-                  height: 50,
-                  '&:hover': { background: button.color  },
-                  background: button.color,
-                  borderRadius: 0,
-                  color: button.textColor,
-                }}
-              >
-                {button.text}
-                {deriveCorrectIcon(button.icon)}
-              </Button>
+                  key={i}
+                  fullWidth
+                  disabled={loading}
+                  onClick={() => {
+                    if (openDialogue === dialogues.addQuickItem) {
+                      handleAddItem(textFieldRef.current.value);
+                    } else if (openDialogue === dialogues.editItem) {
+                      handleEditItem(textFieldRef.current.value);
+                    } else if (openDialogue === dialogues.deleteItem) {
+                      handleDeleteItem(item);
+                    }
+                  }}
+                  sx={{
+                    height: 50,
+                    "&:hover": { background: button.color[theme] },
+                    background: button.color[theme],
+                    borderRadius: 0,
+                    color: button.textColor[theme],
+                  }}
+                >
+                  {button.text}
+                  {deriveCorrectIcon(button.icon)}
+                </Button>
               ))}
             </Stack>
           </Paper>
         </Fade>
       </Modal>
     </>
-  )
-}
+  );
+};
 
-export default QuickDialogue
-const CssTextField = styled(TextField)({
-  '& label.Mui-focused': {
-    color: '#A0AAB4',
-  },
-  '& .MuiInput-underline:after': {
-    borderBottomColor: 'black',
-  },
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': {
-      border: '2px solid black',
-      borderRadius: 0,
-    },
-    '&:hover fieldset': {
-      borderColor: 'black',
-    },
-    '&.Mui-focused fieldset': {
-      borderColor: 'black',
-    },
-  },
-})
+export default QuickDialogue;

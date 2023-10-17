@@ -31,25 +31,25 @@ const ChangeName = ({ user, setUser, theme }) => {
 
   const CssTextField = styled(TextField)({
     "& label.Mui-focused": {
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& label": {
       fontFamily: "Urbanist",
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: colors[theme].generalColors.fontColor,
+      borderBottomColor: colors[theme]?.generalColors.fontColor,
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `1px solid ${colors[theme].generalColors.fontColor}`,
+        border: `1px solid ${colors[theme]?.generalColors.fontColor}`,
         borderRadius: 0,
       },
       "&:hover fieldset": {
-        borderColor: colors[theme].generalColors.fontColor,
+        borderColor: colors[theme]?.generalColors.fontColor,
       },
       "&.Mui-focused fieldset": {
-        borderColor: colors[theme].generalColors.fontColor,
+        borderColor: colors[theme]?.generalColors.fontColor,
       },
     },
   });
@@ -123,7 +123,7 @@ const ChangeName = ({ user, setUser, theme }) => {
   }, []);
   return (
     <>
-      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
+      <meta name="theme-color" content={colors[theme]?.generalColors.outerBackground} />
       <Slide severity={alert?.severity} in={alert?.message && true} sx={{ maxWidth: mobileWidth }}>
         <Alert>{alert?.message}</Alert>
       </Slide>
@@ -131,9 +131,9 @@ const ChangeName = ({ user, setUser, theme }) => {
         {/* Top buttons / title */}
         <Stack direction={"row"} width={"100%"}>
           <IconButton onClick={() => navigate(-1)}>
-            <ArrowBackIosIcon sx={{color: colors[theme].generalColors.fontColor}}/>
+            <ArrowBackIosIcon sx={{color: colors[theme]?.generalColors.fontColor}}/>
           </IconButton>
-          <Typography variant="h4" fontFamily={"Urbanist"} textAlign={"left"} color={colors[theme].generalColors.fontColor}>
+          <Typography variant="h4" fontFamily={"Urbanist"} textAlign={"left"} color={colors[theme]?.generalColors.fontColor}>
             Update Name
           </Typography>
         </Stack>
@@ -142,7 +142,7 @@ const ChangeName = ({ user, setUser, theme }) => {
 
         {/*  Textfield(s) */}
         <Stack direction={"column"} spacing={2} pt={4} width={"100%"}>
-          <Typography textAlign={"left"} fontFamily={"Urbanist"} color={colors[theme].generalColors.fontColor}>
+          <Typography textAlign={"left"} fontFamily={"Urbanist"} color={colors[theme]?.generalColors.fontColor}>
             Manage your name <strong>{user?.name + " " + user?.lastName}</strong>
           </Typography>
           <CssTextField
@@ -152,7 +152,7 @@ const ChangeName = ({ user, setUser, theme }) => {
             defaultValue={user?.name}
             inputRef={nameRef}
             label={"First Name"}
-            InputProps={{ style: { fontFamily: "Urbanist", color: colors[theme].generalColors.fontColor } }}
+            InputProps={{ style: { fontFamily: "Urbanist", color: colors[theme]?.generalColors.fontColor } }}
             inputProps={{
               maxLength: 100,
             }}
@@ -164,7 +164,7 @@ const ChangeName = ({ user, setUser, theme }) => {
             defaultValue={user?.lastName}
             inputRef={lastNameRef}
             label={"Last Name"}
-            InputProps={{ style: { fontFamily: "Urbanist", color: colors[theme].generalColors.fontColor } }}
+            InputProps={{ style: { fontFamily: "Urbanist", color: colors[theme]?.generalColors.fontColor } }}
             inputProps={{
               maxLength: 100,
             }}
@@ -178,10 +178,10 @@ const ChangeName = ({ user, setUser, theme }) => {
               handleOnSave(nameRef?.current?.value.trim(), lastNameRef?.current?.value.trim())
             }
             sx={{
-              background: colors[theme].fallbackColors.bold,
+              background: colors[theme]?.fallbackColors.bold,
               "&:hover": {
-                background: colors[theme].fallbackColors.bold,
-                border: `2px solid ${colors[theme].fallbackColors.bold}`,
+                background: colors[theme]?.fallbackColors.bold,
+                border: `2px solid ${colors[theme]?.fallbackColors.bold}`,
               },
             }}
           >

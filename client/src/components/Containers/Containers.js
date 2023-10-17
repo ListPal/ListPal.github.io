@@ -30,7 +30,7 @@ const Containers = ({
       setUser(null);
       setActiveContainer({ collapsedLists: [] });
       setActiveList({ groceryListItems: [] });
-      navigate("/");
+      navigate("/login");
     } else {
       console.debug("Failed log you out. Please refresh the page and try again.");
     }
@@ -42,7 +42,7 @@ const Containers = ({
   }, []);
   return (
     <>
-      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
+      <meta name="theme-color" content={colors[theme]?.generalColors.outerBackground} />
       <Grid
         sx={{
           display: "flex",
@@ -60,7 +60,7 @@ const Containers = ({
               mt: 2,
               width: "90vw",
               maxWidth: mobileWidth,
-              backgroundColor: colors[theme].generalColors.userTopMenu,
+              backgroundColor: colors[theme]?.generalColors.userTopMenu,
               borderRadius: 5,
               alignItems: "center",
               justifyContent: "space-between",

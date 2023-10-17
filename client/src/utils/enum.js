@@ -68,7 +68,6 @@ const colors = {
       userTopMenu: DARK_INNER,
       fontColor: DARK_TEXT,
       helperTextFontColor: DARK_TEXT,
-      // helperTextFontColor: "#d6cec2",
       outerBackground: DARK_OUTER,
       innerBackground: DARK_INNER,
       slideSelector: {

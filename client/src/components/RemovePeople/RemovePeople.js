@@ -72,7 +72,7 @@ const RemovePeople = ({
     <List
       dense
       sx={{
-        bgcolor: colors[theme].generalColors.innerBackground,
+        bgcolor: colors[theme]?.generalColors.innerBackground,
         overflow: "scroll",
         maxHeight: "40vh",
       }}
@@ -96,7 +96,7 @@ const RemovePeople = ({
               <ListItemAvatar>
                 <Avatar alt={`${user}`} src={`/static/images/avatar/${user}.jpg`} />
               </ListItemAvatar>
-              <ListItemText id={labelId} primary={<Typography fontFamily={'Urbanist'} color={colors[theme].generalColors.fontColor}>{user.split("@")[0]}</Typography>} />
+              <ListItemText id={labelId} primary={<Typography fontFamily={'Urbanist'} color={colors[theme]?.generalColors.fontColor}>{user.split("@")[0]}</Typography>} />
             </ListItemButton>
           </ListItem>
         );

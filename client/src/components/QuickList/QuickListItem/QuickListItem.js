@@ -26,13 +26,13 @@ const QuickListItem = ({
   const [checked, setChecked] = useState(item?.checked);
   const [moreOrCloseButton, setMoreOrCloseButton] = useState(
     <MoreHorizIcon
-      sx={{ color: colors[theme].quickListColors.bold, position: "relative", right: 18 }}
+      sx={{ color: colors[theme]?.quickListColors.bold, position: "relative", right: 18 }}
     />
   );
 
   const actions = [
     { icon: <DeleteIcon sx={{ color: "red" }} />, name: "Copy" },
-    { icon: <EditIcon sx={{ color: colors[theme].quickListColors.bold }} />, name: "Save" },
+    { icon: <EditIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />, name: "Save" },
   ];
 
   const handleOpenItemDescription = () => {
@@ -69,6 +69,7 @@ const QuickListItem = ({
             height: 80,
             opacity: 0.9,
             borderLeft: `5px solid black`,
+            backgroundColor: colors[theme].generalColors.outerBackground,
           }}
         >
           <Stack
@@ -85,18 +86,22 @@ const QuickListItem = ({
                 <Button disableRipple onClick={handleCheck}>
                   <CheckCircleIcon
                     fontSize="large"
-                    sx={{ color: colors[theme].quickListColors.bold }}
+                    sx={{ color: colors[theme]?.quickListColors.bold }}
                   />
                 </Button>
               ) : (
                 <Button disableRipple onClick={handleCheck}>
                   <RadioButtonUncheckedIcon
                     fontSize="large"
-                    sx={{ color: colors[theme].quickListColors.bold }}
+                    sx={{ color: colors[theme]?.quickListColors.bold }}
                   />
                 </Button>
               )}
-              <Typography fontFamily={"Urbanist"} onClick={handleOpenItemDescription}>
+              <Typography
+                color={colors[theme].generalColors.fontColor}
+                fontFamily={"Urbanist"}
+                onClick={handleOpenItemDescription}
+              >
                 {item?.name && truncateString(item?.name, 30)}
               </Typography>
             </Stack>
@@ -109,7 +114,7 @@ const QuickListItem = ({
                 setMoreOrCloseButton(
                   <MoreHorizIcon
                     sx={{
-                      color: colors[theme].quickListColors.bold,
+                      color: colors[theme]?.quickListColors.bold,
                       position: "relative",
                       right: 18,
                     }}
@@ -120,7 +125,7 @@ const QuickListItem = ({
                 setMoreOrCloseButton(
                   <CloseIcon
                     sx={{
-                      color: colors[theme].quickListColors.bold,
+                      color: colors[theme]?.quickListColors.bold,
                       position: "relative",
                       right: 18,
                     }}
@@ -139,7 +144,7 @@ const QuickListItem = ({
               {actions.map((action, i) => (
                 <SpeedDialAction
                   sx={{
-                    color: colors[theme].quickListColors.bold,
+                    background: colors[theme]?.generalColors.innerBackground,
                     position: "relative",
                     right: 18,
                   }}
@@ -155,6 +160,7 @@ const QuickListItem = ({
 
       {openItemDescrition && isActive && (
         <ItemDescription
+          theme={theme}
           setIsActive={setIsActive}
           item={item}
           openItemDescription={openItemDescrition}
@@ -165,6 +171,7 @@ const QuickListItem = ({
 
       {openDialogue && isActive && (
         <QuickDialogue
+          theme={theme}
           setIsActive={setIsActive}
           itemsArray={itemsArray}
           setItemsArray={setItemsArray}

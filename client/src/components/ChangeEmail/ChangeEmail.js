@@ -26,25 +26,25 @@ const ChangeEmail = ({ user, setUser, theme }) => {
 
   const CssTextField = styled(TextField)({
     "& label.Mui-focused": {
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& label": {
       fontFamily: "Urbanist",
-      color: colors[theme].generalColors.helperTextFontColor,
+      color: colors[theme]?.generalColors.helperTextFontColor,
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: colors[theme].generalColors.fontColor,
+      borderBottomColor: colors[theme]?.generalColors.fontColor,
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        border: `1px solid ${colors[theme].generalColors.fontColor}`,
+        border: `1px solid ${colors[theme]?.generalColors.fontColor}`,
         borderRadius: 0,
       },
       "&:hover fieldset": {
-        borderColor: colors[theme].generalColors.fontColor,
+        borderColor: colors[theme]?.generalColors.fontColor,
       },
       "&.Mui-focused fieldset": {
-        borderColor: colors[theme].generalColors.fontColor,
+        borderColor: colors[theme]?.generalColors.fontColor,
       },
     },
   });
@@ -112,7 +112,7 @@ const ChangeEmail = ({ user, setUser, theme }) => {
   }, []);
   return (
     <>
-      <meta name="theme-color" content={colors[theme].generalColors.outerBackground} />
+      <meta name="theme-color" content={colors[theme]?.generalColors.outerBackground} />
       <Slide
         severity={alert?.severity || "info"}
         in={alert?.message && true}
@@ -124,13 +124,13 @@ const ChangeEmail = ({ user, setUser, theme }) => {
         {/* Top buttons / title */}
         <Stack direction={"row"} width={"100%"}>
           <IconButton onClick={() => navigate(-1)}>
-            <ArrowBackIosIcon sx={{color: colors[theme].generalColors.fontColor}}/>
+            <ArrowBackIosIcon sx={{color: colors[theme]?.generalColors.fontColor}}/>
           </IconButton>
           <Typography
             variant="h4"
             fontFamily={"Urbanist"}
             textAlign={"left"}
-            color={colors[theme].generalColors.fontColor}
+            color={colors[theme]?.generalColors.fontColor}
           >
             Change Email
           </Typography>
@@ -143,7 +143,7 @@ const ChangeEmail = ({ user, setUser, theme }) => {
           <Typography
             textAlign={"left"}
             fontFamily={"Urbanist"}
-            color={colors[theme].generalColors.fontColor}
+            color={colors[theme]?.generalColors.fontColor}
           >
             Manage your username <strong>{user?.email}</strong> by updating your current email
           </Typography>
@@ -154,7 +154,7 @@ const ChangeEmail = ({ user, setUser, theme }) => {
             fullWidth
             inputRef={usernameRef}
             label={"Enter New Email"}
-            InputProps={{ style: { fontFamily: "Urbanist", color: colors[theme].generalColors.fontColor } }}
+            InputProps={{ style: { fontFamily: "Urbanist", color: colors[theme]?.generalColors.fontColor } }}
             inputProps={{
               maxLength: 100,
             }}
@@ -166,10 +166,10 @@ const ChangeEmail = ({ user, setUser, theme }) => {
             variant={"contained"}
             onClick={() => handleOnSave(usernameRef.current.value)}
             sx={{
-              background: colors[theme].fallbackColors.bold,
+              background: colors[theme]?.fallbackColors.bold,
               "&:hover": {
-                background: colors[theme].fallbackColors.bold,
-                border: `2px solid ${colors[theme].fallbackColors.bold}`,
+                background: colors[theme]?.fallbackColors.bold,
+                border: `2px solid ${colors[theme]?.fallbackColors.bold}`,
               },
             }}
           >
