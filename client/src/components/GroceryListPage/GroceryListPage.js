@@ -7,7 +7,7 @@ import SwipeableViews from "react-swipeable-views";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 // MUI imports
-import { Typography, Toolbar, AppBar, Slide, Alert, Stack, List, Fab } from "@mui/material";
+import { Typography, Slide, Alert, Stack, List } from "@mui/material";
 
 // MUI Icons
 import IconButton from "@mui/material/IconButton";
@@ -44,15 +44,16 @@ function GroceryListPage({
   theme,
 }) {
   // States
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [activeItem, setActiveItem] = useState(null);
   const [alertMessage, setAlertMessage] = useState(null);
   const [groupedByIdentifier, setGroupedByIdentifier] = useState([]);
   const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
-  const [showDone, setShowDone] = useState(false);
+  const [showDone, setShowDone] = useState(user?.userPreferences?.showChecked);
   const [modifiedIds, setModifiedIds] = useState(new Set());
   const [slide, setSlide] = useState(0);
   const [isRefarctored, setisRefarctored] = useState(false);
+  const [updateTimer, setUpdateTimer] = useState(null);
 
   // Other globals
   const navigate = useNavigate();
@@ -66,6 +67,21 @@ function GroceryListPage({
   const scope = state.scope || urlParams.get("scope");
 
   // Handlers
+  const handleCheckItemsInterval = async () => {
+    if (updateTimer !== null) {
+      // Haven't sent items yet, so clear the timeout and start a new attempt
+      // console.log("Resetting the timer...");
+      clearTimeout(updateTimer);
+    }
+    // Set a new timer to update the database after 3 seconds
+    const timer = setTimeout(() => {
+      // console.log("Updating database with checked items:");
+      handleCheckItems();
+    }, 3000); // Adjust the delay as needed
+
+    setUpdateTimer(timer);
+  };
+
   const handleCheckItems = async () => {
     console.log("Triggered handleCheckedItems");
     // Handling preconditions
@@ -98,6 +114,10 @@ function GroceryListPage({
 
     // Post data and return the response to the next controller
     const res = await postRequest(uri, data);
+    if (res?.status === 200) {
+      setModifiedIds(new Set());
+      console.log("Done checking items.");
+    }
     return res;
   };
 
@@ -168,14 +188,21 @@ function GroceryListPage({
 
   const handleSync = async (cache) => {
     setLoading(true);
-    // Pull
-    const pull = await handlePullList(false, false);
-    // Merge (current merge resolution is: "keep theirs")
-    const mergedArray = await mergeArrays(activeList?.groceryListItems, pull?.groceryListItems);
-    // Cache
-    if (cache === true) setActiveList({ ...activeList, groceryListItems: mergedArray });
-    // Reset relevant states
-    setTimeout(() => setLoading(false), 900);
+    // Send checks
+    handleCheckItems()
+      .then(async (res) => {
+        // Pull
+        const pull = await handlePullList(false, false);
+        // Merge (current merge resolution is: "keep theirs")
+        const mergedArray = await mergeArrays(activeList?.groceryListItems, pull?.groceryListItems);
+        // Cache
+        if (cache === true) setActiveList({ ...activeList, groceryListItems: mergedArray });
+        // Reset relevant states
+        setLoading(false)
+      })
+      .catch((e) => {
+        console.debug(e);
+      });
   };
 
   const handleBorderColor = (identifier) => {
@@ -363,7 +390,7 @@ function GroceryListPage({
       // Success
       if (cache) setActiveList(res?.body);
       // Reset isRefactored
-      setisRefarctored(false)
+      setisRefarctored(false);
     } else if (res?.status === 401) {
       setAlertMessage(messages.unauthorizedAccess);
       setTimeout(() => setLoading(false), 900);
@@ -382,10 +409,6 @@ function GroceryListPage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeList]);
 
-  useMemo(() => {
-    // TODO: Recompute checked/unchecked
-  }, [activeList]);
-
   useEffect(() => {
     if (showDone) {
       setSlide(0);
@@ -393,11 +416,14 @@ function GroceryListPage({
   }, [showDone]);
 
   useEffect(() => {
-    // Fetch user and container if not a public list
-    if (scope !== groceryListScopes.public && !user) {
-      handleAtomicUserAndContainerFetch();
+    if (modifiedIds.size === 0) {
+      setLoading(false)
+      return
     }
+    handleCheckItemsInterval();
+  }, [modifiedIds.size]);
 
+  useEffect(() => {
     // Check for cached list items
     if (
       activeList?.id === listId &&
@@ -408,14 +434,23 @@ function GroceryListPage({
       return;
     }
 
+    // Reset groceryListItems to avoid displaying the wrong data when server is down
+    setActiveList({ groceryListItems: [] });
+
+    // Fetch user and container if not a public list
+    if (scope !== groceryListScopes.public && !user) {
+      handleAtomicUserAndContainerFetch();
+    }
+
     // Pull new list
-    handlePullList();
+    handlePullList(true, false);
+    setLoading(false);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <PullToRefresh onRefresh={handleSync}>
+    <PullToRefresh onRefresh={() => handleSync(true)}>
       <meta name="theme-color" content={colors[theme]?.generalColors.outerBackground} />
 
       {/* Loading progress */}
@@ -599,7 +634,7 @@ function GroceryListPage({
         </Stack>
       )}
 
-      {activeList?.groceryListItems.length === 0 && !loading && (
+      {activeList?.id && activeList?.groceryListItems.length === 0 && !loading && (
         <Typography
           variant={"subtitle1"}
           fontFamily={"Urbanist"}

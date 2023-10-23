@@ -45,12 +45,11 @@ const ItemDescription = ({
             width: "85vw",
             minHeight: 60,
             padding: 2,
-            borderLeft: `5px solid ${borderColor ? borderColor : colors[theme]?.quickListColors.bold}`,
-            borderRight: `5px solid ${borderColor ? borderColor : colors[theme]?.quickListColors.bold}`,
+            backgroundColor: colors[theme]?.generalColors.innerBackground,
           }}
         >
           <Stack>
-            <Typography align="left" overflow={'auto'} width={'85vw'} fontFamily={'Urbanist'}>
+            <Typography align="left" overflow={'auto'} width={'85vw'} fontFamily={'Urbanist'} color={colors[theme].generalColors.fontColor}>
               {item?.name}
             </Typography>
           </Stack>

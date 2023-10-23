@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { Grid, Button, Stack, Typography, Avatar } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Grid, Button, Stack, Typography, Avatar, Slide, Alert } from "@mui/material";
 import Container from "./Container/Container";
 import { truncateString } from "../../utils/helper";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -19,6 +19,7 @@ const Containers = ({
   todo,
   theme,
 }) => {
+  const [logoutError, setLogoutError] = useState(false);
   const imgSources = [shop, grocery, todo];
   const containerIds = ["wishlistContainerId", "groceryContainerId", "todoContainerId"];
   const navigate = useNavigate();
@@ -32,6 +33,8 @@ const Containers = ({
       setActiveList({ groceryListItems: [] });
       navigate("/login");
     } else {
+      setLogoutError(true);
+      setTimeout(() => setLogoutError(false), 3000);
       console.debug("Failed log you out. Please refresh the page and try again.");
     }
   };
@@ -43,6 +46,9 @@ const Containers = ({
   return (
     <>
       <meta name="theme-color" content={colors[theme]?.generalColors.outerBackground} />
+      <Slide in={logoutError} sx={{ position: "fixed", top: 0, zIndex: 10, maxWidth: mobileWidth, minWidth: '90%' }}>
+        <Alert severity="error"> Failed log you out. Please try again later. </Alert>
+      </Slide>
       <Grid
         sx={{
           display: "flex",
@@ -83,7 +89,7 @@ const Containers = ({
                   fontFamily: "Urbanist",
                   width: 56,
                   height: 56,
-                  background: theme === themes.lightTheme ? 'lightgray' : "#707070",
+                  background: theme === themes.lightTheme ? "lightgray" : "#707070",
                   borderRadius: "50%",
                   display: "flex",
                   alignItems: "center",

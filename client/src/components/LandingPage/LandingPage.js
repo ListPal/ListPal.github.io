@@ -1,11 +1,11 @@
-import { Typography, IconButton, List, Fab } from "@mui/material";
+import { Typography, IconButton, List, Fab, Slide, Alert } from "@mui/material";
 import { useState, useEffect } from "react";
 import { getAllLists, logout, postRequest, checkSession } from "../../utils/rest";
 import {
-  colors,
+  groceryListScopes,
   filterCardsBy,
   groceryContainerTypes,
-  groceryListScopes,
+  colors,
   messages,
   themes,
   URLS,
@@ -41,14 +41,12 @@ const LandingPage = ({
   theme,
 }) => {
   // States
-  const [filter, setFilter] = useState(filterCardsBy.all);
+  // const [filter, setFilter] = useState(filterCardsBy.all);
   const [newListFormOpen, setNewListFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [wasRefactored, setWasRefactored] = useState(false);
   const [severity, setSeverity] = useState("info");
-  const [alertMessage, setAlertMessage] = useState(
-    "No lists yet to display. Create your first list 🥳"
-  );
+  const [alertMessage, setAlertMessage] = useState("");
 
   // Other locals
   const navigate = useNavigate();
@@ -103,7 +101,8 @@ const LandingPage = ({
       setActiveList({ groceryListItems: [] });
       navigate("/login");
     } else {
-      showAlert("error", "Failed log you out. Please refresh the page and try again.");
+      showAlert("error", "Failed log you out. Please try again later.");
+      setTimeout(() => setSeverity("info"), 3000);
     }
     setLoading(false);
   };
@@ -180,24 +179,6 @@ const LandingPage = ({
     return grocery; // TODO: error image
   };
 
-  const handlefilterListByScope = (lists) => {
-    if (filter === filterCardsBy.all) {
-      return lists;
-    }
-    if (filter === filterCardsBy.public) {
-      const filteredLists = lists.filter((e) => e.scope === groceryListScopes.public);
-      return filteredLists;
-    }
-    if (filter === filterCardsBy.private) {
-      const filteredLists = lists.filter((e) => e.scope === groceryListScopes.private);
-      return filteredLists;
-    }
-    if (filter === filterCardsBy.restricted) {
-      const filteredLists = lists.filter((e) => e.scope === groceryListScopes.restricted);
-      return filteredLists;
-    }
-  };
-
   const handleOnDragEnd = (result) => {
     // Prevents errors for dragging out of bounds
     if (!result.destination) return;
@@ -223,6 +204,12 @@ const LandingPage = ({
     // margin -40px and padding +40px avoids an issue with the pull to refresh
     <PullToRefresh onRefresh={handleRefresh}>
       <meta name="theme-color" content={colors[theme]?.generalColors.outerBackground} />
+      <Slide
+        in={severity === "error"}
+        sx={{ position: "fixed", top: 0, zIndex: 10, maxWidth: mobileWidth, minWidth: "90%" }}
+      >
+        <Alert severity="error"> {alertMessage} </Alert>
+      </Slide>
       <Grid spacing={1} container sx={{ maxWidth: mobileWidth, alignItems: "center" }}>
         <Grid item>
           <Paper
@@ -300,7 +287,7 @@ const LandingPage = ({
                 </Typography>
 
                 {/* Log out button */}
-                <IconButton onClick={handleLogout}>
+                <IconButton disabled={loading} onClick={handleLogout}>
                   <LogoutIcon
                     fontSize={"small"}
                     sx={{ color: colors[theme]?.generalColors.fontColor }}
@@ -339,7 +326,7 @@ const LandingPage = ({
 
                   {!loading &&
                     activeContainer?.collapsedLists &&
-                    handlefilterListByScope(activeContainer?.collapsedLists).map((e, i) => (
+                    activeContainer?.collapsedLists.map((e, i) => (
                       <GroceryListCard
                         index={i}
                         username={user?.username}
