@@ -1,25 +1,19 @@
 {
   "files": {
     "main.css": "/static/css/main.3ac67b38.css",
-    "main.js": "/static/js/main.615bdf11.js",
+    "main.js": "/static/js/main.1108556a.js",
     "static/js/787.28cb0dcd.chunk.js": "/static/js/787.28cb0dcd.chunk.js",
-    "static/media/thanksgiving.jpg": "/static/media/thanksgiving.2efca53852dee568b563.jpg",
     "static/media/todo.jpg": "/static/media/todo.47eff6c0b7e3ad37f029.jpg",
     "static/media/shoppingWallpaperDark.jpg": "/static/media/shoppingWallpaperDark.e8d566ce752a1f1267cf.jpg",
-    "static/media/christmasWallpaperDark.jpg": "/static/media/christmasWallpaperDark.3ce43e0f68ddfd872d82.jpg",
     "static/media/shop.jpg": "/static/media/shop.e514fa7a2841a0d83b2b.jpg",
-    "static/media/christmasWallpaper.jpg": "/static/media/christmasWallpaper.1e805d169ac87324dc4f.jpg",
-    "static/media/todoWallpaper.jpg": "/static/media/todoWallpaper.acccbb02717bdbc647dd.jpg",
     "static/media/grocery.jpg": "/static/media/grocery.2e6107f38a0c7013f59e.jpg",
-    "static/media/shoppingWallpaper.jpg": "/static/media/shoppingWallpaper.a6d944c69cd95c4f6e48.jpg",
-    "static/media/groceryWallpaper.jpg": "/static/media/groceryWallpaper.3dd353ef7a6d555a2bad.jpg",
     "index.html": "/index.html",
     "main.3ac67b38.css.map": "/static/css/main.3ac67b38.css.map",
-    "main.615bdf11.js.map": "/static/js/main.615bdf11.js.map",
+    "main.1108556a.js.map": "/static/js/main.1108556a.js.map",
     "787.28cb0dcd.chunk.js.map": "/static/js/787.28cb0dcd.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.3ac67b38.css",
-    "static/js/main.615bdf11.js"
+    "static/js/main.1108556a.js"
   ]
 }
