@@ -45,7 +45,10 @@ const Listitem = ({
 
   const actions = [
     { icon: <DeleteIcon sx={{ color: "red" }} />, name: "Delete item" },
-    { icon: <EditIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />, name: "Edit item" },
+    {
+      icon: <EditIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />,
+      name: "Edit item",
+    },
   ];
 
   // Handlers
@@ -81,7 +84,7 @@ const Listitem = ({
       e.id === item?.id ? { ...e, checked: !e.checked } : e
     );
 
-    // Do not sperate checked/unchcked items
+    // Do not separate checked/unchcked items
     listItems = updatedItems;
 
     // Toggle modified state
@@ -170,7 +173,11 @@ const Listitem = ({
           >
             {actions.map((action, i) => (
               <SpeedDialAction
-                sx={{ position: "relative", right: 18, background: colors[theme]?.generalColors.innerBackground }}
+                sx={{
+                  position: "relative",
+                  right: 18,
+                  background: colors[theme]?.generalColors.innerBackground,
+                }}
                 key={action.name}
                 icon={action.icon}
                 tooltipTitle={action.name}
@@ -203,24 +210,29 @@ const Listitem = ({
           </IconButton>
         </ListItemIcon>
         <ListItemText
-          primary={
-            <>
-              <Typography
-                fontFamily={"Urbanist"}
-                fontWeight={500}
-                color={item?.checked ? "gray" : colors[theme]?.generalColors.fontColor}
-                sx={{ textDecorationLine: item?.checked && "line-through" }}
-              >
-                {item?.name && truncateString(item?.name, 28)}
-              </Typography>
-            </>
-          }
+          primaryTypographyProps={{
+            style: {
+              fontFamily: "Urbanist",
+              color: item?.checked ? "gray" : colors[theme]?.generalColors.fontColor,
+              textDecorationLine: item?.checked && "line-through",
+              fontWeight: 500,
+              fontSize: '0.95rem',
+            },
+          }}
+          secondaryTypographyProps={{
+            style: {
+              display:'flex',
+              flexDirection:'column',
+              fontFamily: "Urbanist",
+              color: "#9CA3AF",
+              fontSize: 12,
+            },
+          }}
+          primary={item?.name && truncateString(item?.name, 28)}
           secondary={
             <>
-              <Typography fontSize={12} fontFamily={"Urbanist"} color={"#9CA3AF"}>
-                {identifier}
-              </Typography>
-              {item?.name.length >= 28 && <NotesIcon fontSize={"12"} color={"action"} />}
+            {identifier}
+            {item?.name.length >= 28 && <NotesIcon sx={{fontSize:12}}/>}
             </>
           }
           onClick={handleOpenItemDescription}

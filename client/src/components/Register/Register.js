@@ -82,12 +82,14 @@ const Register = ({ setUser, setActiveList, theme }) => {
       lastName: lastName.trim() || "",
       phone: phone.trim() || "",
       email: username.toLowerCase().trim() || "",
+      username: username.toLowerCase().trim() || "",
       password: password || "",
     };
 
     // Validate regisration input on client side
     const valid = await registrationValidation(data);
     if (!valid?.validated) {
+      console.log('Here')
       setValidation(valid);
       setLoading(false);
       return;
@@ -188,8 +190,8 @@ const Register = ({ setUser, setActiveList, theme }) => {
         >
           <CssTextField
             autoFocus
-            error={validation.error === validationErrors.name}
-            helperText={validation.error === validationErrors.name && validation?.message}
+            error={validation?.error === validationErrors.name}
+            helperText={validation?.error === validationErrors.name && validation?.message}
             required
             id="name-input"
             label="Name"

@@ -1,4 +1,15 @@
-import { Typography, IconButton, List, Fab, Slide, Alert } from "@mui/material";
+import {
+  Typography,
+  IconButton,
+  List,
+  Fab,
+  Slide,
+  Alert,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import { useState, useEffect } from "react";
 import { getAllLists, logout, postRequest, checkSession } from "../../utils/rest";
 import {
@@ -27,6 +38,9 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import Skeleton from "@mui/material/Skeleton";
 
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import GroceryDarkThemeIcon from "../Icons/GroceryIcon";
+import OtherDarkThemeIcon from "../Icons/OtherIcon";
+import ShoppingDarkThemeIcon from "../Icons/ShoppingIcon";
 
 const LandingPage = ({
   activeList,
@@ -44,9 +58,10 @@ const LandingPage = ({
   // const [filter, setFilter] = useState(filterCardsBy.all);
   const [newListFormOpen, setNewListFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [wasRefactored, setWasRefactored] = useState(false);
+  const [wasRefactored, setWasRefactored] = useState(0);
   const [severity, setSeverity] = useState("info");
   const [alertMessage, setAlertMessage] = useState("");
+  const [updateTimer, setUpdateTimer] = useState(null);
 
   // Other locals
   const navigate = useNavigate();
@@ -62,7 +77,7 @@ const LandingPage = ({
     setNewListFormOpen(!newListFormOpen);
   };
 
-  const handleBack = async () => {
+  const handleRefactorLists = async () => {
     if (wasRefactored) {
       // Set the new order
       const collapsedLists = activeContainer?.collapsedLists.map((e, i) => {
@@ -71,18 +86,14 @@ const LandingPage = ({
       const data = { containerId: activeContainer?.id, collapsedLists: collapsedLists };
       const res = await postRequest(URLS.refactorCollapsedLists, data);
       if (res?.status === 200) {
-        setWasRefactored(false);
-        navigate(-1);
+        setWasRefactored(0);
       } else if (res?.status === 401) {
-        navigate("/");
+        console.debug(res);
       } else if (res?.status === 403) {
-        navigate("/");
+        console.debug(res);
       } else {
         console.debug(res);
-        navigate(-1);
       }
-    } else {
-      navigate(-1);
     }
   };
 
@@ -168,13 +179,27 @@ const LandingPage = ({
 
   const handleContainerImg = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
-      return grocery;
+      return <GroceryDarkThemeIcon  color={colors[theme].landingPageColors.icon} />;
     }
     if (activeContainer?.containerType === groceryContainerTypes.todo) {
-      return todo;
+      return (
+        <OtherDarkThemeIcon
+          color={colors[theme].generalColors.innerBackground}
+          trace={
+            theme == themes.lightTheme
+              ? colors[theme].generalColors.fontColor
+              : colors[theme].generalColors.outerBackground
+          }
+        />
+      );
     }
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
-      return shop;
+      return (
+        <ShoppingDarkThemeIcon
+          color={colors[theme].generalColors.highlight}
+          secondary={colors[theme].shoppingColors.emptyListIcon}
+        />
+      );
     }
     return grocery; // TODO: error image
   };
@@ -187,9 +212,27 @@ const LandingPage = ({
     const [reorderedItem] = collapsedLists.splice(result.source.index, 1);
     collapsedLists.splice(result.destination.index, 0, reorderedItem);
     setActiveContainer({ ...activeContainer, collapsedList: collapsedLists });
-    setWasRefactored(true);
+    setWasRefactored((wasRefactored) => wasRefactored + 1);
   };
 
+  const handleCheckItemsInterval = async () => {
+    if (updateTimer !== null) {
+      // Haven't sent items yet, so clear the timeout and start a new attempt
+      console.log("Resetting the timer...");
+      clearTimeout(updateTimer);
+    }
+    // Set a new timer to update the database after 3 seconds
+    const timer = setTimeout(() => {
+      console.log("Updating lists order");
+      handleRefactorLists();
+    }, 2000); // Adjust the delay as needed
+
+    setUpdateTimer(timer);
+  };
+
+  useEffect(() => {
+    handleCheckItemsInterval();
+  }, [wasRefactored]);
   useEffect(() => {
     // Fetch only if lists are not cached
     if (activeContainer?.id !== location?.state?.containerId) {
@@ -262,7 +305,7 @@ const LandingPage = ({
                   }}
                 >
                   {/*  Back Button */}
-                  <IconButton size={"small"} disableRipple onClick={handleBack}>
+                  <IconButton size={"small"} disableRipple onClick={() => navigate(-1)}>
                     <ArrowBackIosIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />
                   </IconButton>
 
@@ -372,13 +415,14 @@ const LandingPage = ({
               alignItems: "center",
             }}
           >
-            <img
+            {/* <img
               alt="decorative-background"
               src={handleContainerImg()}
               loading="lazy"
               height={"95%"}
               width={"95%"}
-            />
+            /> */}
+            {handleContainerImg()}
 
             <Typography
               fontFamily={"Urbanist"}

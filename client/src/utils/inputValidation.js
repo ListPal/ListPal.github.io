@@ -249,7 +249,7 @@ const registrationValidation = async (registration) => {
   validation = validatePhone(registration?.phone);
   if (!validation?.validated) return validation;
 
-  validation = console.log("Registration Validated");
+  console.log("Registration Validated");
   return validation;
 };
 

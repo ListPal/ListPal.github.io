@@ -6,6 +6,9 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { colors, mobileWidth, themes } from "../../utils/enum";
 import { logout } from "../../utils/rest";
 import { useNavigate } from "react-router-dom";
+import ShoppingDarkThemeIcon from "../Icons/ShoppingIcon";
+import GroceryDarkThemeIcon from "../Icons/GroceryIcon";
+import OtherDarkThemeIcon from "../Icons/OtherIcon";
 
 const Containers = ({
   setUser,
@@ -20,7 +23,22 @@ const Containers = ({
   theme,
 }) => {
   const [logoutError, setLogoutError] = useState(false);
-  const imgSources = [shop, grocery, todo];
+  // const imgSources = [shop, grocery, todo];
+  const imgSources = [
+    <ShoppingDarkThemeIcon
+      color={colors[theme].generalColors.highlight}
+      secondary={colors[theme].shoppingColors.icon}
+    />,
+    <GroceryDarkThemeIcon color={colors[theme].landingPageColors.icon} />,
+    <OtherDarkThemeIcon
+      color={colors[theme].generalColors.innerBackground}
+      trace={
+        theme == themes.lightTheme
+          ? colors[theme].generalColors.fontColor
+          : colors[theme].generalColors.outerBackground
+      }
+    />,
+  ];
   const containerIds = ["wishlistContainerId", "groceryContainerId", "todoContainerId"];
   const navigate = useNavigate();
 
@@ -46,7 +64,10 @@ const Containers = ({
   return (
     <>
       <meta name="theme-color" content={colors[theme]?.generalColors.outerBackground} />
-      <Slide in={logoutError} sx={{ position: "fixed", top: 0, zIndex: 10, maxWidth: mobileWidth, minWidth: '90%' }}>
+      <Slide
+        in={logoutError}
+        sx={{ position: "fixed", top: 0, zIndex: 10, maxWidth: mobileWidth, minWidth: "90%" }}
+      >
         <Alert severity="error"> Failed log you out. Please try again later. </Alert>
       </Slide>
       <Grid

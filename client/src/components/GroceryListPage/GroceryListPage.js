@@ -1,7 +1,8 @@
 // React imports
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SwipeableViews from "react-swipeable-views";
+import "./GroceryListPage.css";
 
 // Dnd imports
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -12,6 +13,7 @@ import { Typography, Slide, Alert, Stack, List } from "@mui/material";
 // MUI Icons
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import CloseIcon from "@mui/icons-material/Close";
 
 // My imports
 import {
@@ -44,16 +46,18 @@ function GroceryListPage({
   theme,
 }) {
   // States
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [filteredItems, setFilteredItems] = useState([]);
   const [activeItem, setActiveItem] = useState(null);
   const [alertMessage, setAlertMessage] = useState(null);
   const [groupedByIdentifier, setGroupedByIdentifier] = useState([]);
   const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
-  const [showDone, setShowDone] = useState(user?.userPreferences?.showChecked);
+  const [showDone, setShowDone] = useState(false);
   const [modifiedIds, setModifiedIds] = useState(new Set());
   const [slide, setSlide] = useState(0);
   const [isRefarctored, setisRefarctored] = useState(false);
   const [updateTimer, setUpdateTimer] = useState(null);
+  const [updateTimerLookup, setUpdateTimerLookup] = useState(null);
 
   // Other globals
   const navigate = useNavigate();
@@ -65,8 +69,55 @@ function GroceryListPage({
   const listId = state.listId || urlParams.get("listId");
   const listName = state.listName || urlParams.get("name");
   const scope = state.scope || urlParams.get("scope");
+  const lookupRef = useRef(null);
 
   // Handlers
+
+  const handleMouseDown = (event) => {
+    event.preventDefault();
+  };
+
+  const handleTouchStart = (event) => {
+    if (event.touches.length > 1) {
+      event.preventDefault();
+    }
+  };
+
+  const handleLookupItems = (sequence) => {
+    const matchingItems = [];
+    activeList?.groceryListItems.forEach((e, i) => {
+      if (e.name.toLowerCase().includes(sequence.toLowerCase())) matchingItems.push(e);
+    });
+    setFilteredItems(matchingItems);
+  };
+
+  const handleOnLookupInputChange = (event) => {
+    if (!event.target.value) return;
+
+    if (updateTimer !== null) {
+      // Haven't sent items yet, so clear the timeout and start a new attempt
+      // console.log("Resetting the timer...");
+      setLoading(true);
+      clearTimeout(updateTimerLookup);
+    }
+    // Set a new timer to update the database after 3 seconds
+    const timer = setTimeout(() => {
+      // console.log("Searching items...");
+      handleLookupItems(event.target.value);
+      setLoading(false);
+    }, 800); // Adjust the delay as needed
+
+    setUpdateTimerLookup(timer);
+  };
+
+  const handleResetLookupBar = () => {
+    if (lookupRef.current && lookupRef.current.value.length !== 0) {
+      console.debug("resetting search bar")
+      lookupRef.current.value = null;
+      setFilteredItems(activeList?.groceryListItems);
+    }
+  };
+
   const handleCheckItemsInterval = async () => {
     if (updateTimer !== null) {
       // Haven't sent items yet, so clear the timeout and start a new attempt
@@ -77,7 +128,7 @@ function GroceryListPage({
     const timer = setTimeout(() => {
       // console.log("Updating database with checked items:");
       handleCheckItems();
-    }, 3000); // Adjust the delay as needed
+    }, 1000); // Adjust the delay as needed
 
     setUpdateTimer(timer);
   };
@@ -122,10 +173,8 @@ function GroceryListPage({
   };
 
   const handleBack = () => {
-    if (modifiedIds.size > 0) {
-      handleCheckItems();
-    }
     if (scope === groceryListScopes.private) {
+      // Reorder items if necessary
       handlePushList(activeList?.groceryListItems, false, false);
     }
     navigate(-1);
@@ -188,21 +237,14 @@ function GroceryListPage({
 
   const handleSync = async (cache) => {
     setLoading(true);
-    // Send checks
-    handleCheckItems()
-      .then(async (res) => {
-        // Pull
-        const pull = await handlePullList(false, false);
-        // Merge (current merge resolution is: "keep theirs")
-        const mergedArray = await mergeArrays(activeList?.groceryListItems, pull?.groceryListItems);
-        // Cache
-        if (cache === true) setActiveList({ ...activeList, groceryListItems: mergedArray });
-        // Reset relevant states
-        setLoading(false)
-      })
-      .catch((e) => {
-        console.debug(e);
-      });
+    // Pull
+    const pull = await handlePullList(false, false);
+    // Merge (current merge resolution is: "keep theirs")
+    const mergedArray = await mergeArrays(activeList?.groceryListItems, pull?.groceryListItems);
+    // Cache
+    if (cache === true) setActiveList({ ...activeList, groceryListItems: mergedArray });
+    // Reset relevant states
+    setLoading(false);
   };
 
   const handleBorderColor = (identifier) => {
@@ -345,7 +387,10 @@ function GroceryListPage({
 
     // Cache it in state
     if (res?.status === 200) {
-      if (cache) setActiveList({ ...res?.body, groceryListItems: res?.body?.groceryListItems });
+      if (cache) {
+        setActiveList({ ...res?.body, groceryListItems: res?.body?.groceryListItems });
+        setFilteredItems(res?.body?.groceryListItems);
+      }
     } else if (res?.status === 401) {
       setAlertMessage(messages.unauthorizedAccess);
     } else if (res?.status === 403) {
@@ -406,6 +451,7 @@ function GroceryListPage({
 
   useMemo(() => {
     handleGroupByUsername(activeList?.groceryListItems);
+    setFilteredItems(activeList?.groceryListItems);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeList]);
 
@@ -416,14 +462,13 @@ function GroceryListPage({
   }, [showDone]);
 
   useEffect(() => {
-    if (modifiedIds.size === 0) {
-      setLoading(false)
-      return
-    }
     handleCheckItemsInterval();
   }, [modifiedIds.size]);
 
   useEffect(() => {
+    // Show checked items if public list
+    setShowDone(scope === groceryListScopes.public)
+
     // Check for cached list items
     if (
       activeList?.id === listId &&
@@ -431,6 +476,8 @@ function GroceryListPage({
       activeList?.scope === scope
     ) {
       // console.debug("No need to fetch items.");
+      setFilteredItems(activeList?.groceryListItems);
+      setLoading(false);
       return;
     }
 
@@ -443,11 +490,15 @@ function GroceryListPage({
     }
 
     // Pull new list
-    handlePullList(true, false);
-    setLoading(false);
+    handlePullList(true, true);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Using WebSockets
+  useEffect(() => {
+    
+  }, [])
 
   return (
     <PullToRefresh onRefresh={() => handleSync(true)}>
@@ -476,14 +527,55 @@ function GroceryListPage({
         />
       )}
 
-      {/* Back button */}
-      <IconButton
-        size="small"
-        onClick={handleBack}
-        sx={{ mt: 3, position: "fixed", left: "15px", zIndex: 11 }}
+      {/* Top stack */}
+      <Stack
+        pl={2}
+        pt={2}
+        pr={1}
+        direction={"row"}
+        alignItems={"center"}
+        zIndex={11}
+        position={"fixed"}
+        width={"100%"}
+        maxWidth={mobileWidth}
+        sx={{ backdropFilter: "blur(5px)" }}
       >
-        <ArrowBackIosIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />
-      </IconButton>
+        {/* Back button */}
+        <IconButton size="small" onClick={handleBack}>
+          <ArrowBackIosIcon sx={{ color: colors[theme]?.generalColors.fontColor }} />
+        </IconButton>
+
+        {/* Searchbar */}
+        <div style={{ width: "calc(80% - 5px)" }}>
+          <input
+            ref={lookupRef}
+            onChange={handleOnLookupInputChange}
+            id="lookupInput"
+            className="noZoom"
+            placeholder={"Lookup item"}
+            style={{
+              color: colors[theme]?.generalColors.fontColor,
+              border: `1px solid ${colors[theme]?.generalColors.lightBorder}`,
+              background: colors[theme].generalColors.outerBackground,
+            }}
+          />
+          <IconButton
+            className="reset-text-icon"
+            onClick={handleResetLookupBar}
+            size={"small"}
+            sx={{
+              position: "absolute",
+              top: "calc(2 * 8px + 5px)",
+              left: 'calc(80% + 5px)',
+            }}
+          >
+            <CloseIcon
+              fontSize={"1rem"}
+              sx={{ color: colors[theme]?.generalColors.lightBorder }}
+            />
+          </IconButton>
+        </div>
+      </Stack>
 
       {/* List items */}
       <SwipeableViews disabled={showDone} index={slide} onChangeIndex={(slide) => setSlide(slide)}>
@@ -499,11 +591,11 @@ function GroceryListPage({
                   overflowX: "hidden",
                   maxWidth: mobileWidth,
                   height: "88vh",
-                  pt: 4,
+                  pt: 10,
                 }}
               >
                 {!loading &&
-                  activeList?.groceryListItems.map((e, i) => {
+                  filteredItems.map((e, i) => {
                     if (!e.checked || showDone)
                       return (
                         <Draggable draggableId={`${i}`} index={i} key={i}>
@@ -549,11 +641,11 @@ function GroceryListPage({
               overflowX: "hidden",
               maxWidth: mobileWidth,
               height: "88vh",
-              pt: 4,
+              pt: 10,
             }}
           >
             {!loading &&
-              activeList?.groceryListItems.map((e, i) => {
+              filteredItems.map((e, i) => {
                 if (e.checked)
                   return (
                     <Listitem
@@ -597,7 +689,7 @@ function GroceryListPage({
         showDone={showDone}
         setShowDone={setShowDone}
       />
-      {!showDone && (
+      {!showDone && activeList?.id && filteredItems.length > 0 && (
         <Stack
           direction={"row"}
           position={"fixed"}
@@ -634,7 +726,7 @@ function GroceryListPage({
         </Stack>
       )}
 
-      {activeList?.id && activeList?.groceryListItems.length === 0 && !loading && (
+      {activeList?.id && filteredItems.length === 0 && !loading && (
         <Typography
           variant={"subtitle1"}
           fontFamily={"Urbanist"}

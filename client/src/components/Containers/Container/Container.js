@@ -1,6 +1,8 @@
 import { Typography, Grid, Card, CardContent, CardMedia, CardActionArea } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { colors, mobileWidth, themes } from "../../../utils/enum";
+import GroceryDarkThemeIcon from "../../Icons/GroceryIcon";
+import ShoppingDarkThemeIcon from "../../Icons/ShoppingIcon";
 
 const Container = ({ heading, imgSrc, id, theme }) => {
   const navigate = useNavigate();
@@ -33,8 +35,9 @@ const Container = ({ heading, imgSrc, id, theme }) => {
             >
               {heading}
             </Typography>
-            <CardMedia>
-              <img alt="decorative-card" src={imgSrc} loading="lazy" height={"95%"} width={"95%"} />
+            <CardMedia sx={{ pt: 5 }}>
+              {/* <img alt="decorative-card" src={imgSrc} loading="lazy" height={"95%"} width={"95%"} /> */}
+              {imgSrc}
             </CardMedia>
           </CardContent>
         </CardActionArea>

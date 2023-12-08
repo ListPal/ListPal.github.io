@@ -13,6 +13,7 @@ import AddPeopleList from "./components/AddPeopleList/AddPeopleList";
 import grocery from "./assets/grocery.jpg";
 import shop from "./assets/shop.jpg";
 import todo from "./assets/todo.jpg";
+import shoppingWallpaperDarkTheme from "./assets/shoppingWallpaperDark.jpg";
 //
 import Profile from "./components/Profile/Profile";
 import ChangeEmail from "./components/ChangeEmail/ChangeEmail";
@@ -22,6 +23,7 @@ import ChangePhone from "./components/ChangePhone/ChangePhone";
 import AuthPage from "./components/AuthPage/AuthPage";
 
 import { themes } from "./utils/enum";
+import SandBox from "./components/SandBox/SandBox";
 
 function App() {
   const [theme, setTheme] = useState(themes.lightTheme);
@@ -67,7 +69,7 @@ function App() {
                 theme={user?.userPreferences?.theme || theme}
                 grocery={grocery}
                 todo={todo}
-                shop={shop}
+                shop={shoppingWallpaperDarkTheme}
                 user={user}
                 setUser={setUser}
                 activeList={activeList}
@@ -190,6 +192,11 @@ function App() {
           <Route
             path="/quick-list"
             element={<QuickList theme={user?.userPreferences?.theme || theme} />}
+          />
+
+          <Route
+            path="/sandbox"
+            element={<SandBox theme={user?.userPreferences?.theme || theme} />}
           />
         </Routes>
       </HashRouter>

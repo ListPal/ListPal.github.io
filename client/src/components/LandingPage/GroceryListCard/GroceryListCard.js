@@ -2,22 +2,25 @@ import { colors, groceryContainerTypes, groceryListScopes, mobileWidth } from ".
 import Paper from "@mui/material/Paper";
 import { useLocation, useNavigate } from "react-router-dom";
 import MoreOptions from "./MoreOptions/MoreOptions";
-import { Stack, Typography, Slide, Alert, ListItem } from "@mui/material";
+import { Stack, Typography, Slide, Alert, ListItem, Card, List } from "@mui/material";
 import { useState } from "react";
 import KeyIcon from "@mui/icons-material/Key";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PublicIcon from "@mui/icons-material/Public";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 // IMGS
-import groceryWallpaper from "../../../assets/groceryWallpaper.jpg";
-import shoppingWallpaper from "../../../assets/shoppingWallpaper.jpg";
-import todoWallpaper from "../../../assets/todoWallpaper.jpg";
-import christmasWallpaper from "../../../assets/christmasWallpaper.jpg";
-import thanksGivingWallpaper from "../../../assets/thanksgiving.jpg";
-
-import shoppingWallpaperDarkTheme from "../../../assets/shoppingWallpaperDark.jpg";
-import christmasWallpaperDarkTheme from "../../../assets/christmasWallpaperDark.jpg";
+// import groceryWallpaper from "../../../assets/groceryWallpaper.jpg";
+// import shoppingWallpaper from "../../../assets/shoppingWallpaper.jpg";
+// import todoWallpaper from "../../../assets/todoWallpaper.jpg";
+// import christmasWallpaper from "../../../assets/christmasWallpaper.jpg";
+// import thanksGivingWallpaper from "../../../assets/thanksgiving.jpg";
+// import shoppingWallpaperDarkTheme from "../../../assets/shoppingWallpaperDark.jpg";
+// import christmasWallpaperDarkTheme from "../../../assets/christmasWallpaperDark.jpg";
 import { Draggable } from "react-beautiful-dnd";
+import CarrotIcon from "../../Icons/CarrotIcon";
+import ChristmasTree from "../../Icons/ChristmasTree";
+import ShoppingCart from "../../Icons/ShoppingCart";
+import TodoIcon from "../../Icons/TodoIcon";
 
 const GroceryListCard = ({
   username,
@@ -84,34 +87,59 @@ const GroceryListCard = ({
 
   const handleDeriveWallpaper = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
-      return listInfo?.listName.toUpperCase().includes("THANK")
-        ? thanksGivingWallpaper
-        : groceryWallpaper;
+      return <CarrotIcon />;
     }
     if (activeContainer?.containerType === groceryContainerTypes.todo) {
-      return todoWallpaper;
+      return (
+        <TodoIcon
+          color={colors[themes].todoColors.icon}
+          secondary={colors[themes].generalColors.fontColor}
+        />
+      );
     }
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
-      if (themes === "darkTheme") {
-        return listInfo?.listName.toUpperCase().includes("CHRISTMAS")
-          ? christmasWallpaperDarkTheme
-          : shoppingWallpaperDarkTheme;
-      } else {
-        return listInfo?.listName.toUpperCase().includes("CHRISTMAS")
-          ? christmasWallpaper
-          : shoppingWallpaper;
-      }
+      return listInfo?.listName.toUpperCase().includes("CHRISTMAS") ? (
+        <ChristmasTree color={"#7b9370"} star={colors[themes].generalColors.highlight} />
+      ) : (
+        <ShoppingCart
+          color={colors[themes].shoppingColors.icon}
+          secondary={colors[themes].generalColors.highlight}
+        />
+      );
     }
   };
+
+  // const handleDeriveWallpaper = () => {
+  //   if (activeContainer?.containerType === groceryContainerTypes.grocery) {
+  //     return listInfo?.listName.toUpperCase().includes("THANK")
+  //       ? thanksGivingWallpaper
+  //       : groceryWallpaper;
+  //   }
+  //   if (activeContainer?.containerType === groceryContainerTypes.todo) {
+  //     return todoWallpaper;
+  //   }
+  //   if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
+  //     if (themes === "darkTheme") {
+  //       return listInfo?.listName.toUpperCase().includes("CHRISTMAS")
+  //         ? christmasWallpaperDarkTheme
+  //         : shoppingWallpaperDarkTheme;
+  //     } else {
+  //       return listInfo?.listName.toUpperCase().includes("CHRISTMAS")
+  //         ? christmasWallpaper
+  //         : shoppingWallpaper;
+  //     }
+  //   }
+  // };
 
   return (
     <Draggable draggableId={`${index}`} index={index}>
       {(provided) => (
-        <ListItem>
+        <ListItem
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+        >
           <Paper
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
             elevation={0}
             sx={{
               maxWidth: mobileWidth,
@@ -121,23 +149,17 @@ const GroceryListCard = ({
               backgroundColor: colors[themes].generalColors.innerBackground,
             }}
           >
-            <Slide
-              in={alertMessage && true}
-              sx={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                zIndex: 10,
-              }}
-            >
-              <Alert severity={severity}>
-                <Typography>{alertMessage}</Typography>
-              </Alert>
-            </Slide>
-
             {/* All content */}
             <Stack p direction={"column"} sx={{ alignItems: "center" }}>
-              <Stack width={"100%"} alignItems={"flex-end"}>
+              <Stack width={"100%"} direction={"row"} justifyContent={"space-between"}>
+                <Typography
+                  fontFamily={"Urbanist"}
+                  color={colors[themes].generalColors.fontColor}
+                  variant={"h6"}
+                >
+                  {listInfo?.listName ? listInfo?.listName + "  " : "Unknown List"}
+                  {handleDeriveListScopeIcon()}
+                </Typography>
                 <MoreOptions
                   theme={themes}
                   username={username}
@@ -151,37 +173,33 @@ const GroceryListCard = ({
                 onClick={handleNavigate}
                 style={{
                   display: "flex",
-                  flexDirection: "column",
-                  background: theme,
-                  backgroundImage: `url(${handleDeriveWallpaper()})`,
+                  // backgroundImage: `url(${handleDeriveWallpaper()})`,
                   backgroundSize: "cover",
                   width: "100%",
                   height: "20vh",
-                  // maxHeight: 150,
                   borderRadius: "5px",
                   justifyContent: "center",
                   alignItems: "center",
+                  overflow: "hidden",
                 }}
               >
-                <Typography
-                  padding={1}
-                  variant="overline"
-                  fontFamily={"Urbanist"}
-                  sx={{
-                    display: "flex",
-                    border: `1px solid ${colors[themes].generalColors.fontColor}`,
-                    color: colors[themes].generalColors.fontColor,
-                    backdropFilter: "blur(5px)",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {listInfo?.listName ? listInfo?.listName : "Unknown List"}
-                  {handleDeriveListScopeIcon()}
-                </Typography>
+                {handleDeriveWallpaper()}
               </div>
             </Stack>
           </Paper>
+          <Slide
+            in={alertMessage && true}
+            sx={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              zIndex: 10,
+            }}
+          >
+            <Alert severity={severity}>
+              <Typography>{alertMessage}</Typography>
+            </Alert>
+          </Slide>
         </ListItem>
       )}
     </Draggable>

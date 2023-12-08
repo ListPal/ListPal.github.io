@@ -3,7 +3,7 @@ const DARK_INNER = "#414141";
 const DARK_TEXT = "#CECECE";
 const DARK_BOLD = "#9F9F9F";
 
-const LIGHT_TEXT = "#3D4F58";
+const LIGHT_TEXT = "#51565F";
 
 const mobileWidth = "480px";
 
@@ -70,6 +70,8 @@ const colors = {
       helperTextFontColor: DARK_TEXT,
       outerBackground: DARK_OUTER,
       innerBackground: DARK_INNER,
+      lightBorder: 'gray',
+      highlight: '#FFDD49',
       slideSelector: {
         active: "lightgray",
         inactive: "black",
@@ -84,16 +86,20 @@ const colors = {
       low: DARK_INNER,
       medium: DARK_INNER,
       bold: DARK_BOLD,
+      icon: DARK_OUTER,
     },
     todoColors: {
       low: DARK_INNER,
       medium: DARK_INNER,
       bold: DARK_BOLD,
+      icon: '#67768d',
     },
     shoppingColors: {
       low: DARK_INNER,
       medium: DARK_INNER,
       bold: DARK_BOLD,
+      icon: DARK_OUTER,
+      emptyListIcon: DARK_INNER
     },
     quickListColors: {
       low: DARK_INNER,
@@ -109,6 +115,8 @@ const colors = {
       helperTextFontColor: "rgba(0, 0, 0, 0.6)",
       outerBackground: "white",
       innerBackground: "white",
+      lightBorder: "lightgray",
+      highlight: '#5BC1D7',
       slideSelector: {
         active: "black",
         inactive: "lightgray",
@@ -123,16 +131,20 @@ const colors = {
       low: "#eaf6e4",
       medium: "#FFF5EB",
       bold: "#7b9370",
+      icon: LIGHT_TEXT,
     },
     todoColors: {
       low: "#F3F4F6",
       medium: "#F3F4F6",
       bold: "#9CA3AF",
+      icon: '#9CA3AF',
     },
     shoppingColors: {
       low: "#E1F2F6",
       medium: "#ffff",
       bold: "#007CAD",
+      icon: LIGHT_TEXT,
+      emptyListIcon: LIGHT_TEXT,
     },
     quickListColors: {
       low: "#E1F2F6",
@@ -236,7 +248,7 @@ const dialogueObject = {
     ],
     button: [
       {
-        textColor: { lightTheme: 'black', darkTheme: DARK_TEXT },
+        textColor: { lightTheme: "black", darkTheme: DARK_TEXT },
         color: { lightTheme: "red", darkTheme: DARK_OUTER },
         text: "Delete Entire List",
         icon: "deleteIcon",
@@ -317,7 +329,7 @@ const dialogueObject = {
     textFields: [],
     button: [
       {
-        textColor: { lightTheme: 'black', darkTheme: DARK_TEXT },
+        textColor: { lightTheme: "black", darkTheme: DARK_TEXT },
         color: { lightTheme: "red", darkTheme: DARK_OUTER },
         text: "Delete Checked",
         icon: "deletePeople",
@@ -353,7 +365,7 @@ const dialogueObject = {
 
 // Engines
 // const engine = "https://katespracticespace.com";
-const engine = "http://joses-macbook-pro-3.local:8080";
+const engine = "http://joses-macbook-pro-4.local:8080";
 
 const URLS = {
   // Authentication endpoins
@@ -412,3 +424,4 @@ export {
   dialogueObject,
   themes,
 };
+
