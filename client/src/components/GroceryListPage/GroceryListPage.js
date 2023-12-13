@@ -1,7 +1,7 @@
 // React imports
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import SwipeableViews from "react-swipeable-views";
+// import SwipeableViews from "react-swipeable-views";
 import "./GroceryListPage.css";
 
 // Dnd imports
@@ -25,6 +25,7 @@ import {
   mobileWidth,
   groceryContainerTypes,
   messages,
+  actions,
 } from "../../utils/enum";
 import { getPublicList, postRequest, checkSession, getAllLists } from "../../utils/rest";
 import { mergeArrays } from "../../utils/helper";
@@ -35,6 +36,19 @@ import BottomBar from "./BottomBar/BottomBar";
 import Dialogue from "./Dialogues/Dialogue";
 import PullToRefresh from "../PullToRefresh/PullToRefresh";
 import Loading from "../Loading/Loading";
+
+// Websocket
+import {
+  connectWebSocket,
+  disconnectWebSocket,
+  subscribeTest,
+  unsubscribeTest,
+  subscribeToList,
+  sendMessage,
+  unscubscribeFromList,
+  checkItemsWs,
+  isWebSocketConnected,
+} from "../../utils/WebSocket";
 
 function GroceryListPage({
   activeList,
@@ -52,7 +66,7 @@ function GroceryListPage({
   const [alertMessage, setAlertMessage] = useState(null);
   const [groupedByIdentifier, setGroupedByIdentifier] = useState([]);
   const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
-  const [showDone, setShowDone] = useState(false);
+  const [showDone, setShowDone] = useState(true);
   const [modifiedIds, setModifiedIds] = useState(new Set());
   const [slide, setSlide] = useState(0);
   const [isRefarctored, setisRefarctored] = useState(false);
@@ -72,6 +86,40 @@ function GroceryListPage({
   const lookupRef = useRef(null);
 
   // Handlers
+  const handleWebsocketSubscription = () => {
+    const onSuccess = (message) => {
+      const res = message?.body;
+      const action = message?.body?.action;
+      switch (action) {
+        case actions.ADD_ITEM:
+          setActiveList(res?.body);
+          break;
+        case actions.EDIT_ITEM:
+          setActiveList(res?.body);
+          break;
+        case actions.DELETE_ITEM:
+          setActiveList(res?.body);
+          break;
+        case actions.REMOVE_ITEMS:
+          setActiveList(res?.body);
+          break;
+        case actions.CHECK_ITEMS:
+          setActiveList(res?.body);
+          setModifiedIds(new Set());
+          break;
+        case actions.REMOVE_CHECKED_ITEMS:
+          setActiveList(res?.body);
+          break;
+        default:
+          console.debug("No allowed action.");
+          break;
+      }
+    };
+    const onError = () => {
+      setAlertMessage(messages.genericError);
+    };
+    subscribeToList(listId, onSuccess, onError);
+  };
 
   const handleMouseDown = (event) => {
     event.preventDefault();
@@ -112,7 +160,7 @@ function GroceryListPage({
 
   const handleResetLookupBar = () => {
     if (lookupRef.current && lookupRef.current.value.length !== 0) {
-      console.debug("resetting search bar")
+      console.debug("resetting search bar");
       lookupRef.current.value = null;
       setFilteredItems(activeList?.groceryListItems);
     }
@@ -162,6 +210,22 @@ function GroceryListPage({
       activeList?.scope === groceryListScopes.public
         ? URLS.checkPublicListItemsUri
         : URLS.checkListItemsUri;
+
+    // Websocket
+    if (activeList?.scope === groceryListScopes.restricted) {
+      const authResponse = await checkSession();
+      if (authResponse?.status !== 200) {
+        navigate("/");
+      }
+
+      if (!isWebSocketConnected()) {
+        setAlertMessage("Connection was lost. Please try refreshing or restarting the app.");
+        setLoading(false);
+        return;
+      }
+      checkItemsWs(activeList?.id, data, actions.CHECK_ITEMS, authResponse?.token);
+      return;
+    }
 
     // Post data and return the response to the next controller
     const res = await postRequest(uri, data);
@@ -393,9 +457,14 @@ function GroceryListPage({
       }
     } else if (res?.status === 401) {
       setAlertMessage(messages.unauthorizedAccess);
+      setTimeout(() => navigate("/"), 3000);
     } else if (res?.status === 403) {
       console.debug(res);
       navigate("/");
+    } else if (res?.status === 500) {
+      setAlertMessage(messages.lostConnection);
+    } else if (res?.status === 400) {
+      navigate('/listNotFound')
     } else {
       console.debug(res);
       if (scope === groceryListScopes.public) {
@@ -467,7 +536,7 @@ function GroceryListPage({
 
   useEffect(() => {
     // Show checked items if public list
-    setShowDone(scope === groceryListScopes.public)
+    setShowDone(scope === groceryListScopes.public);
 
     // Check for cached list items
     if (
@@ -497,8 +566,22 @@ function GroceryListPage({
 
   // Using WebSockets
   useEffect(() => {
-    
-  }, [])
+    if (scope === groceryListScopes.restricted) {
+      if (!isWebSocketConnected()) {
+        setAlertMessage(messages.lostConnection);
+        return;
+      }
+
+      // Subscribe to topic
+      handleWebsocketSubscription();
+
+      // Unsubscribe on component unmount
+      return () => {
+        if (isWebSocketConnected) unscubscribeFromList(listId);
+        
+      };
+    }
+  }, []);
 
   return (
     <PullToRefresh onRefresh={() => handleSync(true)}>
@@ -508,9 +591,15 @@ function GroceryListPage({
       {loading && <Loading color={handleDeriveThemeColor().bold} />}
 
       {/* Alert messages*/}
-      <Slide className="alert-slide" in={alertMessage && true}>
-        <Alert severity={"error"} sx={{ position: "fixed", width: "96vw", top: 0, zIndex: 20 }}>
-          {alertMessage}
+      <Slide
+        className="alert-slide"
+        in={alertMessage && true}
+        sx={{ position: "absolute", zIndex: 100 }}
+      >
+        <Alert severity={"error"}>
+          <Typography variant={"body2"} textAlign={"left"}>
+            {alertMessage}
+          </Typography>
         </Alert>
       </Slide>
 
@@ -566,117 +655,66 @@ function GroceryListPage({
             sx={{
               position: "absolute",
               top: "calc(2 * 8px + 5px)",
-              left: 'calc(80% + 5px)',
+              left: "calc(80% + 5px)",
             }}
           >
-            <CloseIcon
-              fontSize={"1rem"}
-              sx={{ color: colors[theme]?.generalColors.lightBorder }}
-            />
+            <CloseIcon fontSize={"1rem"} sx={{ color: colors[theme]?.generalColors.lightBorder }} />
           </IconButton>
         </div>
       </Stack>
 
       {/* List items */}
-      <SwipeableViews disabled={showDone} index={slide} onChangeIndex={(slide) => setSlide(slide)}>
-        {/* Active items */}
-        <DragDropContext onDragEnd={handleOnDragEnd}>
-          <Droppable droppableId="list-items">
-            {(provided, snapshot) => (
-              <List
-                dense
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                sx={{
-                  overflowX: "hidden",
-                  maxWidth: mobileWidth,
-                  height: "88vh",
-                  pt: 10,
-                }}
-              >
-                {!loading &&
-                  filteredItems.map((e, i) => {
-                    if (!e.checked || showDone)
-                      return (
-                        <Draggable draggableId={`${i}`} index={i} key={i}>
-                          {(provided) => (
-                            <Listitem
-                              theme={theme}
-                              provided={provided}
-                              borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
-                              identifier={e?.user?.username.split("@")[0]}
-                              setOpenDialogue={setOpenDialogue}
-                              setActiveList={setActiveList}
-                              openDialogue={openDialogue}
-                              activeContainer={activeContainer}
-                              setActiveContainer={setActiveContainer}
-                              activeList={activeList}
-                              listId={listId}
-                              item={e}
-                              setItem={setActiveItem}
-                              user={user}
-                              setUser={setUser}
-                              key={i}
-                              index={i}
-                              containerId={containerId}
-                              setAlertMessage={setAlertMessage}
-                              modifiedIds={modifiedIds}
-                              setModifiedIds={setModifiedIds}
-                            />
-                          )}
-                        </Draggable>
-                      );
-                  })}
-                {provided.placeholder}
-              </List>
-            )}
-          </Droppable>
-        </DragDropContext>
-
-        {/* Checked items */}
-        {!showDone ? (
-          <List
-            dense
-            sx={{
-              overflowX: "hidden",
-              maxWidth: mobileWidth,
-              height: "88vh",
-              pt: 10,
-            }}
-          >
-            {!loading &&
-              filteredItems.map((e, i) => {
-                if (e.checked)
+      <DragDropContext onDragEnd={handleOnDragEnd}>
+        <Droppable droppableId="list-items">
+          {(provided, snapshot) => (
+            <List
+              dense
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              sx={{
+                overflowX: "hidden",
+                maxWidth: mobileWidth,
+                height: "88vh",
+                pt: 10,
+              }}
+            >
+              {!loading &&
+                filteredItems.map((e, i) => {
                   return (
-                    <Listitem
-                      theme={theme}
-                      borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
-                      identifier={e?.user?.username.split("@")[0]}
-                      setOpenDialogue={setOpenDialogue}
-                      setActiveList={setActiveList}
-                      openDialogue={openDialogue}
-                      activeContainer={activeContainer}
-                      setActiveContainer={setActiveContainer}
-                      activeList={activeList}
-                      listId={listId}
-                      item={e}
-                      setItem={setActiveItem}
-                      user={user}
-                      setUser={setUser}
-                      key={i}
-                      index={i}
-                      containerId={containerId}
-                      setAlertMessage={setAlertMessage}
-                      modifiedIds={modifiedIds}
-                      setModifiedIds={setModifiedIds}
-                    />
+                    <Draggable draggableId={`${i}`} index={i} key={i}>
+                      {(provided) => (
+                        <Listitem
+                          theme={theme}
+                          provided={provided}
+                          borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
+                          identifier={e?.user?.username.split("@")[0]}
+                          setOpenDialogue={setOpenDialogue}
+                          setActiveList={setActiveList}
+                          openDialogue={openDialogue}
+                          activeContainer={activeContainer}
+                          setActiveContainer={setActiveContainer}
+                          activeList={activeList}
+                          listId={listId}
+                          item={e}
+                          setItem={setActiveItem}
+                          user={user}
+                          setUser={setUser}
+                          key={i}
+                          index={i}
+                          containerId={containerId}
+                          setAlertMessage={setAlertMessage}
+                          modifiedIds={modifiedIds}
+                          setModifiedIds={setModifiedIds}
+                        />
+                      )}
+                    </Draggable>
                   );
-              })}
-          </List>
-        ) : (
-          <></>
-        )}
-      </SwipeableViews>
+                })}
+              {provided.placeholder}
+            </List>
+          )}
+        </Droppable>
+      </DragDropContext>
 
       {/* Bottom Bar */}
       <BottomBar
@@ -689,42 +727,6 @@ function GroceryListPage({
         showDone={showDone}
         setShowDone={setShowDone}
       />
-      {!showDone && activeList?.id && filteredItems.length > 0 && (
-        <Stack
-          direction={"row"}
-          position={"fixed"}
-          left={"calc(50% - 15px)"}
-          top={"90vh"}
-          bottom={10}
-          justifyContent={"space-around"}
-          width={"30px"}
-        >
-          <div
-            onClick={() => setSlide(0)}
-            style={{
-              height: "8px",
-              width: "8px",
-              borderRadius: "50%",
-              background:
-                slide === 0
-                  ? colors[theme]?.generalColors.slideSelector.active
-                  : colors[theme]?.generalColors.slideSelector.inactive,
-            }}
-          />
-          <div
-            onClick={() => setSlide(1)}
-            style={{
-              height: "8px",
-              width: "8px",
-              borderRadius: "50%",
-              background:
-                slide === 1
-                  ? colors[theme]?.generalColors.slideSelector.active
-                  : colors[theme]?.generalColors.slideSelector.inactive,
-            }}
-          />
-        </Stack>
-      )}
 
       {activeList?.id && filteredItems.length === 0 && !loading && (
         <Typography
@@ -741,23 +743,6 @@ function GroceryListPage({
           No items to display
         </Typography>
       )}
-
-      {/* Background Wallpaper */}
-      {/* <div
-        id="background-image"
-        style={{
-          position: "fixed",
-          top: "0",
-          height: "100vh",
-          width: "100vw",
-          maxWidth: mobileWidth,
-          zIndex: "-1",
-          // backgroundImage: `url(${handleDeriveWallpaper()})`,
-          backdropFilter:'',
-          backgroundSize: "60%",
-          overflowX: "hidden",
-        }}
-      /> */}
     </PullToRefresh>
   );
 }

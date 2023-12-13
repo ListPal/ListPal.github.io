@@ -15,9 +15,19 @@ const filterCardsBy = {
   restricted: 3,
 };
 
+const actions = {
+  ADD_ITEM: 'ADD_ITEM',
+  EDIT_ITEM: 'EDIT_ITEM',
+  DELETE_ITEM: 'DELETE_ITEM',
+  CHECK_ITEMS: 'CHECK_ITEMS',
+  REMOVE_ITEMS: 'REMOVE_ITEMS',
+  REMOVE_CHECKED_ITEMS: 'REMOVE_CHECKED_ITEMS',
+}
+
 // Normalized messages here
 const messages = {
   genericError: "Apologies. Something went wrong.",
+  lostConnection: 'Connection was lost. Try refresing or reopening the app, if the issue still persist, please try again later.',
   noList: "Whoops! This link is no longer active.",
   unauthorizedAction:
     "Hmmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities.",
@@ -423,5 +433,6 @@ export {
   newListFormHelperText,
   dialogueObject,
   themes,
+  actions
 };
 

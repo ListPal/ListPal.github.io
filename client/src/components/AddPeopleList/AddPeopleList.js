@@ -97,6 +97,7 @@ const AddPeopleList = ({ theme }) => {
 
   const handleLookupUser = async () => {
     // Prepare to call api
+    const requesteeId = textFieldUserRef.current.value.toLowerCase()
     setLoading(true);
     setTextfieldMessage(null);
     // Input validation
@@ -116,7 +117,7 @@ const AddPeopleList = ({ theme }) => {
     // Call API
     const data = {
       requesterUsername: location?.state?.selfUsername,
-      userIdentifier: textFieldUserRef.current.value.toLowerCase(),
+      userIdentifier: requesteeId,
       criteria: lookupByPhone ? "PHONE" : "USERNAME",
     };
     const res = await lookupUser(data);

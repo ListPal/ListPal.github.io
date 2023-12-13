@@ -19,16 +19,25 @@ import RemoveDoneIcon from "@mui/icons-material/RemoveDone";
 import { styled } from "@mui/material/styles";
 import {
   URLS,
+  actions,
   colors,
   dialogueObject,
   dialogues,
   groceryListScopes,
   messages,
 } from "../../../utils/enum";
-import { postRequest, deleteRequest } from "../../../utils/rest";
+import { postRequest, deleteRequest, checkSession } from "../../../utils/rest";
 import { useLocation, useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../utils/dialoguesValidation";
 import LoadingButton from "@mui/lab/LoadingButton";
+// Websocket
+import {
+  addItemWs,
+  editItemWs,
+  removeListItemsWs,
+  removeCheckedListItemsWs,
+  isWebSocketConnected,
+} from "../../../utils/WebSocket";
 
 function Dialogue({
   containerId,
@@ -159,11 +168,32 @@ function Dialogue({
       activeList?.scope === groceryListScopes.public
         ? URLS.createPublicListItemUri
         : URLS.createListItemUri;
-    const res = await postRequest(uri, data);
+
+    // Send and notifiy websocket subscribers
+    if (activeList?.scope === groceryListScopes.restricted) {
+      const authResponse = await checkSession();
+      if (authResponse?.status !== 200) {
+        navigate('/')
+      }
+
+      if (!isWebSocketConnected()) {
+        setAlertMessage("Connection was lost. Please try refreshing or restarting the app.");
+        setSeverity("error");
+        closeDialogueWithDelay();
+        setLoading(false);
+        return;
+      }
+
+      addItemWs(data.listId, data, actions.ADD_ITEM, authResponse?.token);
+      closeDialogueWithoutDelay();
+      setLoading(false);
+      return;
+    }
+
     // Add it to the items state object for re-rendering
+    const res = await postRequest(uri, data);
     if (res?.status === 200) {
-      const updatedItems = [...activeList?.groceryListItems, res?.body];
-      setActiveList({ ...activeList, groceryListItems: updatedItems });
+      setActiveList(res?.body);
       closeDialogueWithoutDelay();
     } else if (res?.status === 403) {
       navigate("/");
@@ -175,7 +205,7 @@ function Dialogue({
     }
   };
 
-  const handleEditItem = async (name, category) => {
+  const handleEditItem = async (name, category) => { 
     // Ensure reset states
     setLoading(true);
     setErrorMessage(null);
@@ -203,20 +233,37 @@ function Dialogue({
       scope: activeList?.scope,
       category: "Misc",
     };
+
     const uri =
       activeList?.scope === groceryListScopes.public
         ? URLS.updatePublicListItemUri
         : URLS.updateListItemUri;
-    const res = await postRequest(uri, data);
 
+    // Websockets
+    if (activeList?.scope === groceryListScopes.restricted) {
+      const authResponse = await checkSession();
+      if (authResponse?.status !== 200) {
+        navigate('/')
+      }
+
+      if (!isWebSocketConnected()) {
+        setAlertMessage("Connection was lost. Please try refreshing or restarting the app.");
+        setSeverity("error");
+        closeDialogueWithDelay();
+        setLoading(false);
+        return;
+      }
+
+      editItemWs(activeList?.id, data, actions.EDIT_ITEM, authResponse?.token);
+      setLoading(false);
+      closeDialogueWithoutDelay();
+      return;
+    }
+
+    const res = await postRequest(uri, data);
     // Update items state object for re-rendering
     if (res?.status === 200) {
-      const updatedItems = activeList?.groceryListItems.map((e) => {
-        if (e.name === item?.name) {
-          return { ...e, name: res?.body.name, id: res?.body.id };
-        } else return e;
-      });
-      setActiveList({ ...activeList, groceryListItems: updatedItems });
+      setActiveList(res?.body);
       closeDialogueWithoutDelay();
     } else if (res?.status === 403) {
       // navigate('/') TODO:
@@ -259,11 +306,30 @@ function Dialogue({
       scope: activeList?.scope,
       listId: activeList?.id,
     };
+
+    if (activeList?.scope === groceryListScopes.restricted) {
+      const authResponse = await checkSession();
+      if (authResponse?.status !== 200) {
+        navigate('/')
+      }
+
+      if (!isWebSocketConnected()) {
+        setAlertMessage("Connection was lost. Please try refreshing or restarting the app.");
+        setSeverity("error");
+        closeDialogueWithDelay();
+        setLoading(false);
+        return;
+      }
+
+      removeListItemsWs(activeList?.id, data, actions.REMOVE_ITEMS, authResponse?.token);
+      setLoading(false);
+      closeDialogueWithoutDelay();
+      return;
+    }
+
     const res = await deleteRequest(URLS.resetList, data);
     if (res?.status === 200) {
-      setActiveList((activeList) => {
-        return { ...activeList, groceryListItems: [] };
-      });
+      setActiveList(res?.body);
       closeDialogueWithoutDelay();
     } else if (res?.status === 403) {
       navigate("/");
@@ -283,7 +349,7 @@ function Dialogue({
       setOpenDialogue(dialogues.closed);
       return;
     }
-    const updatedListItems = activeList?.groceryListItems.filter((e) => !e.checked);
+
     setLoading(true);
     const data = {
       containerId: containerId,
@@ -291,11 +357,31 @@ function Dialogue({
       listId: activeList?.id,
       itemIds: listItems.map((e) => e.id),
     };
+
+    // Send and notifiy websocket subscribers
+    if (activeList?.scope === groceryListScopes.restricted) {
+      const authResponse = await checkSession();
+      if (authResponse?.status !== 200) {
+        navigate('/')
+      }
+
+      if (!isWebSocketConnected()) {
+        setAlertMessage("Connection was lost. Please try refreshing or restarting the app.");
+        setSeverity("error");
+        closeDialogueWithDelay();
+        setLoading(false);
+        return;
+      }
+
+      removeCheckedListItemsWs(activeList?.id, data, actions.REMOVE_ITEMS, authResponse?.token);
+      closeDialogueWithoutDelay();
+      setLoading(false);
+      return;
+    }
+
     const res = await deleteRequest(URLS.eraseListItems, data);
     if (res?.status === 200) {
-      setActiveList((activeList) => {
-        return { ...activeList, groceryListItems: updatedListItems };
-      });
+      setActiveList(res?.body);
       closeDialogueWithoutDelay();
     } else if (res?.status === 403) {
       navigate("/");
@@ -394,7 +480,12 @@ function Dialogue({
                         label={textField.text}
                         helperText={errorMessage ? errorMessage : textField.helperText}
                         defaultValue={deriveDefaultText()}
-                        InputProps={{ style: { fontFamily: "Urbanist", color: colors[theme]?.generalColors.fontColor } }}
+                        InputProps={{
+                          style: {
+                            fontFamily: "Urbanist",
+                            color: colors[theme]?.generalColors.fontColor,
+                          },
+                        }}
                         inputProps={{
                           maxLength: textField?.maxLength || 100,
                         }}

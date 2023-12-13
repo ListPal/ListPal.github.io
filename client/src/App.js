@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes, HashRouter } from "react-router-dom";
 import LandingPage from "./components/LandingPage/LandingPage";
 import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
@@ -24,6 +24,9 @@ import AuthPage from "./components/AuthPage/AuthPage";
 
 import { themes } from "./utils/enum";
 import SandBox from "./components/SandBox/SandBox";
+// Websocket
+import { connectWebSocket, disconnectWebSocket } from "./utils/WebSocket";
+import NoListPage from "./components/NoListPage/NoListPage";
 
 function App() {
   const [theme, setTheme] = useState(themes.lightTheme);
@@ -32,7 +35,10 @@ function App() {
   const [activeContainer, setActiveContainer] = useState({
     collapsedLists: [],
   });
-
+  useEffect(() => {
+    connectWebSocket();
+    return () => disconnectWebSocket();
+  });
   return (
     <div className={user?.userPreferences?.theme || theme}>
       <HashRouter>
@@ -192,6 +198,11 @@ function App() {
           <Route
             path="/quick-list"
             element={<QuickList theme={user?.userPreferences?.theme || theme} />}
+          />
+
+          <Route
+            path="/listNotFound"
+            element={<NoListPage theme={user?.userPreferences?.theme || theme} />}
           />
 
           <Route

@@ -81,18 +81,16 @@ const BottomBar = ({
     },
   ];
 
-  {
-    // Replace the show/hide checked items with the share list for public lists
-    scope === groceryListScopes.public
-      ? (icons[2] = {
-          icon: (
-            <IosShareIcon
-              sx={{ color: colors[theme]?.generalColors?.fontColor, fontSize: "1.5rem" }}
-            />
-          ),
-        })
-      : (icons[2] = icons[2]);
-  }
+  // Replace the show/hide checked items with the share list for public lists
+  scope === groceryListScopes.public
+    ? (icons[2] = {
+        icon: (
+          <IosShareIcon
+            sx={{ color: colors[theme]?.generalColors?.fontColor, fontSize: "1.5rem" }}
+          />
+        ),
+      })
+    : (icons[2] = icons[2]);
 
   // Actions passed to the SpeedDial
   const onClicks = [

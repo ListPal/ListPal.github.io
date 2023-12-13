@@ -20,7 +20,8 @@ import {
   Divider,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { deleteItem, deletePublicItem } from "../../../utils/rest";
+import { checkSession, deleteItem, deletePublicItem } from "../../../utils/rest";
+import { deleteItemWs, isWebSocketConnected } from "../../../utils/WebSocket";
 
 const Listitem = ({
   identifier = "unknown",
@@ -127,6 +128,24 @@ const Listitem = ({
       itemId: item?.id,
     };
 
+    // WebSockets
+    if (activeList?.scope === groceryListScopes.restricted) {
+      const authResponse = await checkSession();
+      if (authResponse?.status !== 200) {
+        navigate('/')
+      }
+
+      if (!isWebSocketConnected()) {
+        setAlertMessage("Connection was lost. Please try refreshing or restarting the app.");
+        setLoading(false);
+        return;
+      }
+
+      deleteItemWs(activeList?.id, data, actions.EDIT_ITEM, authResponse?.token);
+      setLoading(false);
+      return;
+    }
+    console.log('Init http protocol delete item')
     // Send DELETE request to server
     const res =
       activeList?.scope === groceryListScopes.public
@@ -216,13 +235,13 @@ const Listitem = ({
               color: item?.checked ? "gray" : colors[theme]?.generalColors.fontColor,
               textDecorationLine: item?.checked && "line-through",
               fontWeight: 500,
-              fontSize: '0.95rem',
+              fontSize: "0.95rem",
             },
           }}
           secondaryTypographyProps={{
             style: {
-              display:'flex',
-              flexDirection:'column',
+              display: "flex",
+              flexDirection: "column",
               fontFamily: "Urbanist",
               color: "#9CA3AF",
               fontSize: 12,
@@ -231,8 +250,8 @@ const Listitem = ({
           primary={item?.name && truncateString(item?.name, 28)}
           secondary={
             <>
-            {identifier}
-            {item?.name.length >= 28 && <NotesIcon sx={{fontSize:12}}/>}
+              {identifier}
+              {item?.name.length >= 28 && <NotesIcon sx={{ fontSize: 12 }} />}
             </>
           }
           onClick={handleOpenItemDescription}
