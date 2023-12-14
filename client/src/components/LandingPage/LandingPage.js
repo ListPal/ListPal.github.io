@@ -43,6 +43,8 @@ import OtherDarkThemeIcon from "../Icons/OtherIcon";
 import ShoppingDarkThemeIcon from "../Icons/ShoppingIcon";
 
 const LandingPage = ({
+  todo,
+  shop,
   activeList,
   setActiveList,
   user,
@@ -50,8 +52,6 @@ const LandingPage = ({
   activeContainer,
   setActiveContainer,
   grocery,
-  todo,
-  shop,
   theme,
 }) => {
   // States
@@ -233,9 +233,10 @@ const LandingPage = ({
   useEffect(() => {
     handleCheckItemsInterval();
   }, [wasRefactored]);
+  
   useEffect(() => {
     // Fetch only if lists are not cached
-    if (activeContainer?.id !== location?.state?.containerId) {
+    if (!location?.state?.containerId || activeContainer?.id !== location?.state?.containerId) {
       pullLists();
     } else {
       // console.debug("Lists are cached. No need to fetch");

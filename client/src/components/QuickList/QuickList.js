@@ -28,7 +28,7 @@ const QuickList = ({theme}) => {
         sx={{
           paddingLeft: "10px",
           width: "105vw",
-          background: colors[theme]?.quickListColors.low,
+          background: 'black',
           alignItems: "space-between",
         }}
       >

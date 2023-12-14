@@ -24,7 +24,6 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
   // Other Locals
   const location = useLocation();
   const textFieldRef = useRef(null);
-
   const navigate = useNavigate();
 
   // Handlers
@@ -139,8 +138,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       }
 
       if (!isWebSocketConnected()) {
-        setAlertMessage("Connection was lost. Please try refreshing or restarting the app.");
-        setSeverity("error");
+        showAlert("error", "Connection was lost. Please try refreshing or restarting the app.");
         closeDialogueWithDelay();
         setLoading(false);
         return;
@@ -161,6 +159,8 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       navigate("/");
     } else if (res?.status === 401) {
       showAlert("warning", messages.unauthorizedAction);
+    } else if (res?.status === 400 && activeList?.scope === groceryListScopes.public) {
+      navigate("/listNotFound");
     } else {
       showAlert("error", "Whoops!. Couldn't add item.");
       closeDialogueWithDelay();
@@ -206,8 +206,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       }
 
       if (!isWebSocketConnected()) {
-        setAlertMessage("Connection was lost. Please try refreshing or restarting the app.");
-        setSeverity("error");
+        showAlert("error", "Connection was lost. Please try refreshing or restarting the app.");
         closeDialogueWithDelay();
         setLoading(false);
         return;
@@ -228,6 +227,8 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       // navigate('/') TODO:
     } else if (res?.status === 401) {
       showAlert("warning", messages.unauthorizedAction);
+    } else if (res?.status === 400 && activeList?.scope === groceryListScopes.public) {
+      navigate("/listNotFound");
     } else {
       showAlert("error", messages.genericError);
       closeDialogueWithDelay();
@@ -273,8 +274,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       }
 
       if (!isWebSocketConnected()) {
-        setAlertMessage("Connection was lost. Please try refreshing or restarting the app.");
-        setSeverity("error");
+        showAlert("error", "Connection was lost. Please try refreshing or restarting the app.");
         closeDialogueWithDelay();
         setLoading(false);
         return;
@@ -291,11 +291,12 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       setActiveList(res?.body);
       closeDialogueWithoutDelay();
     } else if (res?.status === 403) {
-      navigate("/");
+      showAlert("warning", messages.unauthorizedAction);
     } else if (res?.status === 401) {
       showAlert("warning", messages.unauthorizedAction);
+    }  else if (res?.status === 400 && activeList?.scope === groceryListScopes.public) {
+      navigate("/listNotFound");
     } else {
-      console.log(res);
       showAlert("error", messages.genericError);
       closeDialogueWithDelay();
     }
@@ -325,8 +326,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       }
 
       if (!isWebSocketConnected()) {
-        setAlertMessage("Connection was lost. Please try refreshing or restarting the app.");
-        setSeverity("error");
+        showAlert("error", "Connection was lost. Please try refreshing or restarting the app.");
         closeDialogueWithDelay();
         setLoading(false);
         return;
@@ -343,11 +343,12 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       setActiveList(res?.body);
       closeDialogueWithoutDelay();
     } else if (res?.status === 403) {
-      navigate("/");
+      showAlert("warning", messages.unauthorizedAction);
     } else if (res?.status === 401) {
       showAlert("warning", messages.unauthorizedAction);
+    } else if (res?.status === 400 && activeList?.scope === groceryListScopes.public) {
+      navigate("/listNotFound");
     } else {
-      console.log(res);
       showAlert("error", messages.genericError);
       closeDialogueWithDelay();
     }

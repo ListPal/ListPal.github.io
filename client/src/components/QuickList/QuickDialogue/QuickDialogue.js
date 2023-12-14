@@ -243,11 +243,12 @@ const QuickDialogue = ({
                     }
                   }}
                   sx={{
+                    fontFamily: "Urbanist",
                     height: 50,
                     "&:hover": { background: button.color[theme] },
-                    background: button.color[theme],
-                    borderRadius: 0,
-                    color: button.textColor[theme],
+                      background: button.color[theme],
+                      borderRadius: 0,
+                      color: button.textColor[theme],
                   }}
                 >
                   {button.text}

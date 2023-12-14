@@ -126,7 +126,7 @@ const Listitem = ({
       }
 
       if (!isWebSocketConnected()) {
-        setAlertMessage("Connection was lost. Please try refreshing or restarting the app.");
+        setAlertMessage({ severity: "error", message: "Connection was lost. Please try refreshing or restarting the app." });
         setLoading(false);
         return;
       }
@@ -135,7 +135,7 @@ const Listitem = ({
       setLoading(false);
       return;
     }
-    console.log("Init http protocol delete item");
+
     // Send DELETE request to server
     const res = activeList?.scope === groceryListScopes.public ? await deletePublicItem(data) : await deleteItem(data);
     if (res?.status === 200) {
@@ -147,8 +147,10 @@ const Listitem = ({
       navigate("/");
     } else if (res?.status === 401) {
       setAlertMessage(messages.unauthorizedAccess);
+    } else if (res?.status === 400 && activeList?.scope === groceryListScopes.public) {
+      navigate("/listNotFound");
     } else {
-      setAlertMessage(messages.genericError);
+      setAlertMessage({ severity: "error", message: messages.genericError });
     }
     setLoading(false);
   };
