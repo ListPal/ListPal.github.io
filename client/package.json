@@ -23,6 +23,7 @@
     "react-pull-to-refresh": "^2.0.1",
     "react-router-dom": "^6.13.0",
     "react-scripts": "5.0.1",
+    "react-swipeable-views": "^0.14.0",
     "sass": "^1.60.0",
     "sockjs-client": "^1.6.1",
     "web-vitals": "^2.1.4"

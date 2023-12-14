@@ -1,8 +1,10 @@
+// CSS import
+import "./GroceryListPage.css";
+
 // React imports
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-// import SwipeableViews from "react-swipeable-views";
-import "./GroceryListPage.css";
+import SwipeableViews from "react-swipeable-views";
 
 // Dnd imports
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -44,9 +46,6 @@ import {
   checkItemsWs,
   isWebSocketConnected,
   atomicConnectSubscribe,
-  disconnectWebSocket,
-  connectWebSocket,
-  socket,
 } from "../../utils/WebSocket";
 
 function GroceryListPage({
@@ -693,57 +692,143 @@ function GroceryListPage({
       </Stack>
 
       {/* List items */}
-      <DragDropContext onDragEnd={handleOnDragEnd}>
-        <Droppable droppableId="list-items">
-          {(provided, snapshot) => (
-            <List
-              dense
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              sx={{
-                overflowX: "hidden",
-                maxWidth: mobileWidth,
-                height: "88vh",
-                pt: 10,
-              }}
-            >
-              {!loading &&
-                filteredItems.map((e, i) => {
+      <SwipeableViews disabled={showDone} index={slide} onChangeIndex={(slide) => setSlide(slide)}>
+        {/* Active items */}
+        <DragDropContext onDragEnd={handleOnDragEnd}>
+          <Droppable droppableId="list-items">
+            {(provided, snapshot) => (
+              <List
+                dense
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                sx={{
+                  overflowX: "hidden",
+                  maxWidth: mobileWidth,
+                  height: "88vh",
+                  pt: 10,
+                }}
+              >
+                {!loading &&
+                  filteredItems.map((e, i) => {
+                    if (!e.checked || showDone)
+                      return (
+                        <Draggable draggableId={`${i}`} index={i} key={i}>
+                          {(provided) => (
+                            <Listitem
+                              theme={theme}
+                              provided={provided}
+                              borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
+                              identifier={e?.user?.username.split("@")[0]}
+                              setOpenDialogue={setOpenDialogue}
+                              setActiveList={setActiveList}
+                              openDialogue={openDialogue}
+                              activeContainer={activeContainer}
+                              setActiveContainer={setActiveContainer}
+                              activeList={activeList}
+                              listId={listId}
+                              item={e}
+                              setItem={setActiveItem}
+                              user={user}
+                              setUser={setUser}
+                              key={i}
+                              index={i}
+                              containerId={containerId}
+                              setAlertMessage={setAlertMessage}
+                              modifiedIds={modifiedIds}
+                              setModifiedIds={setModifiedIds}
+                            />
+                          )}
+                        </Draggable>
+                      );
+                  })}
+                {provided.placeholder}
+              </List>
+            )}
+          </Droppable>
+        </DragDropContext>
+
+        {/* Checked items */}
+        {!showDone ? (
+          <List
+            dense
+            sx={{
+              overflowX: "hidden",
+              maxWidth: mobileWidth,
+              height: "88vh",
+              pt: 10,
+            }}
+          >
+            {!loading &&
+              filteredItems.map((e, i) => {
+                if (e.checked)
                   return (
-                    <Draggable draggableId={`${i}`} index={i} key={i}>
-                      {(provided) => (
-                        <Listitem
-                          theme={theme}
-                          provided={provided}
-                          borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
-                          identifier={e?.user?.username.split("@")[0]}
-                          setOpenDialogue={setOpenDialogue}
-                          setActiveList={setActiveList}
-                          openDialogue={openDialogue}
-                          activeContainer={activeContainer}
-                          setActiveContainer={setActiveContainer}
-                          activeList={activeList}
-                          listId={listId}
-                          item={e}
-                          setItem={setActiveItem}
-                          user={user}
-                          setUser={setUser}
-                          key={i}
-                          index={i}
-                          containerId={containerId}
-                          setAlertMessage={setAlertMessage}
-                          modifiedIds={modifiedIds}
-                          setModifiedIds={setModifiedIds}
-                        />
-                      )}
-                    </Draggable>
+                    <Listitem
+                      theme={theme}
+                      borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
+                      identifier={e?.user?.username.split("@")[0]}
+                      setOpenDialogue={setOpenDialogue}
+                      setActiveList={setActiveList}
+                      openDialogue={openDialogue}
+                      activeContainer={activeContainer}
+                      setActiveContainer={setActiveContainer}
+                      activeList={activeList}
+                      listId={listId}
+                      item={e}
+                      setItem={setActiveItem}
+                      user={user}
+                      setUser={setUser}
+                      key={i}
+                      index={i}
+                      containerId={containerId}
+                      setAlertMessage={setAlertMessage}
+                      modifiedIds={modifiedIds}
+                      setModifiedIds={setModifiedIds}
+                    />
                   );
-                })}
-              {provided.placeholder}
-            </List>
-          )}
-        </Droppable>
-      </DragDropContext>
+              })}
+          </List>
+        ) : (
+          <></>
+        )}
+      </SwipeableViews>
+
+      {/* Page Selectors */}
+      {!showDone && activeList?.id && filteredItems.length > 0 && (
+        <Stack
+          direction={"row"}
+          position={"fixed"}
+          left={"calc(50% - 15px)"}
+          top={"90vh"}
+          bottom={10}
+          justifyContent={"space-around"}
+          width={"30px"}
+        >
+          <div
+            onClick={() => setSlide(0)}
+            style={{
+              height: "8px",
+              width: "8px",
+              borderRadius: "50%",
+              background:
+                slide === 0
+                  ? colors[theme]?.generalColors.slideSelector.active
+                  : colors[theme]?.generalColors.slideSelector.inactive,
+            }}
+          />
+          <div
+            onClick={() => setSlide(1)}
+            style={{
+              height: "8px",
+              width: "8px",
+              borderRadius: "50%",
+              background:
+                slide === 1
+                  ? colors[theme]?.generalColors.slideSelector.active
+                  : colors[theme]?.generalColors.slideSelector.inactive,
+            }}
+          />
+        </Stack>
+      )}
 
       {/* Bottom Bar */}
       <BottomBar
