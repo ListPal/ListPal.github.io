@@ -85,11 +85,16 @@ function GroceryListPage({
   const lookupRef = useRef(null);
 
   // Handlers
-  const handleWebSocketReconnection = () => {
-    if (!isWebSocketConnected()) {
+  const handleWebSocketReconnection = (overrideConnected = false) => {
+    if (!isWebSocketConnected() || overrideConnected) {
+      // setAlertMessage({
+      //   severity: "error",
+      //   message: "Lost connection, attempting to reconnect to ws...",
+      // });
       atomicConnectSubscribe(() => {
-        console.log("Applying onConnectSuccess");
         const { onSuccess, onError } = makeWebsocketHandlers();
+        setAlertMessage({ severity: "success", message: "Connected." });
+        setTimeout(() => setAlertMessage(null), 1500);
         subscribeToList(listId, onSuccess, onError);
       });
     }
@@ -125,7 +130,7 @@ function GroceryListPage({
       }
     };
     const onError = () => {
-      setAlertMessage(messages.genericError);
+      setAlertMessage({ severity: "error", message: messages.genericError });
     };
 
     return { onSuccess: onSuccess, onError: onError };
@@ -229,7 +234,7 @@ function GroceryListPage({
       }
 
       if (!isWebSocketConnected()) {
-        setAlertMessage("Connection was lost. Please try refreshing or restarting the app.");
+        setAlertMessage({ severity: "error", message: messages.lostConnection });
         setLoading(false);
         return;
       }
@@ -469,22 +474,20 @@ function GroceryListPage({
         setFilteredItems(res?.body?.groceryListItems);
       }
     } else if (res?.status === 401) {
-      setAlertMessage(messages.unauthorizedAccess);
+      setAlertMessage({ severity: "error", message: messages.unauthorizedAccess });
       setTimeout(() => navigate("/"), 3000);
     } else if (res?.status === 403) {
       console.debug(res);
       navigate("/");
     } else if (res?.status === 500) {
-      setAlertMessage(messages.lostConnection);
+      setAlertMessage({ severity: "error", message: messages.lostConnection });
     } else if (res?.status === 400) {
       navigate("/listNotFound");
     } else {
       console.debug(res);
-      if (scope === groceryListScopes.public) {
-        setAlertMessage(messages.noList);
-      } else {
-        setAlertMessage(messages.genericError);
-      }
+
+      setAlertMessage({ severity: "error", message: messages.genericError });
+
       setTimeout(() => setAlertMessage(null), 3000);
     }
     if (loadingControl) setTimeout(() => setLoading(false), 900);
@@ -519,12 +522,12 @@ function GroceryListPage({
       // Reset isRefactored
       setisRefarctored(false);
     } else if (res?.status === 401) {
-      setAlertMessage(messages.unauthorizedAccess);
+      setAlertMessage({ severity: "error", message: messages.unauthorizedAccess });
       setTimeout(() => setLoading(false), 900);
     } else if (res?.status === 403) {
       navigate("/");
     } else {
-      setAlertMessage(messages.genericError);
+      setAlertMessage({ severity: "error", message: messages.genericError });
       setTimeout(() => setAlertMessage(null), 3000);
     }
     if (loadingControl) setTimeout(() => setLoading(false), 900);
@@ -582,7 +585,7 @@ function GroceryListPage({
     if (scope === groceryListScopes.restricted) {
       if (!isWebSocketConnected()) {
         // Connect and subscribe
-        console.log("Reconnecting and subscribing in useEffect");
+        console.debug("Reconnecting and subscribing in useEffect");
         handleWebSocketReconnection();
       } else {
         // Subscribe to topic
@@ -599,13 +602,14 @@ function GroceryListPage({
 
   // Setting up event handlers
   useEffect(() => {
-    document.addEventListener("visibilitychange", () => {
-      console.log(document.visibilityState);
-      if (document.visibilityState === "visible" && !isWebSocketConnected()) {
-        console.log("Connection was lost and page is now visible");
-        handleWebSocketReconnection();
-      }
-    });
+    if (scope === groceryListScopes.restricted) {
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+          console.debug("Page is now visible");
+          handleWebSocketReconnection(true);
+        }
+      });
+    }
   }, []);
 
   return (
@@ -619,11 +623,11 @@ function GroceryListPage({
       <Slide
         className="alert-slide"
         in={alertMessage && true}
-        sx={{ position: "absolute", zIndex: 100 }}
+        sx={{ position: "absolute", zIndex: 100, minWidth: "92vw", maxWidth: mobileWidth }}
       >
-        <Alert severity={"error"}>
+        <Alert severity={alertMessage?.severity}>
           <Typography variant={"body2"} textAlign={"left"}>
-            {alertMessage}
+            {alertMessage?.message}
           </Typography>
         </Alert>
       </Slide>
