@@ -16,18 +16,19 @@ const filterCardsBy = {
 };
 
 const actions = {
-  ADD_ITEM: 'ADD_ITEM',
-  EDIT_ITEM: 'EDIT_ITEM',
-  DELETE_ITEM: 'DELETE_ITEM',
-  CHECK_ITEMS: 'CHECK_ITEMS',
-  REMOVE_ITEMS: 'REMOVE_ITEMS',
-  REMOVE_CHECKED_ITEMS: 'REMOVE_CHECKED_ITEMS',
-}
+  ADD_ITEM: "ADD_ITEM",
+  EDIT_ITEM: "EDIT_ITEM",
+  DELETE_ITEM: "DELETE_ITEM",
+  CHECK_ITEMS: "CHECK_ITEMS",
+  REMOVE_ITEMS: "REMOVE_ITEMS",
+  REMOVE_CHECKED_ITEMS: "REMOVE_CHECKED_ITEMS",
+};
 
 // Normalized messages here
 const messages = {
   genericError: "Apologies. Something went wrong.",
-  lostConnection: 'Connection was lost. Try refresing or reopening the app, if the issue still persist, please try again later.',
+  lostConnection:
+    "Connection was lost. Try refresing or reopening the app, if the issue still persist, please try again later.",
   noList: "Whoops! This link is no longer active.",
   unauthorizedAction:
     "Hmmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities.",
@@ -80,8 +81,8 @@ const colors = {
       helperTextFontColor: DARK_TEXT,
       outerBackground: DARK_OUTER,
       innerBackground: DARK_INNER,
-      lightBorder: 'gray',
-      highlight: '#FFDD49',
+      lightBorder: "gray",
+      highlight: "#FFDD49",
       slideSelector: {
         active: "lightgray",
         inactive: "black",
@@ -102,14 +103,14 @@ const colors = {
       low: DARK_INNER,
       medium: DARK_INNER,
       bold: DARK_BOLD,
-      icon: '#67768d',
+      icon: "#67768d",
     },
     shoppingColors: {
       low: DARK_INNER,
       medium: DARK_INNER,
       bold: DARK_BOLD,
       icon: DARK_OUTER,
-      emptyListIcon: DARK_INNER
+      emptyListIcon: DARK_INNER,
     },
     quickListColors: {
       low: DARK_INNER,
@@ -126,7 +127,7 @@ const colors = {
       outerBackground: "white",
       innerBackground: "white",
       lightBorder: "lightgray",
-      highlight: '#5BC1D7',
+      highlight: "#5BC1D7",
       slideSelector: {
         active: "black",
         inactive: "lightgray",
@@ -147,7 +148,7 @@ const colors = {
       low: "#F3F4F6",
       medium: "#F3F4F6",
       bold: "#9CA3AF",
-      icon: '#9CA3AF',
+      icon: "#9CA3AF",
     },
     shoppingColors: {
       low: "#E1F2F6",
@@ -418,6 +419,14 @@ const URLS = {
   resetPublicList: `${engine}/server/reset-list`,
   updateListOrder: `${engine}/server/updated-list-order`,
   refactorCollapsedLists: `${engine}/server/update-collapsed-list-order`,
+
+  // Websockets
+  wsAddItem: `/app/add-item`,
+  wsEditItem: `/app/edit-item`,
+  wsDeleteItem: `/app/delete-item`,
+  wsRemoveItems: `/app/remove-list-items`,
+  wsRemoveCheckedItems: `/remove-checked-list-items`,
+  wsCheckItems: `/app/check-items`,
 };
 
 export {
@@ -433,6 +442,5 @@ export {
   newListFormHelperText,
   dialogueObject,
   themes,
-  actions
+  actions,
 };
-

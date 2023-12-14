@@ -170,7 +170,7 @@ function Dialogue({
         : URLS.createListItemUri;
 
     // Send and notifiy websocket subscribers
-    if (activeList?.scope === groceryListScopes.restricted) {
+    if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
         navigate('/')
@@ -240,7 +240,7 @@ function Dialogue({
         : URLS.updateListItemUri;
 
     // Websockets
-    if (activeList?.scope === groceryListScopes.restricted) {
+    if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
         navigate('/')
@@ -307,7 +307,7 @@ function Dialogue({
       listId: activeList?.id,
     };
 
-    if (activeList?.scope === groceryListScopes.restricted) {
+    if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
         navigate('/')
@@ -359,7 +359,7 @@ function Dialogue({
     };
 
     // Send and notifiy websocket subscribers
-    if (activeList?.scope === groceryListScopes.restricted) {
+    if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
         navigate('/')

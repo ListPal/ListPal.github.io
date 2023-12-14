@@ -129,7 +129,7 @@ const Listitem = ({
     };
 
     // WebSockets
-    if (activeList?.scope === groceryListScopes.restricted) {
+    if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
         navigate('/')

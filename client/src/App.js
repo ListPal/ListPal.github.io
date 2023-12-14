@@ -25,7 +25,10 @@ import AuthPage from "./components/AuthPage/AuthPage";
 import { themes } from "./utils/enum";
 import SandBox from "./components/SandBox/SandBox";
 // Websocket
-import { connectWebSocket, disconnectWebSocket } from "./utils/WebSocket";
+import {
+  connectWebSocket,
+  disconnectWebSocket,
+} from "./utils/WebSocket";
 import NoListPage from "./components/NoListPage/NoListPage";
 
 function App() {
@@ -35,10 +38,12 @@ function App() {
   const [activeContainer, setActiveContainer] = useState({
     collapsedLists: [],
   });
+
   useEffect(() => {
     connectWebSocket();
     return () => disconnectWebSocket();
-  });
+  }, []);
+
   return (
     <div className={user?.userPreferences?.theme || theme}>
       <HashRouter>

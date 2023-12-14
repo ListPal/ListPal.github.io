@@ -39,15 +39,14 @@ import Loading from "../Loading/Loading";
 
 // Websocket
 import {
-  connectWebSocket,
-  disconnectWebSocket,
-  subscribeTest,
-  unsubscribeTest,
   subscribeToList,
-  sendMessage,
   unscubscribeFromList,
   checkItemsWs,
   isWebSocketConnected,
+  atomicConnectSubscribe,
+  disconnectWebSocket,
+  connectWebSocket,
+  socket,
 } from "../../utils/WebSocket";
 
 function GroceryListPage({
@@ -86,7 +85,17 @@ function GroceryListPage({
   const lookupRef = useRef(null);
 
   // Handlers
-  const handleWebsocketSubscription = () => {
+  const handleWebSocketReconnection = () => {
+    if (!isWebSocketConnected()) {
+      atomicConnectSubscribe(() => {
+        console.log("Applying onConnectSuccess");
+        const { onSuccess, onError } = makeWebsocketHandlers();
+        subscribeToList(listId, onSuccess, onError);
+      });
+    }
+  };
+
+  const makeWebsocketHandlers = () => {
     const onSuccess = (message) => {
       const res = message?.body;
       const action = message?.body?.action;
@@ -118,7 +127,8 @@ function GroceryListPage({
     const onError = () => {
       setAlertMessage(messages.genericError);
     };
-    subscribeToList(listId, onSuccess, onError);
+
+    return { onSuccess: onSuccess, onError: onError };
   };
 
   const handleMouseDown = (event) => {
@@ -212,7 +222,7 @@ function GroceryListPage({
         : URLS.checkListItemsUri;
 
     // Websocket
-    if (activeList?.scope === groceryListScopes.restricted) {
+    if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
         navigate("/");
@@ -223,6 +233,7 @@ function GroceryListPage({
         setLoading(false);
         return;
       }
+
       checkItemsWs(activeList?.id, data, actions.CHECK_ITEMS, authResponse?.token);
       return;
     }
@@ -301,6 +312,8 @@ function GroceryListPage({
 
   const handleSync = async (cache) => {
     setLoading(true);
+    // handle Webscocket reconnection/subscription atomically
+    handleWebSocketReconnection();
     // Pull
     const pull = await handlePullList(false, false);
     // Merge (current merge resolution is: "keep theirs")
@@ -464,7 +477,7 @@ function GroceryListPage({
     } else if (res?.status === 500) {
       setAlertMessage(messages.lostConnection);
     } else if (res?.status === 400) {
-      navigate('/listNotFound')
+      navigate("/listNotFound");
     } else {
       console.debug(res);
       if (scope === groceryListScopes.public) {
@@ -568,19 +581,31 @@ function GroceryListPage({
   useEffect(() => {
     if (scope === groceryListScopes.restricted) {
       if (!isWebSocketConnected()) {
-        setAlertMessage(messages.lostConnection);
-        return;
+        // Connect and subscribe
+        console.log("Reconnecting and subscribing in useEffect");
+        handleWebSocketReconnection();
+      } else {
+        // Subscribe to topic
+        const { onSuccess, onError } = makeWebsocketHandlers();
+        subscribeToList(listId, onSuccess, onError);
       }
-
-      // Subscribe to topic
-      handleWebsocketSubscription();
 
       // Unsubscribe on component unmount
       return () => {
-        if (isWebSocketConnected) unscubscribeFromList(listId);
-        
+        if (isWebSocketConnected()) unscubscribeFromList(listId);
       };
     }
+  }, []);
+
+  // Setting up event handlers
+  useEffect(() => {
+    document.addEventListener("visibilitychange", () => {
+      console.log(document.visibilityState);
+      if (document.visibilityState === "visible" && !isWebSocketConnected()) {
+        console.log("Connection was lost and page is now visible");
+        handleWebSocketReconnection();
+      }
+    });
   }, []);
 
   return (
