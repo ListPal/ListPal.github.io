@@ -25,10 +25,7 @@ import AuthPage from "./components/AuthPage/AuthPage";
 import { themes } from "./utils/enum";
 import SandBox from "./components/SandBox/SandBox";
 // Websocket
-import {
-  connectWebSocket,
-  disconnectWebSocket,
-} from "./utils/WebSocket";
+import { connectWebSocket, disconnectWebSocket } from "./utils/WebSocket";
 import NoListPage from "./components/NoListPage/NoListPage";
 
 function App() {
@@ -49,16 +46,7 @@ function App() {
       <HashRouter>
         <ScrollToTop />
         <Routes>
-          <Route
-            path="/"
-            element={
-              <AuthPage
-                theme={user?.userPreferences?.theme || theme}
-                user={user}
-                setUser={setUser}
-              />
-            }
-          />
+          <Route path="/" element={<AuthPage theme={user?.userPreferences?.theme || theme} user={user} setUser={setUser} />} />
           <Route
             path="/login"
             element={
@@ -150,70 +138,30 @@ function App() {
           />
           <Route
             path="/profile"
-            element={
-              <Profile
-                setTheme={setTheme}
-                theme={user?.userPreferences?.theme || theme}
-                user={user}
-                setUser={setUser}
-              />
-            }
+            element={<Profile setTheme={setTheme} theme={user?.userPreferences?.theme || theme} user={user} setUser={setUser} />}
           />
           <Route
             path="/profile/change-name"
-            element={
-              <ChangeName
-                theme={user?.userPreferences?.theme || theme}
-                user={user}
-                setUser={setUser}
-              />
-            }
+            element={<ChangeName theme={user?.userPreferences?.theme || theme} user={user} setUser={setUser} />}
           />
           <Route
             path="/profile/change-email"
-            element={
-              <ChangeEmail
-                theme={user?.userPreferences?.theme || theme}
-                user={user}
-                setUser={setUser}
-              />
-            }
+            element={<ChangeEmail theme={user?.userPreferences?.theme || theme} user={user} setUser={setUser} />}
           />
           <Route
             path="/profile/change-phone"
-            element={
-              <ChangePhone
-                theme={user?.userPreferences?.theme || theme}
-                user={user}
-                setUser={setUser}
-              />
-            }
+            element={<ChangePhone theme={user?.userPreferences?.theme || theme} user={user} setUser={setUser} />}
           />
           <Route
             path="/profile/change-password"
-            element={
-              <ChangePassword
-                theme={user?.userPreferences?.theme || theme}
-                user={user}
-                setUser={setUser}
-              />
-            }
+            element={<ChangePassword theme={user?.userPreferences?.theme || theme} user={user} setUser={setUser} />}
           />
 
-          <Route
-            path="/quick-list"
-            element={<QuickList theme={user?.userPreferences?.theme || theme} />}
-          />
+          <Route path="/quick-list" element={<QuickList theme={user?.userPreferences?.theme || theme} />} />
 
-          <Route
-            path="/listNotFound"
-            element={<NoListPage theme={user?.userPreferences?.theme || theme} />}
-          />
+          <Route path="/listNotFound" element={<NoListPage theme={user?.userPreferences?.theme || theme} />} />
 
-          <Route
-            path="/sandbox"
-            element={<SandBox theme={user?.userPreferences?.theme || theme} />}
-          />
+          <Route path="/sandbox" element={<SandBox theme={user?.userPreferences?.theme || theme} />} />
         </Routes>
       </HashRouter>
     </div>

@@ -40,23 +40,9 @@ import PullToRefresh from "../PullToRefresh/PullToRefresh";
 import Loading from "../Loading/Loading";
 
 // Websocket
-import {
-  subscribeToList,
-  unscubscribeFromList,
-  checkItemsWs,
-  isWebSocketConnected,
-  atomicConnectSubscribe,
-} from "../../utils/WebSocket";
+import { subscribeToList, unscubscribeFromList, checkItemsWs, isWebSocketConnected, atomicConnectSubscribe } from "../../utils/WebSocket";
 
-function GroceryListPage({
-  activeList,
-  setActiveList,
-  activeContainer,
-  setActiveContainer,
-  user,
-  setUser,
-  theme,
-}) {
+function GroceryListPage({ activeList, setActiveList, activeContainer, setActiveContainer, user, setUser, theme }) {
   // States
   const [loading, setLoading] = useState(false);
   const [filteredItems, setFilteredItems] = useState([]);
@@ -67,9 +53,9 @@ function GroceryListPage({
   const [showDone, setShowDone] = useState(true);
   const [modifiedIds, setModifiedIds] = useState(new Set());
   const [slide, setSlide] = useState(0);
-  const [isRefarctored, setisRefarctored] = useState(false);
-  const [updateTimer, setUpdateTimer] = useState(null);
-  const [updateTimerLookup, setUpdateTimerLookup] = useState(null);
+  const [isRefarctored, setIsRefarctored] = useState(false);
+  const [updateMarkCheckedTimer, setUpdateMarkCheckedTimer] = useState(null);
+  const [updateLookupTimer, setUpdateLookupTimer] = useState(null);
 
   // Other globals
   const navigate = useNavigate();
@@ -84,12 +70,8 @@ function GroceryListPage({
   const lookupRef = useRef(null);
 
   // Handlers
-  const handleWebSocketReconnection = (overrideConnected = false) => {
-    if (!isWebSocketConnected() || overrideConnected) {
-      // setAlertMessage({
-      //   severity: "error",
-      //   message: "Lost connection, attempting to reconnect to ws...",
-      // });
+  const handleWebSocketReconnection = (controlGate = false) => {
+    if (!isWebSocketConnected() || controlGate) {
       atomicConnectSubscribe(() => {
         const { onSuccess, onError } = makeWebsocketHandlers();
         setAlertMessage({ severity: "success", message: "Connected." });
@@ -135,16 +117,6 @@ function GroceryListPage({
     return { onSuccess: onSuccess, onError: onError };
   };
 
-  const handleMouseDown = (event) => {
-    event.preventDefault();
-  };
-
-  const handleTouchStart = (event) => {
-    if (event.touches.length > 1) {
-      event.preventDefault();
-    }
-  };
-
   const handleLookupItems = (sequence) => {
     const matchingItems = [];
     activeList?.groceryListItems.forEach((e, i) => {
@@ -156,11 +128,10 @@ function GroceryListPage({
   const handleOnLookupInputChange = (event) => {
     if (!event.target.value) return;
 
-    if (updateTimer !== null) {
+    if (updateLookupTimer !== null) {
       // Haven't sent items yet, so clear the timeout and start a new attempt
-      // console.log("Resetting the timer...");
       setLoading(true);
-      clearTimeout(updateTimerLookup);
+      clearTimeout(updateLookupTimer);
     }
     // Set a new timer to update the database after 3 seconds
     const timer = setTimeout(() => {
@@ -169,22 +140,21 @@ function GroceryListPage({
       setLoading(false);
     }, 800); // Adjust the delay as needed
 
-    setUpdateTimerLookup(timer);
+    setUpdateLookupTimer(timer);
   };
 
   const handleResetLookupBar = () => {
     if (lookupRef.current && lookupRef.current.value.length !== 0) {
-      console.debug("resetting search bar");
+      // console.debug("resetting search bar");
       lookupRef.current.value = null;
       setFilteredItems(activeList?.groceryListItems);
     }
   };
 
   const handleCheckItemsInterval = async () => {
-    if (updateTimer !== null) {
+    if (updateMarkCheckedTimer !== null) {
       // Haven't sent items yet, so clear the timeout and start a new attempt
-      // console.log("Resetting the timer...");
-      clearTimeout(updateTimer);
+      clearTimeout(updateMarkCheckedTimer);
     }
     // Set a new timer to update the database after 3 seconds
     const timer = setTimeout(() => {
@@ -192,17 +162,18 @@ function GroceryListPage({
       handleCheckItems();
     }, 1000); // Adjust the delay as needed
 
-    setUpdateTimer(timer);
+    setUpdateMarkCheckedTimer(timer);
   };
 
   const handleCheckItems = async () => {
     console.log("Triggered handleCheckedItems");
     // Handling preconditions
     if (!(scope && containerId && listId)) {
-      console.debug(
-        "Incomple data. One of `scope` | `containerId` | `listId` is null or undefined."
-      );
-      setAlertMessage("Apologies. Something went wrong. Try refreshing the page and retry.");
+      console.debug("Incomplete data. One of `scope` | `containerId` | `listId` is null or undefined.");
+      setAlertMessage({
+        severity: "error",
+        message: messages.genericError,
+      });
       return;
     } else if (activeList?.groceryListItems.length === 0) {
       console.debug("Empty list. No need to check items");
@@ -218,12 +189,6 @@ function GroceryListPage({
       listId: activeList?.id,
       itemIds: [...modifiedIds],
     };
-
-    // Derive public or authenticated uri
-    const uri =
-      activeList?.scope === groceryListScopes.public
-        ? URLS.checkPublicListItemsUri
-        : URLS.checkListItemsUri;
 
     // Websocket
     if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
@@ -243,6 +208,8 @@ function GroceryListPage({
     }
 
     // Post data and return the response to the next controller
+    // Derive public or authenticated uri
+    const uri = activeList?.scope === groceryListScopes.public ? URLS.checkPublicListItemsUri : URLS.checkListItemsUri;
     const res = await postRequest(uri, data);
     if (res?.status === 200) {
       setModifiedIds(new Set());
@@ -253,7 +220,7 @@ function GroceryListPage({
 
   const handleBack = () => {
     if (scope === groceryListScopes.private) {
-      // Reorder items if necessary
+      // Reorder items if necessary for private lists only
       handlePushList(activeList?.groceryListItems, false, false);
     }
     navigate(-1);
@@ -267,7 +234,7 @@ function GroceryListPage({
     const [reorderedItem] = listItems.splice(result.source.index, 1);
     listItems.splice(result.destination.index, 0, reorderedItem);
     setActiveList({ ...activeList, groceryListItems: listItems });
-    setisRefarctored(true);
+    setIsRefarctored(true);
   };
 
   const handleGroupByUsername = async (items) => {
@@ -456,16 +423,14 @@ function GroceryListPage({
     // Reset states
     if (loadingControl) setLoading(true);
     setAlertMessage(null);
+    // Engineer data to be sent
     const data = {
       containerId: containerId,
       listId: listId,
       scope: scope,
     };
-    const res =
-      scope === groceryListScopes.public
-        ? await getPublicList(data)
-        : await postRequest(URLS.getListUri, data);
-
+    // Send api request
+    const res = scope === groceryListScopes.public ? await getPublicList(data) : await postRequest(URLS.getListUri, data);
     // Cache it in state
     if (res?.status === 200) {
       if (cache) {
@@ -519,7 +484,7 @@ function GroceryListPage({
       // Success
       if (cache) setActiveList(res?.body);
       // Reset isRefactored
-      setisRefarctored(false);
+      setIsRefarctored(false);
     } else if (res?.status === 401) {
       setAlertMessage({ severity: "error", message: messages.unauthorizedAccess });
       setTimeout(() => setLoading(false), 900);
@@ -540,12 +505,10 @@ function GroceryListPage({
   }, [activeList]);
 
   useEffect(() => {
-    if (showDone) {
-      setSlide(0);
-    }
+    if (showDone) setSlide(0);
   }, [showDone]);
 
-  useEffect(() => {
+  useMemo(() => {
     handleCheckItemsInterval();
   }, [modifiedIds.size]);
 
@@ -554,11 +517,7 @@ function GroceryListPage({
     setShowDone(scope === groceryListScopes.public);
 
     // Check for cached list items
-    if (
-      activeList?.id === listId &&
-      activeList?.listName === listName &&
-      activeList?.scope === scope
-    ) {
+    if (activeList?.id === listId && activeList?.listName === listName && activeList?.scope === scope) {
       // console.debug("No need to fetch items.");
       setFilteredItems(activeList?.groceryListItems);
       setLoading(false);
@@ -592,23 +551,30 @@ function GroceryListPage({
         subscribeToList(listId, onSuccess, onError);
       }
 
-      // Unsubscribe on component unmount
+      // Unsubscribe from topic on component unmount
       return () => {
         if (isWebSocketConnected()) unscubscribeFromList(listId);
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Setting up event handlers
   useEffect(() => {
+    const eventHandler = () => {
+      if (document.visibilityState === "visible") {
+        console.debug("Page is now visible");
+        handleWebSocketReconnection(true);
+      }
+    };
+
+    // Add visibility event handler
     if (scope === groceryListScopes.restricted) {
-      document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible") {
-          console.debug("Page is now visible");
-          handleWebSocketReconnection(true);
-        }
-      });
+      document.addEventListener("visibilitychange", eventHandler);
     }
+
+    // Remove visibility event handler on component unmount
+    return () => document.removeEventListener("visibilitychange", eventHandler);
   }, []);
 
   return (
@@ -810,9 +776,7 @@ function GroceryListPage({
               width: "8px",
               borderRadius: "50%",
               background:
-                slide === 0
-                  ? colors[theme]?.generalColors.slideSelector.active
-                  : colors[theme]?.generalColors.slideSelector.inactive,
+                slide === 0 ? colors[theme]?.generalColors.slideSelector.active : colors[theme]?.generalColors.slideSelector.inactive,
             }}
           />
           <div
@@ -822,9 +786,7 @@ function GroceryListPage({
               width: "8px",
               borderRadius: "50%",
               background:
-                slide === 1
-                  ? colors[theme]?.generalColors.slideSelector.active
-                  : colors[theme]?.generalColors.slideSelector.inactive,
+                slide === 1 ? colors[theme]?.generalColors.slideSelector.active : colors[theme]?.generalColors.slideSelector.inactive,
             }}
           />
         </Stack>

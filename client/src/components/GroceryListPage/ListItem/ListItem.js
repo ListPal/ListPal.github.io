@@ -10,15 +10,7 @@ import SpeedDialAction from "@mui/material/SpeedDialAction";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import NotesIcon from "@mui/icons-material/Notes";
-import {
-  Typography,
-  SpeedDial,
-  ListItem,
-  ListItemText,
-  IconButton,
-  ListItemIcon,
-  Divider,
-} from "@mui/material";
+import { Typography, SpeedDial, ListItem, ListItemText, IconButton, ListItemIcon, Divider } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { checkSession, deleteItem, deletePublicItem } from "../../../utils/rest";
 import { deleteItemWs, isWebSocketConnected } from "../../../utils/WebSocket";
@@ -81,9 +73,7 @@ const Listitem = ({
     setLoading(true);
     // Mark items checked/unchecked
     let listItems = activeList?.groceryListItems || [];
-    const updatedItems = listItems.map((e) =>
-      e.id === item?.id ? { ...e, checked: !e.checked } : e
-    );
+    const updatedItems = listItems.map((e) => (e.id === item?.id ? { ...e, checked: !e.checked } : e));
 
     // Do not separate checked/unchcked items
     listItems = updatedItems;
@@ -132,7 +122,7 @@ const Listitem = ({
     if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
-        navigate('/')
+        navigate("/");
       }
 
       if (!isWebSocketConnected()) {
@@ -145,12 +135,9 @@ const Listitem = ({
       setLoading(false);
       return;
     }
-    console.log('Init http protocol delete item')
+    console.log("Init http protocol delete item");
     // Send DELETE request to server
-    const res =
-      activeList?.scope === groceryListScopes.public
-        ? await deletePublicItem(data)
-        : await deleteItem(data);
+    const res = activeList?.scope === groceryListScopes.public ? await deletePublicItem(data) : await deleteItem(data);
     if (res?.status === 200) {
       // Update items state
       const previousItems = activeList?.groceryListItems.filter((e) => !(e.id === item?.id));

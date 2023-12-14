@@ -26,9 +26,8 @@ const actions = {
 
 // Normalized messages here
 const messages = {
-  genericError: "Apologies. Something went wrong.",
-  lostConnection:
-    "Connection was lost. Try refresing or reopening the app, if the issue still persist, please try again later.",
+  genericError: "Apologies. Something went wrong. Try refreshing or reopening the app.",
+  lostConnection: "Connection was lost. Try refresing or reopening the app, if the issue still persist, please try again later.",
   noList: "Whoops! This link is no longer active.",
   unauthorizedAction:
     "Hmmm... It seems like you don't have permissions to do that. Verify with the owner of the list to grant you the correct authorities.",

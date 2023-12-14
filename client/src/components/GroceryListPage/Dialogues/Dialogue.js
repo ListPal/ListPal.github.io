@@ -1,15 +1,4 @@
-import {
-  Alert,
-  Typography,
-  Modal,
-  Fade,
-  Slide,
-  Backdrop,
-  Paper,
-  Stack,
-  TextField,
-  FormControl,
-} from "@mui/material";
+import { Alert, Typography, Modal, Fade, Slide, Backdrop, Paper, Stack, TextField, FormControl } from "@mui/material";
 import { useState, useRef } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -17,37 +6,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AppleIcon from "@mui/icons-material/Apple";
 import RemoveDoneIcon from "@mui/icons-material/RemoveDone";
 import { styled } from "@mui/material/styles";
-import {
-  URLS,
-  actions,
-  colors,
-  dialogueObject,
-  dialogues,
-  groceryListScopes,
-  messages,
-} from "../../../utils/enum";
+import { URLS, actions, colors, dialogueObject, dialogues, groceryListScopes, messages } from "../../../utils/enum";
 import { postRequest, deleteRequest, checkSession } from "../../../utils/rest";
 import { useLocation, useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../utils/dialoguesValidation";
 import LoadingButton from "@mui/lab/LoadingButton";
 // Websocket
-import {
-  addItemWs,
-  editItemWs,
-  removeListItemsWs,
-  removeCheckedListItemsWs,
-  isWebSocketConnected,
-} from "../../../utils/WebSocket";
+import { addItemWs, editItemWs, removeListItemsWs, removeCheckedListItemsWs, isWebSocketConnected } from "../../../utils/WebSocket";
 
-function Dialogue({
-  containerId,
-  item,
-  openDialogue,
-  setOpenDialogue,
-  activeList,
-  setActiveList,
-  theme,
-}) {
+function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList, setActiveList, theme }) {
   // States
   const [severity, setSeverity] = useState("info");
   const [alertMessage, setAlertMessage] = useState(null);
@@ -145,9 +112,7 @@ function Dialogue({
     }
 
     // Check for duplicates if list is not public
-    const isDuplicate = activeList?.groceryListItems.find(
-      (e) => e.name.toUpperCase() === name.toUpperCase()
-    );
+    const isDuplicate = activeList?.groceryListItems.find((e) => e.name.toUpperCase() === name.toUpperCase());
     if (activeList?.scope !== groceryListScopes.public && isDuplicate) {
       showAlert("warning", "Item already exists in the list.");
       setLoading(false);
@@ -164,16 +129,13 @@ function Dialogue({
       scope: activeList?.scope,
       category: "Misc",
     };
-    const uri =
-      activeList?.scope === groceryListScopes.public
-        ? URLS.createPublicListItemUri
-        : URLS.createListItemUri;
+    const uri = activeList?.scope === groceryListScopes.public ? URLS.createPublicListItemUri : URLS.createListItemUri;
 
     // Send and notifiy websocket subscribers
     if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
-        navigate('/')
+        navigate("/");
       }
 
       if (!isWebSocketConnected()) {
@@ -205,7 +167,7 @@ function Dialogue({
     }
   };
 
-  const handleEditItem = async (name, category) => { 
+  const handleEditItem = async (name, category) => {
     // Ensure reset states
     setLoading(true);
     setErrorMessage(null);
@@ -234,16 +196,13 @@ function Dialogue({
       category: "Misc",
     };
 
-    const uri =
-      activeList?.scope === groceryListScopes.public
-        ? URLS.updatePublicListItemUri
-        : URLS.updateListItemUri;
+    const uri = activeList?.scope === groceryListScopes.public ? URLS.updatePublicListItemUri : URLS.updateListItemUri;
 
     // Websockets
     if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
-        navigate('/')
+        navigate("/");
       }
 
       if (!isWebSocketConnected()) {
@@ -310,7 +269,7 @@ function Dialogue({
     if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
-        navigate('/')
+        navigate("/");
       }
 
       if (!isWebSocketConnected()) {
@@ -362,7 +321,7 @@ function Dialogue({
     if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
-        navigate('/')
+        navigate("/");
       }
 
       if (!isWebSocketConnected()) {
@@ -455,11 +414,7 @@ function Dialogue({
                 justifyContent: "center",
               }}
             >
-              <Typography
-                variant="h4"
-                fontFamily={"Urbanist"}
-                color={colors[theme]?.generalColors.fontColor}
-              >
+              <Typography variant="h4" fontFamily={"Urbanist"} color={colors[theme]?.generalColors.fontColor}>
                 {dialogueObject[openDialogue]?.header}
               </Typography>
 
