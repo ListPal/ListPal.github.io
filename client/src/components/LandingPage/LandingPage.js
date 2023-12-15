@@ -1,26 +1,7 @@
-import {
-  Typography,
-  IconButton,
-  List,
-  Fab,
-  Slide,
-  Alert,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
+import { Typography, IconButton, List, Fab, Slide, Alert, ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { useState, useEffect } from "react";
 import { getAllLists, logout, postRequest, checkSession } from "../../utils/rest";
-import {
-  groceryListScopes,
-  filterCardsBy,
-  groceryContainerTypes,
-  colors,
-  messages,
-  themes,
-  URLS,
-} from "../../utils/enum";
+import { groceryListScopes, filterCardsBy, groceryContainerTypes, colors, messages, themes, URLS } from "../../utils/enum";
 import "./LandingPage.scss";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
@@ -42,18 +23,7 @@ import GroceryDarkThemeIcon from "../Icons/GroceryIcon";
 import OtherDarkThemeIcon from "../Icons/OtherIcon";
 import ShoppingDarkThemeIcon from "../Icons/ShoppingIcon";
 
-const LandingPage = ({
-  todo,
-  shop,
-  activeList,
-  setActiveList,
-  user,
-  setUser,
-  activeContainer,
-  setActiveContainer,
-  grocery,
-  theme,
-}) => {
+const LandingPage = ({ todo, shop, activeList, setActiveList, user, setUser, activeContainer, setActiveContainer, grocery, theme }) => {
   // States
   // const [filter, setFilter] = useState(filterCardsBy.all);
   const [newListFormOpen, setNewListFormOpen] = useState(false);
@@ -78,7 +48,8 @@ const LandingPage = ({
   };
 
   const handleRefactorLists = async () => {
-    if (wasRefactored) {
+    if (wasRefactored > 0) {
+      console.log("Updating lists order");
       // Set the new order
       const collapsedLists = activeContainer?.collapsedLists.map((e, i) => {
         return { ...e, order: i };
@@ -179,27 +150,18 @@ const LandingPage = ({
 
   const handleContainerImg = () => {
     if (activeContainer?.containerType === groceryContainerTypes.grocery) {
-      return <GroceryDarkThemeIcon  color={colors[theme].landingPageColors.icon} />;
+      return <GroceryDarkThemeIcon color={colors[theme].landingPageColors.icon} />;
     }
     if (activeContainer?.containerType === groceryContainerTypes.todo) {
       return (
         <OtherDarkThemeIcon
           color={colors[theme].generalColors.innerBackground}
-          trace={
-            theme == themes.lightTheme
-              ? colors[theme].generalColors.fontColor
-              : colors[theme].generalColors.outerBackground
-          }
+          trace={theme == themes.lightTheme ? colors[theme].generalColors.fontColor : colors[theme].generalColors.outerBackground}
         />
       );
     }
     if (activeContainer?.containerType === groceryContainerTypes.whishlist) {
-      return (
-        <ShoppingDarkThemeIcon
-          color={colors[theme].generalColors.highlight}
-          secondary={colors[theme].shoppingColors.emptyListIcon}
-        />
-      );
+      return <ShoppingDarkThemeIcon color={colors[theme].generalColors.highlight} secondary={colors[theme].shoppingColors.emptyListIcon} />;
     }
     return grocery; // TODO: error image
   };
@@ -223,7 +185,6 @@ const LandingPage = ({
     }
     // Set a new timer to update the database after 3 seconds
     const timer = setTimeout(() => {
-      console.log("Updating lists order");
       handleRefactorLists();
     }, 2000); // Adjust the delay as needed
 
@@ -233,14 +194,11 @@ const LandingPage = ({
   useEffect(() => {
     handleCheckItemsInterval();
   }, [wasRefactored]);
-  
+
+  // Pull lists
   useEffect(() => {
     // Fetch only if lists are not cached
-    if (!location?.state?.containerId || activeContainer?.id !== location?.state?.containerId) {
-      pullLists();
-    } else {
-      // console.debug("Lists are cached. No need to fetch");
-    }
+    if (!location?.state?.containerId || activeContainer?.id !== location?.state?.containerId) pullLists();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -248,10 +206,7 @@ const LandingPage = ({
     // margin -40px and padding +40px avoids an issue with the pull to refresh
     <PullToRefresh onRefresh={handleRefresh}>
       <meta name="theme-color" content={colors[theme]?.generalColors.outerBackground} />
-      <Slide
-        in={severity === "error"}
-        sx={{ position: "fixed", top: 0, zIndex: 10, maxWidth: mobileWidth, minWidth: "90%" }}
-      >
+      <Slide in={severity === "error"} sx={{ position: "fixed", top: 0, zIndex: 10, maxWidth: mobileWidth, minWidth: "90%" }}>
         <Alert severity="error"> {alertMessage} </Alert>
       </Slide>
       <Grid spacing={1} container sx={{ maxWidth: mobileWidth, alignItems: "center" }}>
@@ -272,12 +227,7 @@ const LandingPage = ({
             }}
           >
             {loading && (
-              <Skeleton
-                animation="wave"
-                sx={{ borderRadius: 5, maxWidth: `calc(0.9 * ${mobileWidth})` }}
-                width={"90vw"}
-                height={130}
-              />
+              <Skeleton animation="wave" sx={{ borderRadius: 5, maxWidth: `calc(0.9 * ${mobileWidth})` }} width={"90vw"} height={130} />
             )}
 
             {/* User Info Menu Bar */}
@@ -332,10 +282,7 @@ const LandingPage = ({
 
                 {/* Log out button */}
                 <IconButton disabled={loading} onClick={handleLogout}>
-                  <LogoutIcon
-                    fontSize={"small"}
-                    sx={{ color: colors[theme]?.generalColors.fontColor }}
-                  />
+                  <LogoutIcon fontSize={"small"} sx={{ color: colors[theme]?.generalColors.fontColor }} />
                 </IconButton>
               </Stack>
             )}
@@ -349,21 +296,11 @@ const LandingPage = ({
           <DragDropContext onDragEnd={handleOnDragEnd}>
             <Droppable droppableId="list-items">
               {(provided, snapshot) => (
-                <List
-                  sx={{ pb: 2, maxWidth: mobileWidth, width: "100vw" }}
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                >
+                <List sx={{ pb: 2, maxWidth: mobileWidth, width: "100vw" }} {...provided.droppableProps} ref={provided.innerRef}>
                   {loading && (
                     <Stack width={"100vw"} direction={"column"} mt={5} spacing={2}>
                       {[1, 2, 3].map((e, i) => (
-                        <Skeleton
-                          key={i}
-                          animation={"wave"}
-                          variant="rectangular"
-                          sx={{ maxWidth: mobileWidth }}
-                          height={150}
-                        />
+                        <Skeleton key={i} animation={"wave"} variant="rectangular" sx={{ maxWidth: mobileWidth }} height={150} />
                       ))}
                     </Stack>
                   )}
@@ -428,9 +365,7 @@ const LandingPage = ({
             <Typography
               fontFamily={"Urbanist"}
               variant={"h5"}
-              color={
-                theme === themes.darkTheme ? colors.darkTheme.generalColors.fontColor : "GrayText"
-              }
+              color={theme === themes.darkTheme ? colors.darkTheme.generalColors.fontColor : "GrayText"}
             >
               No lists yet to display
             </Typography>

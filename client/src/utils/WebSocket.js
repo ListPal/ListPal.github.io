@@ -34,11 +34,11 @@ export const subscribeToList = (listId, onSuccess, onError) => {
     stompClient.subscribe(`/topic/restricted/${listId}`, async (message) => {
       const parsedMessage = await JSON.parse(message.body);
       const res = parsedMessage?.body;
-      console.log(res?.body);
+      console.log(res?.status);
       if (res?.status === 200) {
         onSuccess(parsedMessage);
       } else {
-        onError();
+        onError(res);
       }
     });
   }
@@ -87,7 +87,7 @@ export const checkItemsWs = async (listId, message, action, token) => {
     action: action,
   };
 
-  stompClient.send(`${URLS.checkListItemsUri}/${listId}`, headers, JSON.stringify(message));
+  stompClient.send(`${URLS.wsCheckItems}/${listId}`, headers, JSON.stringify(message));
 };
 
 export const removeCheckedListItemsWs = async (listId, message, action, token) => {

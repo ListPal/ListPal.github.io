@@ -75,13 +75,14 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
       atomicConnectSubscribe(() => {
         const { onSuccess, onError } = makeWebsocketHandlers();
         setAlertMessage({ severity: "success", message: "Connected." });
-        setTimeout(() => setAlertMessage(null), 1500);
+        setTimeout(() => setAlertMessage(null), 1000);
         subscribeToList(listId, onSuccess, onError);
       });
     }
   };
 
   const makeWebsocketHandlers = () => {
+    // Define websocket success handler
     const onSuccess = (message) => {
       const res = message?.body;
       const action = message?.body?.action;
@@ -110,8 +111,23 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
           break;
       }
     };
-    const onError = () => {
-      setAlertMessage({ severity: "error", message: messages.genericError });
+    // Define websocket error handler
+    const onError = (res) => {
+      switch (res?.status) {
+        case 400:
+          navigate("/listNotFound");
+          break;
+        case 401:
+          setAlertMessage({ severity: "error", message: messages.unauthorizedAction });
+          setTimeout(() => setAlertMessage(null), 3000);
+          break;
+        case 403:
+          navigate("/");
+          break;
+        default:
+          setAlertMessage({ severity: "error", message: messages.genericError });
+          setTimeout(() => setAlertMessage(null), 3000);
+      }
     };
 
     return { onSuccess: onSuccess, onError: onError };
@@ -542,8 +558,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
   useEffect(() => {
     if (scope === groceryListScopes.restricted) {
       if (!isWebSocketConnected()) {
-        // Connect and subscribe
-        console.debug("Reconnecting and subscribing in useEffect");
+        // Connect and subscribe atomically
         handleWebSocketReconnection();
       } else {
         // Subscribe to topic
@@ -561,20 +576,23 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
 
   // Setting up event handlers
   useEffect(() => {
-    const eventHandler = () => {
+    const visibilityEventHandler = () => {
       if (document.visibilityState === "visible") {
         console.debug("Page is now visible");
+        // Pull list items
+        handlePullList(true, true);
+        // Handle websocket reconnect
         handleWebSocketReconnection(true);
       }
     };
 
-    // Add visibility event handler
+    // Add visibility event handler to DOM only if list is restricted
     if (scope === groceryListScopes.restricted) {
-      document.addEventListener("visibilitychange", eventHandler);
+      document.addEventListener("visibilitychange", visibilityEventHandler);
     }
 
     // Remove visibility event handler on component unmount
-    return () => document.removeEventListener("visibilitychange", eventHandler);
+    return () => document.removeEventListener("visibilitychange", visibilityEventHandler);
   }, []);
 
   return (
@@ -587,10 +605,10 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
       {/* Alert messages*/}
       <Slide
         className="alert-slide"
-        in={alertMessage && true}
+        in={alertMessage?.message && true}
         sx={{ position: "absolute", zIndex: 100, minWidth: "92vw", maxWidth: mobileWidth }}
       >
-        <Alert severity={alertMessage?.severity}>
+        <Alert severity={alertMessage?.severity || "error"}>
           <Typography variant={"body2"} textAlign={"left"}>
             {alertMessage?.message}
           </Typography>
