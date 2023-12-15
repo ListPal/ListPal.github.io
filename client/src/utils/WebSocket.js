@@ -2,10 +2,35 @@ import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { URLS } from "./enum";
 
+// Private functions
+const subscribeToTopic = (topic, onSuccess, onError) => {
+  if (stompClient.connected) {
+    stompClient.subscribe(topic, async (message) => {
+      const parsedMessage = await JSON.parse(message.body);
+      const res = parsedMessage?.body;
+      if (res?.status === 200) {
+        onSuccess(parsedMessage);
+      } else {
+        onError(res);
+      }
+    });
+  }
+};
+
+const unscubscribeFromTopic = (topic) => {
+  if (stompClient.connected) {
+    stompClient.unsubscribe(topic, () => {
+      console.log("Attempting to unsubscribe");
+    });
+  }
+};
+
+// Stom client definitions
 export const socket = new SockJS("http://joses-macbook-pro-4.local:8080/websocket-shared-list");
 
 export const stompClient = Stomp.over(() => new SockJS("http://joses-macbook-pro-4.local:8080/websocket-shared-list"));
 
+// Stomp handlers
 export const atomicConnectSubscribe = (onConnectSuccess) => {
   stompClient.disconnect(() => {});
   stompClient.connect(
@@ -17,41 +42,39 @@ export const atomicConnectSubscribe = (onConnectSuccess) => {
   );
 };
 
-export const connectWebSocket = () => {
-  const onConnectSuccessful = () => {
-    console.log("Connected to WebSocket");
-  };
-
-  const onConnectUnsuccessful = () => {
-    console.log("Not able to connect to WebSocket");
-  };
-
+export const connectWebSocket = (onConnectSuccessful, onConnectUnsuccessful) => {
   stompClient.connect({}, onConnectSuccessful, onConnectUnsuccessful);
 };
 
-export const subscribeToList = (listId, onSuccess, onError) => {
-  if (stompClient.connected) {
-    stompClient.subscribe(`/topic/restricted/${listId}`, async (message) => {
-      const parsedMessage = await JSON.parse(message.body);
-      const res = parsedMessage?.body;
-      console.log(res?.status);
-      if (res?.status === 200) {
-        onSuccess(parsedMessage);
-      } else {
-        onError(res);
-      }
-    });
+export const subscribeToRestrictedList = (listId, onSuccess, onError) => {
+  console.debug("Subscribing to restricted topic")
+  subscribeToTopic(`/topic/restricted/${listId}`, onSuccess, onError);
+}
+
+export const subscribeToPublicList = (listId, onSuccess, onError) => {
+  console.debug("Subscribing to public topic")
+  subscribeToTopic(`/topic/public/${listId}`, onSuccess, onError);
+}
+
+export const unscubscribeFromRestrictedList = (listId) => {
+  unscubscribeFromTopic(`/topic/restricted/${listId}`)
+}
+
+export const unscubscribeFromPublicList = (listId) => {
+  unscubscribeFromTopic(`/topic/public/${listId}`)
+}
+
+export const disconnectWebSocket = (onDisconnectSuccessful, onDisconnectUnssuccesful) => {
+  if (stompClient) {
+    stompClient.disconnect(onDisconnectSuccessful, onDisconnectUnssuccesful);
   }
 };
 
-export const unscubscribeFromList = (listId) => {
-  if (stompClient.connected) {
-    stompClient.unsubscribe(`/topic/restricted/${listId}`, () => {
-      console.log("Attempting to unsubscribe");
-    });
-  }
+export const isWebSocketConnected = () => {
+  return stompClient.connected;
 };
 
+// Define authenticated requests senders
 export const addItemWs = async (listId, message, action, token) => {
   // Define headers
   const headers = {
@@ -108,13 +131,65 @@ export const removeListItemsWs = async (listId, message, action, token) => {
   stompClient.send(`${URLS.wsRemoveItems}/${listId}`, headers, JSON.stringify(message));
 };
 
-export const disconnectWebSocket = () => {
-  if (stompClient) {
-    console.log("disconnecting ws");
-    stompClient.disconnect();
-  }
+// Define public request senders
+export const publicAddItemWs = async (listId, message, action, username) => {
+  // Define headers
+  const headers = {
+    username: username,
+    action: action,
+  };
+
+  // Send message
+  stompClient.send(`${URLS.wsPublicAddItem}/${listId}`, headers, JSON.stringify(message));
 };
 
-export const isWebSocketConnected = () => {
-  return stompClient.connected;
+export const publicDeleteItemWs = async (listId, message, action, username) => {
+  // Define headers
+  const headers = {
+    username: username,
+    action: action,
+  };
+
+  stompClient.send(`${URLS.wsPublicDeleteItem}/${listId}`, headers, JSON.stringify(message));
 };
+
+export const publicEditItemWs = async (listId, message, action, username) => {
+  // Define headers
+  const headers = {
+    username: username,
+    action: action,
+  };
+
+  stompClient.send(`${URLS.wsPublicEditItem}/${listId}`, headers, JSON.stringify(message));
+};
+
+export const publicCheckItemsWs = async (listId, message, action, username) => {
+  // Define headers
+  const headers = {
+    username: username,
+    action: action,
+  };
+  stompClient.send(`${URLS.wsPublicCheckItems}/${listId}`, headers, JSON.stringify(message));
+};
+
+export const publicRemoveCheckedListItemsWs = async (listId, message, action, username) => {
+  // Define headers
+  const headers = {
+    username: username,
+    action: action,
+  };
+
+  stompClient.send(`${URLS.wsPublicRemoveCheckedItems}/${listId}`, headers, JSON.stringify(message));
+};
+
+export const publicRemoveListItemsWs = async (listId, message, action, username) => {
+  // Define headers
+  const headers = {
+    username: username,
+    action: action,
+  };
+
+  stompClient.send(`${URLS.wsPublicRemoveItems}/${listId}`, headers, JSON.stringify(message));
+};
+
+

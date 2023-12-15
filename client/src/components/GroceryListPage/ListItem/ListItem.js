@@ -13,7 +13,7 @@ import NotesIcon from "@mui/icons-material/Notes";
 import { Typography, SpeedDial, ListItem, ListItemText, IconButton, ListItemIcon, Divider } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { checkSession, deleteItem, deletePublicItem } from "../../../utils/rest";
-import { deleteItemWs, isWebSocketConnected } from "../../../utils/WebSocket";
+import { deleteItemWs, isWebSocketConnected, publicDeleteItemWs } from "../../../utils/WebSocket";
 
 const Listitem = ({
   identifier = "unknown",
@@ -28,9 +28,11 @@ const Listitem = ({
   modifiedIds,
   setModifiedIds,
   theme,
+  loading,
+  setLoading,
 }) => {
   // States
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [openSpeedDial, setOpenSpeedDial] = useState(false);
   const [checked, setChecked] = useState(false);
   const [openItemDescrition, setOpenItemDescription] = useState(false);
@@ -119,20 +121,20 @@ const Listitem = ({
     };
 
     // WebSockets
-    if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
+    if (activeList?.scope !== groceryListScopes.private && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
-        navigate("/");
+        console.error("Cannot authenticate user.");
       }
-
+      // Just in case...
       if (!isWebSocketConnected()) {
         setAlertMessage({ severity: "error", message: "Connection was lost. Please try refreshing or restarting the app." });
         setLoading(false);
         return;
       }
-
-      deleteItemWs(activeList?.id, data, actions.EDIT_ITEM, authResponse?.token);
-      setLoading(false);
+      // Derive correct sender
+      if (activeList?.scope === groceryListScopes.restricted) deleteItemWs(activeList?.id, data, actions.EDIT_ITEM, authResponse?.token);
+      if (activeList?.scope === groceryListScopes.public) publicDeleteItemWs(activeList?.id, data, actions.EDIT_ITEM);
       return;
     }
 

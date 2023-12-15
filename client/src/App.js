@@ -37,8 +37,15 @@ function App() {
   });
 
   useEffect(() => {
-    connectWebSocket();
-    return () => disconnectWebSocket();
+    connectWebSocket(
+      () => console.log("Connected to WebSocket"),
+      () => console.log("Error connecting")
+    );
+    return () =>
+      disconnectWebSocket(
+        () => console.log("Disonnected to WebSocket"),
+        () => console.log("Error disconecting")
+      );
   }, []);
 
   return (

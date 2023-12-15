@@ -425,13 +425,21 @@ const URLS = {
   updateListOrder: `${engine}/server/updated-list-order`,
   refactorCollapsedLists: `${engine}/server/update-collapsed-list-order`,
 
-  // Websockets
+  // Websockets authenticated endpoints
   wsAddItem: `/app/add-item`,
   wsEditItem: `/app/edit-item`,
   wsDeleteItem: `/app/delete-item`,
   wsRemoveItems: `/app/remove-list-items`,
-  wsRemoveCheckedItems: `/remove-checked-list-items`,
+  wsRemoveCheckedItems: `/app/remove-checked-list-items`,
   wsCheckItems: `/app/check-items`,
+
+    // Websockets public endpoints
+    wsPublicAddItem: `/app/public/add-item`,
+    wsPublicEditItem: `/app/public/edit-item`,
+    wsPublicDeleteItem: `/app/public/delete-item`,
+    wsPublicRemoveItems: `/app/public/remove-list-items`,
+    wsPublicRemoveCheckedItems: `/app/public/remove-checked-list-items`,
+    wsPublicCheckItems: `/app/public/check-items`,
 };
 
 export {

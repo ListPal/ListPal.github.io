@@ -40,7 +40,17 @@ import PullToRefresh from "../PullToRefresh/PullToRefresh";
 import Loading from "../Loading/Loading";
 
 // Websocket
-import { subscribeToList, unscubscribeFromList, checkItemsWs, isWebSocketConnected, atomicConnectSubscribe } from "../../utils/WebSocket";
+import {
+  checkItemsWs,
+  isWebSocketConnected,
+  atomicConnectSubscribe,
+  subscribeToRestrictedList,
+  subscribeToPublicList,
+  publicCheckItemsWs,
+  unscubscribeFromRestrictedList,
+  unscubscribeFromPublicList,
+  stompClient,
+} from "../../utils/WebSocket";
 
 function GroceryListPage({ activeList, setActiveList, activeContainer, setActiveContainer, user, setUser, theme }) {
   // States
@@ -70,14 +80,20 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
   const lookupRef = useRef(null);
 
   // Handlers
-  const handleWebSocketReconnection = (controlGate = false) => {
+  const handleConnectAndOrSubscribe = (controlGate = false) => {
     if (!isWebSocketConnected() || controlGate) {
       atomicConnectSubscribe(() => {
         const { onSuccess, onError } = makeWebsocketHandlers();
+        if (scope === groceryListScopes.restricted) subscribeToRestrictedList(listId, onSuccess, onError);
+        if (scope === groceryListScopes.public) subscribeToPublicList(listId, onSuccess, onError);
         setAlertMessage({ severity: "success", message: "Connected." });
         setTimeout(() => setAlertMessage(null), 1000);
-        subscribeToList(listId, onSuccess, onError);
       });
+      stompClient.disconnect();
+    } else {
+      const { onSuccess, onError } = makeWebsocketHandlers();
+      if (scope === groceryListScopes.restricted) subscribeToRestrictedList(listId, onSuccess, onError);
+      if (scope === groceryListScopes.public) subscribeToPublicList(listId, onSuccess, onError);
     }
   };
 
@@ -95,6 +111,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
           break;
         case actions.DELETE_ITEM:
           setActiveList(res?.body);
+          setLoading(false);
           break;
         case actions.REMOVE_ITEMS:
           setActiveList(res?.body);
@@ -108,6 +125,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
           break;
         default:
           console.debug("No allowed action.");
+          setLoading(false);
           break;
       }
     };
@@ -207,19 +225,20 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
     };
 
     // Websocket
-    if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
+    if (activeList?.scope !== groceryListScopes.private && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
-        navigate("/");
+        console.error("Cannot authenticate user.");
       }
-
+      // Just in case...
       if (!isWebSocketConnected()) {
         setAlertMessage({ severity: "error", message: messages.lostConnection });
         setLoading(false);
         return;
       }
-
-      checkItemsWs(activeList?.id, data, actions.CHECK_ITEMS, authResponse?.token);
+      // Derive correct sender
+      if (scope === groceryListScopes.restricted) checkItemsWs(activeList?.id, data, actions.CHECK_ITEMS, authResponse?.token);
+      if (scope === groceryListScopes.public) publicCheckItemsWs(activeList?.id, data, actions.CHECK_ITEMS);
       return;
     }
 
@@ -300,7 +319,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
   const handleSync = async (cache) => {
     setLoading(true);
     // handle Webscocket reconnection/subscription atomically
-    handleWebSocketReconnection();
+    handleConnectAndOrSubscribe();
     // Pull
     const pull = await handlePullList(false, false);
     // Merge (current merge resolution is: "keep theirs")
@@ -551,43 +570,44 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
     // Pull new list
     handlePullList(true, true);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Using WebSockets
-  useEffect(() => {
-    if (scope === groceryListScopes.restricted) {
-      if (!isWebSocketConnected()) {
-        // Connect and subscribe atomically
-        handleWebSocketReconnection();
-      } else {
-        // Subscribe to topic
-        const { onSuccess, onError } = makeWebsocketHandlers();
-        subscribeToList(listId, onSuccess, onError);
-      }
-
+    // Using WebSockets
+    if (scope !== groceryListScopes.private) {
       // Unsubscribe from topic on component unmount
       return () => {
-        if (isWebSocketConnected()) unscubscribeFromList(listId);
+        if (scope === groceryListScopes.restricted && isWebSocketConnected()) unscubscribeFromRestrictedList(listId);
+        else if (scope === groceryListScopes.public && isWebSocketConnected()) unscubscribeFromPublicList(listId);
       };
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (scope !== groceryListScopes.private) {
+      // Connect
+      if (!stompClient.connected) {
+        stompClient.connect({}, () => console.debug("Connected (in GLP)"));
+      } else {
+        // Subscribe
+        console.debug("Is already connected (in GLP). Attempting to subscribe...");
+        handleConnectAndOrSubscribe();
+      }
+    }
+  }, [stompClient.connected]);
 
   // Setting up event handlers
   useEffect(() => {
     const visibilityEventHandler = () => {
       if (document.visibilityState === "visible") {
-        console.debug("Page is now visible");
+        // Disconnect to trigger useEffect
+        stompClient.disconnect();
         // Pull list items
         handlePullList(true, true);
-        // Handle websocket reconnect
-        handleWebSocketReconnection(true);
       }
     };
 
     // Add visibility event handler to DOM only if list is restricted
-    if (scope === groceryListScopes.restricted) {
+    if (scope !== groceryListScopes.private) {
       document.addEventListener("visibilitychange", visibilityEventHandler);
     }
 
@@ -699,6 +719,8 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
                         <Draggable draggableId={`${i}`} index={i} key={i}>
                           {(provided) => (
                             <Listitem
+                              loading={loading}
+                              setLoading={setLoading}
                               theme={theme}
                               provided={provided}
                               borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
@@ -747,6 +769,8 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
                 if (e.checked)
                   return (
                     <Listitem
+                      loading={loading}
+                      setLoading={setLoading}
                       theme={theme}
                       borderColor={handleBorderColor(e?.user?.username.split("@")[0])}
                       identifier={e?.user?.username.split("@")[0]}

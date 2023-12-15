@@ -12,7 +12,17 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../utils/dialoguesValidation";
 import LoadingButton from "@mui/lab/LoadingButton";
 // Websocket
-import { addItemWs, editItemWs, removeListItemsWs, removeCheckedListItemsWs, isWebSocketConnected } from "../../../utils/WebSocket";
+import {
+  addItemWs,
+  editItemWs,
+  removeListItemsWs,
+  removeCheckedListItemsWs,
+  isWebSocketConnected,
+  publicRemoveListItemsWs,
+  publicRemoveCheckedListItemsWs,
+  publicAddItemWs,
+  publicEditItemWs,
+} from "../../../utils/WebSocket";
 
 function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList, setActiveList, theme }) {
   // States
@@ -22,9 +32,33 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
   const [errorMessage, setErrorMessage] = useState(null);
 
   // Other Locals
+  const navigate = useNavigate();
   const location = useLocation();
   const textFieldRef = useRef(null);
-  const navigate = useNavigate();
+  const CssTextField = styled(TextField)({
+    "& label.Mui-focused": {
+      color: colors[theme]?.generalColors.helperTextFontColor,
+    },
+    "& label": {
+      fontFamily: "Urbanist",
+      color: colors[theme]?.generalColors.helperTextFontColor,
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: colors[theme]?.generalColors.fontColor,
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        border: `1px solid ${colors[theme]?.generalColors.fontColor}`,
+        borderRadius: 0,
+      },
+      "&:hover fieldset": {
+        borderColor: colors[theme]?.generalColors.fontColor,
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: colors[theme]?.generalColors.fontColor,
+      },
+    },
+  });
 
   // Handlers
   const handleInputValidation = async (input) => {
@@ -61,7 +95,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       setOpenDialogue(dialogues.closed);
       hideAlert();
       setLoading(false);
-      setTimeout(() => setLoading(false), 1000);
+      setTimeout(() => setLoading(false), delay);
     }, delay);
   };
 
@@ -71,31 +105,6 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
     setLoading(false);
     setTimeout(() => setLoading(false), 1000);
   };
-
-  const CssTextField = styled(TextField)({
-    "& label.Mui-focused": {
-      color: colors[theme]?.generalColors.helperTextFontColor,
-    },
-    "& label": {
-      fontFamily: "Urbanist",
-      color: colors[theme]?.generalColors.helperTextFontColor,
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: colors[theme]?.generalColors.fontColor,
-    },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        border: `1px solid ${colors[theme]?.generalColors.fontColor}`,
-        borderRadius: 0,
-      },
-      "&:hover fieldset": {
-        borderColor: colors[theme]?.generalColors.fontColor,
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: colors[theme]?.generalColors.fontColor,
-      },
-    },
-  });
 
   const handleAddItem = async (name, quantity = 1) => {
     // Disable add item button until add op is done
@@ -128,29 +137,29 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       scope: activeList?.scope,
       category: "Misc",
     };
-    const uri = activeList?.scope === groceryListScopes.public ? URLS.createPublicListItemUri : URLS.createListItemUri;
 
     // Send and notifiy websocket subscribers
-    if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
+    if (activeList?.scope !== groceryListScopes.private && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
-        navigate("/");
+        console.error("Cannot athenticate user.");
       }
-
+      // Just in case...
       if (!isWebSocketConnected()) {
         showAlert("error", "Connection was lost. Please try refreshing or restarting the app.");
         closeDialogueWithDelay();
-        setLoading(false);
         return;
       }
-
-      addItemWs(data.listId, data, actions.ADD_ITEM, authResponse?.token);
-      closeDialogueWithoutDelay();
-      setLoading(false);
+      // Define correct sender
+      if (activeList?.scope === groceryListScopes.restricted) addItemWs(data.listId, data, actions.ADD_ITEM, authResponse?.token);
+      if (activeList?.scope === groceryListScopes.public) publicAddItemWs(data.listId, data, actions.ADD_ITEM);
+      
+      closeDialogueWithDelay(800);
       return;
     }
 
     // Add it to the items state object for re-rendering
+    const uri = activeList?.scope === groceryListScopes.public ? URLS.createPublicListItemUri : URLS.createListItemUri;
     const res = await postRequest(uri, data);
     if (res?.status === 200) {
       setActiveList(res?.body);
@@ -196,28 +205,28 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       category: "Misc",
     };
 
-    const uri = activeList?.scope === groceryListScopes.public ? URLS.updatePublicListItemUri : URLS.updateListItemUri;
-
     // Websockets
-    if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
+    if (activeList?.scope !== groceryListScopes.private && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
-        navigate("/");
+        console.error("Cannot athenticate user.");
       }
-
+      // Just in case...
       if (!isWebSocketConnected()) {
         showAlert("error", "Connection was lost. Please try refreshing or restarting the app.");
         closeDialogueWithDelay();
         setLoading(false);
         return;
       }
+      // Derive correct sender
+      if (activeList?.scope === groceryListScopes.restricted) editItemWs(activeList?.id, data, actions.EDIT_ITEM, authResponse?.token);
+      if (activeList?.scope === groceryListScopes.public) publicEditItemWs(activeList?.id, data, actions.EDIT_ITEM);
 
-      editItemWs(activeList?.id, data, actions.EDIT_ITEM, authResponse?.token);
-      setLoading(false);
-      closeDialogueWithoutDelay();
+      closeDialogueWithDelay(800);
       return;
     }
 
+    const uri = activeList?.scope === groceryListScopes.public ? URLS.updatePublicListItemUri : URLS.updateListItemUri;
     const res = await postRequest(uri, data);
     // Update items state object for re-rendering
     if (res?.status === 200) {
@@ -267,22 +276,24 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       listId: activeList?.id,
     };
 
-    if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
+    if (activeList?.scope !== groceryListScopes.private && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
-        navigate("/");
+        console.error("Cannot authenticate user.");
       }
-
+      // Just in case...
       if (!isWebSocketConnected()) {
         showAlert("error", "Connection was lost. Please try refreshing or restarting the app.");
         closeDialogueWithDelay();
         setLoading(false);
         return;
       }
+      // Derive correct sender
+      if (activeList?.scope === groceryListScopes.restricted)
+        removeListItemsWs(activeList?.id, data, actions.REMOVE_ITEMS, authResponse?.token);
+      if (activeList?.scope === groceryListScopes.public) publicRemoveListItemsWs(activeList?.id, data, actions.REMOVE_ITEMS);
 
-      removeListItemsWs(activeList?.id, data, actions.REMOVE_ITEMS, authResponse?.token);
-      setLoading(false);
-      closeDialogueWithoutDelay();
+      closeDialogueWithDelay(800);
       return;
     }
 
@@ -294,7 +305,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       showAlert("warning", messages.unauthorizedAction);
     } else if (res?.status === 401) {
       showAlert("warning", messages.unauthorizedAction);
-    }  else if (res?.status === 400 && activeList?.scope === groceryListScopes.public) {
+    } else if (res?.status === 400 && activeList?.scope === groceryListScopes.public) {
       navigate("/listNotFound");
     } else {
       showAlert("error", messages.genericError);
@@ -319,20 +330,23 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
     };
 
     // Send and notifiy websocket subscribers
-    if (activeList?.scope === groceryListScopes.restricted && isWebSocketConnected()) {
+    if (activeList?.scope !== groceryListScopes.private && isWebSocketConnected()) {
       const authResponse = await checkSession();
       if (authResponse?.status !== 200) {
-        navigate("/");
+        console.error("Cannot authenticate user.");
       }
-
+      // Just in case...
       if (!isWebSocketConnected()) {
         showAlert("error", "Connection was lost. Please try refreshing or restarting the app.");
-        closeDialogueWithDelay();
-        setLoading(false);
+        closeDialogueWithDelay(800);
         return;
       }
+      // Define correct sender
+      if (activeList?.scope === groceryListScopes.restricted)
+        removeCheckedListItemsWs(activeList?.id, data, actions.REMOVE_CHECKED_ITEMS, authResponse?.token);
+      if (activeList?.scope === groceryListScopes.public)
+        publicRemoveCheckedListItemsWs(activeList?.id, data, actions.REMOVE_CHECKED_ITEMS);
 
-      removeCheckedListItemsWs(activeList?.id, data, actions.REMOVE_ITEMS, authResponse?.token);
       closeDialogueWithoutDelay();
       setLoading(false);
       return;
