@@ -1,5 +1,5 @@
 import { Alert, Typography, Modal, Fade, Slide, Backdrop, Paper, Stack, TextField, FormControl } from "@mui/material";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -24,7 +24,7 @@ import {
   publicEditItemWs,
 } from "../../../utils/WebSocket";
 
-function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList, setActiveList, theme }) {
+function Dialogue({ user, containerId, item, openDialogue, setOpenDialogue, activeList, setActiveList, theme }) {
   // States
   const [severity, setSeverity] = useState("info");
   const [alertMessage, setAlertMessage] = useState(null);
@@ -94,7 +94,6 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
     setTimeout(() => {
       setOpenDialogue(dialogues.closed);
       hideAlert();
-      setLoading(false);
       setTimeout(() => setLoading(false), delay);
     }, delay);
   };
@@ -102,7 +101,6 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
   const closeDialogueWithoutDelay = () => {
     setOpenDialogue(dialogues.closed);
     hideAlert();
-    setLoading(false);
     setTimeout(() => setLoading(false), 1000);
   };
 
@@ -152,9 +150,7 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       }
       // Define correct sender
       if (activeList?.scope === groceryListScopes.restricted) addItemWs(data.listId, data, actions.ADD_ITEM, authResponse?.token);
-      if (activeList?.scope === groceryListScopes.public) publicAddItemWs(data.listId, data, actions.ADD_ITEM);
-      
-      closeDialogueWithDelay(800);
+      if (activeList?.scope === groceryListScopes.public) publicAddItemWs(data.listId, data, actions.ADD_ITEM, user?.username);
       return;
     }
 
@@ -220,9 +216,8 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       }
       // Derive correct sender
       if (activeList?.scope === groceryListScopes.restricted) editItemWs(activeList?.id, data, actions.EDIT_ITEM, authResponse?.token);
-      if (activeList?.scope === groceryListScopes.public) publicEditItemWs(activeList?.id, data, actions.EDIT_ITEM);
+      if (activeList?.scope === groceryListScopes.public) publicEditItemWs(activeList?.id, data, actions.EDIT_ITEM, user?.username);
 
-      closeDialogueWithDelay(800);
       return;
     }
 
@@ -291,9 +286,8 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       // Derive correct sender
       if (activeList?.scope === groceryListScopes.restricted)
         removeListItemsWs(activeList?.id, data, actions.REMOVE_ITEMS, authResponse?.token);
-      if (activeList?.scope === groceryListScopes.public) publicRemoveListItemsWs(activeList?.id, data, actions.REMOVE_ITEMS);
-
-      closeDialogueWithDelay(800);
+      if (activeList?.scope === groceryListScopes.public)
+        publicRemoveListItemsWs(activeList?.id, data, actions.REMOVE_ITEMS, user?.username);
       return;
     }
 
@@ -345,10 +339,8 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
       if (activeList?.scope === groceryListScopes.restricted)
         removeCheckedListItemsWs(activeList?.id, data, actions.REMOVE_CHECKED_ITEMS, authResponse?.token);
       if (activeList?.scope === groceryListScopes.public)
-        publicRemoveCheckedListItemsWs(activeList?.id, data, actions.REMOVE_CHECKED_ITEMS);
+        publicRemoveCheckedListItemsWs(activeList?.id, data, actions.REMOVE_CHECKED_ITEMS, user?.username);
 
-      closeDialogueWithoutDelay();
-      setLoading(false);
       return;
     }
 
@@ -372,6 +364,14 @@ function Dialogue({ containerId, item, openDialogue, setOpenDialogue, activeList
 
   const resetListActions = [handleEraseAllItems, handleEraseCheckedItems];
 
+  useEffect(() => {
+    // Cleanup when unmount
+    return () => {
+      setErrorMessage(null);
+      hideAlert();
+      setLoading(false);
+    };
+  }, []);
   return (
     <>
       <Modal

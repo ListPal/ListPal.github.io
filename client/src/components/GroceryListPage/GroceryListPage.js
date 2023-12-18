@@ -10,7 +10,7 @@ import SwipeableViews from "react-swipeable-views";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 // MUI imports
-import { Typography, Slide, Alert, Stack, List } from "@mui/material";
+import { Typography, Slide, Alert, Stack, List, Snackbar, Button, Grow } from "@mui/material";
 
 // MUI Icons
 import IconButton from "@mui/material/IconButton";
@@ -30,7 +30,7 @@ import {
   actions,
 } from "../../utils/enum";
 import { getPublicList, postRequest, checkSession, getAllLists } from "../../utils/rest";
-import { mergeArrays } from "../../utils/helper";
+import { generateRandomUserName, mergeArrays } from "../../utils/helper";
 
 // Component imports
 import Listitem from "./ListItem/ListItem";
@@ -50,6 +50,8 @@ import {
   unscubscribeFromRestrictedList,
   unscubscribeFromPublicList,
   stompClient,
+  disconnectWebSocket,
+  connectWebSocket,
 } from "../../utils/WebSocket";
 
 function GroceryListPage({ activeList, setActiveList, activeContainer, setActiveContainer, user, setUser, theme }) {
@@ -80,16 +82,15 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
   const lookupRef = useRef(null);
 
   // Handlers
-  const handleConnectAndOrSubscribe = (controlGate = false) => {
-    if (!isWebSocketConnected() || controlGate) {
+  const handleAtomicSubscription = (controlGate = false) => {
+    setAlertMessage({ ...alertMessage, severity: "warning", snackBarMessage: "Connecting...", autoHideDuration: 10000 });
+
+    if (!stompClient.connected || controlGate) {
       atomicConnectSubscribe(() => {
         const { onSuccess, onError } = makeWebsocketHandlers();
         if (scope === groceryListScopes.restricted) subscribeToRestrictedList(listId, onSuccess, onError);
         if (scope === groceryListScopes.public) subscribeToPublicList(listId, onSuccess, onError);
-        setAlertMessage({ severity: "success", message: "Connected." });
-        setTimeout(() => setAlertMessage(null), 1000);
       });
-      stompClient.disconnect();
     } else {
       const { onSuccess, onError } = makeWebsocketHandlers();
       if (scope === groceryListScopes.restricted) subscribeToRestrictedList(listId, onSuccess, onError);
@@ -98,30 +99,39 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
   };
 
   const makeWebsocketHandlers = () => {
+    setAlertMessage({ ...alertMessage, severity: "success", snackBarMessage: "Connected", autoHideDuration: 1000 });
     // Define websocket success handler
     const onSuccess = (message) => {
       const res = message?.body;
       const action = message?.body?.action;
+      const entity = message?.body?.entity;
+      console.log("USER: " + user?.username);
+      console.log("ENTITY: " + entity);
       switch (action) {
         case actions.ADD_ITEM:
           setActiveList(res?.body);
+          if (user?.username === entity) setOpenDialogue(dialogues.closed);
           break;
         case actions.EDIT_ITEM:
           setActiveList(res?.body);
+          if (user?.username === entity) setOpenDialogue(dialogues.closed);
           break;
         case actions.DELETE_ITEM:
           setActiveList(res?.body);
-          setLoading(false);
+          if (user?.username === entity) setLoading(false);
           break;
         case actions.REMOVE_ITEMS:
           setActiveList(res?.body);
+          if (user?.username === entity) setOpenDialogue(dialogues.closed);
           break;
         case actions.CHECK_ITEMS:
           setActiveList(res?.body);
           setModifiedIds(new Set());
+          if (user?.username === entity) setOpenDialogue(dialogues.closed);
           break;
         case actions.REMOVE_CHECKED_ITEMS:
           setActiveList(res?.body);
+          if (user?.username === entity) setOpenDialogue(dialogues.closed);
           break;
         default:
           console.debug("No allowed action.");
@@ -130,21 +140,29 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
       }
     };
     // Define websocket error handler
-    const onError = (res) => {
+    const onError = (message) => {
+      const res = message?.body;
+      const entity = message?.body?.entity;
       switch (res?.status) {
         case 400:
-          navigate("/listNotFound");
+          if (user?.username === entity) navigate("/listNotFound");
           break;
         case 401:
-          setAlertMessage({ severity: "error", message: messages.unauthorizedAction });
-          setTimeout(() => setAlertMessage(null), 3000);
+          if (user?.username === entity) {
+            setAlertMessage({ severity: "error", message: messages.unauthorizedAction });
+            setOpenDialogue(dialogues.closed);
+            setTimeout(() => setAlertMessage(null), 3000);
+          }
           break;
         case 403:
-          navigate("/");
+          if (user?.username === entity) navigate("/");
           break;
         default:
-          setAlertMessage({ severity: "error", message: messages.genericError });
-          setTimeout(() => setAlertMessage(null), 3000);
+          if (user?.username === entity) {
+            setOpenDialogue(dialogues.closed);
+            setAlertMessage({ severity: "error", message: messages.genericError });
+            setTimeout(() => setAlertMessage(null), 3000);
+          }
       }
     };
 
@@ -238,7 +256,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
       }
       // Derive correct sender
       if (scope === groceryListScopes.restricted) checkItemsWs(activeList?.id, data, actions.CHECK_ITEMS, authResponse?.token);
-      if (scope === groceryListScopes.public) publicCheckItemsWs(activeList?.id, data, actions.CHECK_ITEMS);
+      if (scope === groceryListScopes.public) publicCheckItemsWs(activeList?.id, data, actions.CHECK_ITEMS, user?.username);
       return;
     }
 
@@ -319,7 +337,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
   const handleSync = async (cache) => {
     setLoading(true);
     // handle Webscocket reconnection/subscription atomically
-    handleConnectAndOrSubscribe();
+    handleAtomicSubscription();
     // Pull
     const pull = await handlePullList(false, false);
     // Merge (current merge resolution is: "keep theirs")
@@ -400,7 +418,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
 
   const handleFetchUserInfo = async () => {
     // Get user info if the user object is null
-    if (!user) {
+    if (!user || user?.anonymous) {
       const userInfoResponse = await checkSession();
       if (userInfoResponse?.status === 200) {
         setUser(userInfoResponse?.user);
@@ -413,6 +431,14 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
         navigate(-1);
       }
     }
+  };
+
+  const handleFetchPublicUserAndPull = async () => {
+    const res = await checkSession();
+    if (res?.status === 200) {
+      setUser(res?.user);
+    }
+    handlePullList(true, true)
   };
 
   const handleFetchContainer = async (data) => {
@@ -443,10 +469,20 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
     const user = await handleFetchUserInfo();
     const container = await handleFetchContainer({
       userId: user?.user?.id,
-      containerId: containerId,
+      containerId: activeContainer?.id || containerId,
       scope: scope,
     });
+
     return user, container;
+  };
+
+  const atomicFetchUserAndPull = async () => {
+    const user = await handleFetchUserInfo();
+    if (user?.user?.id) {
+      await handlePullList(true, true);
+    }
+
+    return user;
   };
 
   const handlePullList = async (cache = true, loadingControl = true) => {
@@ -539,70 +575,81 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeList]);
 
-  useEffect(() => {
-    if (showDone) setSlide(0);
-  }, [showDone]);
-
   useMemo(() => {
     handleCheckItemsInterval();
   }, [modifiedIds.size]);
 
   useEffect(() => {
+    if (showDone) setSlide(0);
+  }, [showDone]);
+
+  useEffect(() => {
+    if (scope !== groceryListScopes.private) {
+      // If not (connected or trying to connect...)
+      if (!stompClient.active) {
+        // Connect
+        handleAtomicSubscription();
+        return;
+      }
+    }
+  }, [stompClient.connected]);
+
+  // Main useEffect
+  useEffect(() => {
     // Show checked items if public list
     setShowDone(scope === groceryListScopes.public);
 
     // Check for cached list items
-    if (activeList?.id === listId && activeList?.listName === listName && activeList?.scope === scope) {
-      // console.debug("No need to fetch items.");
+    if (activeList?.id === listId && activeList?.listName === listName && activeList?.scope === scope && user) {
+      console.debug("No need to fetch items.");
       setFilteredItems(activeList?.groceryListItems);
       setLoading(false);
-      return;
+      // Websocket Cleanup
+      if (scope !== groceryListScopes.private) {
+        return () => {
+          if (scope === groceryListScopes.restricted) unscubscribeFromRestrictedList(listId);
+          else if (scope === groceryListScopes.public) unscubscribeFromPublicList(listId);
+          disconnectWebSocket();
+        };
+      }
     }
 
     // Reset groceryListItems to avoid displaying the wrong data when server is down
     setActiveList({ groceryListItems: [] });
 
-    // Fetch user and container if not a public list
-    if (scope !== groceryListScopes.public && !user) {
-      handleAtomicUserAndContainerFetch();
+    // Fetch user and pull list if not a public list
+    if (scope !== groceryListScopes.public && (!user || user?.anonymous)) {
+      // Set user and pull or deny access as needed
+      atomicFetchUserAndPull();
+    } else if (scope === groceryListScopes.public && (!user || user?.anonymous)) {
+      // Set anonymous user and pull list items
+      handleFetchPublicUserAndPull();
+    } else {
+      // We have an authorized user, so pull list items
+      handlePullList(true, true);
     }
 
-    // Pull new list
-    handlePullList(true, true);
-
-    // Using WebSockets
+    // Cleanup Using WebSockets
     if (scope !== groceryListScopes.private) {
-      // Unsubscribe from topic on component unmount
       return () => {
-        if (scope === groceryListScopes.restricted && isWebSocketConnected()) unscubscribeFromRestrictedList(listId);
-        else if (scope === groceryListScopes.public && isWebSocketConnected()) unscubscribeFromPublicList(listId);
+        if (scope === groceryListScopes.restricted) unscubscribeFromRestrictedList(listId);
+        else if (scope === groceryListScopes.public) unscubscribeFromPublicList(listId);
+        disconnectWebSocket();
       };
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (scope !== groceryListScopes.private) {
-      // Connect
-      if (!stompClient.connected) {
-        stompClient.connect({}, () => console.debug("Connected (in GLP)"));
-      } else {
-        // Subscribe
-        console.debug("Is already connected (in GLP). Attempting to subscribe...");
-        handleConnectAndOrSubscribe();
-      }
-    }
-  }, [stompClient.connected]);
-
   // Setting up event handlers
   useEffect(() => {
     const visibilityEventHandler = () => {
       if (document.visibilityState === "visible") {
-        // Disconnect to trigger useEffect
-        stompClient.disconnect();
-        // Pull list items
         handlePullList(true, true);
+        handleAtomicSubscription();
+      }
+      if (document.visibilityState === "hidden") {
+        disconnectWebSocket();
       }
     };
 
@@ -638,6 +685,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
       {/* Dialogue (absolute positioned) */}
       {openDialogue && (
         <Dialogue
+          user={user}
           theme={theme}
           item={activeItem}
           containerId={containerId}
@@ -836,6 +884,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
 
       {/* Bottom Bar */}
       <BottomBar
+        user={user}
         theme={theme}
         scope={scope}
         handleSync={handleSync}
@@ -861,8 +910,34 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
           No items to display
         </Typography>
       )}
+      {/* <Button onClick={handleClick}>Open simple snackbar</Button> */}
+      <Snackbar
+        open={alertMessage?.snackBarMessage && true}
+        autoHideDuration={alertMessage?.autoHideDuration || 1000}
+        key={"key"}
+        TransitionComponent={TransitionUp}
+        // message={alertMessage?.snackBarMessage}
+        onClose={() => {
+          setAlertMessage({ ...alertMessage, snackBarMessage: null });
+        }}
+        sx={{
+          position: "absolute",
+          bottom: 30,
+        }}
+      >
+        <Alert
+          sx={{ fontFamily: "Urbanist", width: "100%", boxShadow: "0 25.6px 57.6px 0 rgb(0 0 0 / 22%), 0 4.8px 14.4px 0 rgb(0 0 0 / 18%)" }}
+          severity={alertMessage?.severity}
+        >
+          {alertMessage?.snackBarMessage}
+        </Alert>
+      </Snackbar>
     </PullToRefresh>
   );
+}
+
+function TransitionUp(props) {
+  return <Slide {...props} direction="up" />;
 }
 
 export default GroceryListPage;

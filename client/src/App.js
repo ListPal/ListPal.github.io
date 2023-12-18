@@ -27,23 +27,20 @@ import SandBox from "./components/SandBox/SandBox";
 // Websocket
 import { connectWebSocket, disconnectWebSocket } from "./utils/WebSocket";
 import NoListPage from "./components/NoListPage/NoListPage";
+import { generateRandomUserName } from "./utils/helper";
 
 function App() {
   const [theme, setTheme] = useState(themes.lightTheme);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({ name: null, username: generateRandomUserName(), anonymous: true });
   const [activeList, setActiveList] = useState({ groceryListItems: [] });
   const [activeContainer, setActiveContainer] = useState({
     collapsedLists: [],
   });
 
   useEffect(() => {
-    connectWebSocket(
-      () => console.log("Connected to WebSocket"),
-      () => console.log("Error connecting")
-    );
     return () =>
       disconnectWebSocket(
-        () => console.log("Disonnected to WebSocket"),
+        () => console.log("Disonnected from WebSocket"),
         () => console.log("Error disconecting")
       );
   }, []);

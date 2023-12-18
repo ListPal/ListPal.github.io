@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Grid, Button, Stack, Typography, Avatar, Slide, Alert } from "@mui/material";
 import Container from "./Container/Container";
-import { truncateString } from "../../utils/helper";
+import { generateRandomUserName, truncateString } from "../../utils/helper";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { colors, mobileWidth, themes } from "../../utils/enum";
 import { logout } from "../../utils/rest";
@@ -46,7 +46,7 @@ const Containers = ({
     // Reset states and logout
     const res = await logout();
     if (res.status === 200) {
-      setUser(null);
+      setUser({ name: null, username: generateRandomUserName(), anonymous: true });
       setActiveContainer({ collapsedLists: [] });
       setActiveList({ groceryListItems: [] });
       navigate("/login");
@@ -58,7 +58,7 @@ const Containers = ({
   };
 
   useEffect(() => {
-    if (!user) navigate("/");
+    if (!user || user?.anonymous) navigate("/");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (

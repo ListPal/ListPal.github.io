@@ -11,7 +11,7 @@ import GroceryListCard from "./GroceryListCard/GroceryListCard";
 import NewListForm from "./NewListForm/NewListForm";
 import { mobileWidth } from "../../utils/enum";
 import { useLocation, useNavigate } from "react-router-dom";
-import { truncateString } from "../../utils/helper";
+import { generateRandomUserName, truncateString } from "../../utils/helper";
 import PullToRefresh from "../PullToRefresh/PullToRefresh";
 // ICONS
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -78,7 +78,7 @@ const LandingPage = ({ todo, shop, activeList, setActiveList, user, setUser, act
     // Reset states and logout
     const res = await logout();
     if (res.status === 200) {
-      setUser(null);
+      setUser({ name: null, username: generateRandomUserName(), anonymous: true });
       setActiveContainer({ collapsedLists: [] });
       setActiveList({ groceryListItems: [] });
       navigate("/login");
@@ -93,7 +93,7 @@ const LandingPage = ({ todo, shop, activeList, setActiveList, user, setUser, act
     setLoading(true);
     // Get user info if the user object is null
     let userInfoResponse = { user: user };
-    if (!userInfoResponse?.user) {
+    if (!userInfoResponse?.user || userInfoResponse?.user?.anonymous) {
       userInfoResponse = await checkSession();
       if (userInfoResponse?.status !== 200) {
         navigate("/");
@@ -198,7 +198,7 @@ const LandingPage = ({ todo, shop, activeList, setActiveList, user, setUser, act
   // Pull lists
   useEffect(() => {
     // Fetch only if lists are not cached
-    if (!location?.state?.containerId || activeContainer?.id !== location?.state?.containerId) pullLists();
+    if (!location?.state?.containerId || activeContainer?.id !== location?.state?.containerId || user?.name === "Anonymous") pullLists();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -353,13 +353,6 @@ const LandingPage = ({ todo, shop, activeList, setActiveList, user, setUser, act
               alignItems: "center",
             }}
           >
-            {/* <img
-              alt="decorative-background"
-              src={handleContainerImg()}
-              loading="lazy"
-              height={"95%"}
-              width={"95%"}
-            /> */}
             {handleContainerImg()}
 
             <Typography

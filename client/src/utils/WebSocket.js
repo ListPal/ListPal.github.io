@@ -11,7 +11,7 @@ const subscribeToTopic = (topic, onSuccess, onError) => {
       if (res?.status === 200) {
         onSuccess(parsedMessage);
       } else {
-        onError(res);
+        onError(parsedMessage);
       }
     });
   }
@@ -25,14 +25,17 @@ const unscubscribeFromTopic = (topic) => {
   }
 };
 
-// Stom client definitions
-export const socket = new SockJS("http://joses-macbook-pro-4.local:8080/websocket-shared-list");
+// const engine = "https://katespracticespace.com/websocket-shared-list"
+const engine = "http://joses-macbook-pro-4.local:8080/websocket-shared-list"
 
-export const stompClient = Stomp.over(() => new SockJS("http://joses-macbook-pro-4.local:8080/websocket-shared-list"));
+// Stom client definitions
+export const socket = new SockJS(engine);
+
+export const stompClient = Stomp.over(() => new SockJS(engine));
 
 // Stomp handlers
 export const atomicConnectSubscribe = (onConnectSuccess) => {
-  stompClient.disconnect(() => {});
+  // stompClient.disconnect(() => {});
   stompClient.connect(
     {},
     () => {

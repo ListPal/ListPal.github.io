@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { usernamePasswordValidation } from "../../utils/inputValidation";
 import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { generateRandomUserName } from "../../utils/helper";
 
 const Login = ({ setActiveContainer, setUser, theme }) => {
   const [validation, setValidation] = useState({
@@ -89,7 +90,7 @@ const Login = ({ setActiveContainer, setUser, theme }) => {
   };
 
   useEffect(() => {
-    setUser(null);
+    setUser({ name: null, username: generateRandomUserName(), anonymous: true });
     setActiveContainer({ collapsedLists: [] });
     handleCheckSession();
 
@@ -207,18 +208,11 @@ const Login = ({ setActiveContainer, setUser, theme }) => {
           Quick List
         </Button>
         <Stack direction={"row"}>
-          <Typography
-            fontFamily={"Urbanist"}
-            sx={{ color: colors[theme]?.generalColors.helperTextFontColor }}
-          >
+          <Typography fontFamily={"Urbanist"} sx={{ color: colors[theme]?.generalColors.helperTextFontColor }}>
             Dont have an account?
           </Typography>
           <Link to="/register" style={{ textDecoration: "none" }}>
-            <Typography
-              color={colors[theme]?.generalColors.fontColor}
-              fontFamily={"Urbanist"}
-              sx={{ ml: 1, fontWeight: "570" }}
-            >
+            <Typography color={colors[theme]?.generalColors.fontColor} fontFamily={"Urbanist"} sx={{ ml: 1, fontWeight: "570" }}>
               <strong>Sign Up</strong>
             </Typography>
           </Link>

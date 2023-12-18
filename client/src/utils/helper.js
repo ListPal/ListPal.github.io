@@ -5,6 +5,16 @@ const truncateString = (str, n = 15) => {
   return result;
 };
 
+const generateRandomUserName = () => {
+  // Generate a random decimal between 0 (inclusive) and 1 (exclusive)
+  const randomDecimal = Math.random();
+  let username = 'MysteriousUser#'
+  // Scale and round the number to get an integer between 1 and 1,000,000
+  const randomInteger = Math.floor(randomDecimal * 1000000) + 1;
+
+  return username + randomInteger.toString();
+}
+
 // O(N)
 const mergeArrays = async (mine, theirs) => {
   /* mine and theirs are arrays of objects whose one of the keys is an id */
@@ -42,4 +52,4 @@ const mergeArrays = async (mine, theirs) => {
   return mergedArray;
 };
 
-export { truncateString, mergeArrays };
+export { truncateString, mergeArrays, generateRandomUserName };

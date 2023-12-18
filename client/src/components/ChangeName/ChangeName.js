@@ -107,7 +107,7 @@ const ChangeName = ({ user, setUser, theme }) => {
   };
 
   const handleCheckAuth = async () => {
-    if (!user) {
+    if (!user || user?.anonymous) {
       const res = await checkSession();
       if (res?.status === 200) {
         // Success

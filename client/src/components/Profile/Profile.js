@@ -38,7 +38,7 @@ const Profile = ({ user, setUser, theme, setTheme }) => {
   };
 
   const handleCheckAuth = async () => {
-    if (!user) {
+    if (!user || user?.anonymous) {
       console.log("no user");
       const res = await checkSession();
       if (res?.status === 200) {

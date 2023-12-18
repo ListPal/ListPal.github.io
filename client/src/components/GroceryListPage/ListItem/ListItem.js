@@ -16,6 +16,7 @@ import { checkSession, deleteItem, deletePublicItem } from "../../../utils/rest"
 import { deleteItemWs, isWebSocketConnected, publicDeleteItemWs } from "../../../utils/WebSocket";
 
 const Listitem = ({
+  user,
   identifier = "unknown",
   item,
   setItem,
@@ -32,7 +33,6 @@ const Listitem = ({
   setLoading,
 }) => {
   // States
-  // const [loading, setLoading] = useState(false);
   const [openSpeedDial, setOpenSpeedDial] = useState(false);
   const [checked, setChecked] = useState(false);
   const [openItemDescrition, setOpenItemDescription] = useState(false);
@@ -134,7 +134,7 @@ const Listitem = ({
       }
       // Derive correct sender
       if (activeList?.scope === groceryListScopes.restricted) deleteItemWs(activeList?.id, data, actions.EDIT_ITEM, authResponse?.token);
-      if (activeList?.scope === groceryListScopes.public) publicDeleteItemWs(activeList?.id, data, actions.EDIT_ITEM);
+      if (activeList?.scope === groceryListScopes.public) publicDeleteItemWs(activeList?.id, data, actions.EDIT_ITEM, user?.username);
       return;
     }
 
