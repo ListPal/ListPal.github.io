@@ -335,8 +335,8 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
 
   const handleSync = async (cache) => {
     setLoading(true);
-    // handle Webscocket reconnection/subscription atomically
-    handleAtomicSubscription();
+    // Handle ws connection
+    if (user) handleAtomicSubscription(false, user);
     // Pull
     const pull = await handlePullList(false, false);
     // Merge (current merge resolution is: "keep theirs")
@@ -448,7 +448,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
       // setAlertMessage({severity: 'error', message: messages.lostConnection})
       return;
     }
-    handlePullList(true, true)
+    handlePullList(true, true);
   };
 
   const fetchRestrictedUserPullAndSubscribe = async () => {
@@ -564,9 +564,15 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
 
   // Main useEffect
   useEffect(() => {
-    // Check for cached list items
+    // Check for cached list items in private scopes
     let cached = false;
-    if (activeList?.id === listId && activeList?.listName === listName && activeList?.scope === scope && user) {
+    if (
+      scope === groceryListScopes.private &&
+      activeList?.id === listId &&
+      activeList?.listName === listName &&
+      activeList?.scope === scope &&
+      user
+    ) {
       console.debug("No need to fetch items.");
       setFilteredItems(activeList?.groceryListItems);
       setLoading(false);
