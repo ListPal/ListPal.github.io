@@ -90,7 +90,7 @@ const Login = ({ setActiveContainer, setUser, theme }) => {
   };
 
   useEffect(() => {
-    setUser({ name: null, username: generateRandomUserName(), anonymous: true });
+    setUser(null);
     setActiveContainer({ collapsedLists: [] });
     handleCheckSession();
 

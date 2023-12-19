@@ -31,7 +31,7 @@ import { generateRandomUserName } from "./utils/helper";
 
 function App() {
   const [theme, setTheme] = useState(themes.lightTheme);
-  const [user, setUser] = useState({ name: null, username: generateRandomUserName(), anonymous: true });
+  const [user, setUser] = useState(null);
   const [activeList, setActiveList] = useState({ groceryListItems: [] });
   const [activeContainer, setActiveContainer] = useState({
     collapsedLists: [],

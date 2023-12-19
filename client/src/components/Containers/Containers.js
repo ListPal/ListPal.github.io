@@ -46,7 +46,7 @@ const Containers = ({
     // Reset states and logout
     const res = await logout();
     if (res.status === 200) {
-      setUser({ name: null, username: generateRandomUserName(), anonymous: true });
+      setUser(null);
       setActiveContainer({ collapsedLists: [] });
       setActiveList({ groceryListItems: [] });
       navigate("/login");

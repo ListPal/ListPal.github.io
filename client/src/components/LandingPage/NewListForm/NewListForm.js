@@ -1,13 +1,5 @@
 import { useState, useRef } from "react";
-import {
-  Alert,
-  Typography,
-  FormControl,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  FormHelperText,
-} from "@mui/material";
+import { Alert, Typography, FormControl, FormControlLabel, Radio, RadioGroup, FormHelperText } from "@mui/material";
 import Slide from "@mui/material/Slide";
 import AddIcon from "@mui/icons-material/Add";
 import Backdrop from "@mui/material/Backdrop";
@@ -26,14 +18,8 @@ import PublicIcon from "@mui/icons-material/Public";
 import LoadingButton from "@mui/lab/LoadingButton/LoadingButton";
 import { useNavigate } from "react-router-dom";
 import { dialogueValidation } from "../../../utils/dialoguesValidation";
-import {
-  URLS,
-  colors,
-  groceryContainerTypes,
-  groceryListScopes,
-  mobileWidth,
-  newListFormHelperText,
-} from "../../../utils/enum";
+import { URLS, colors, groceryContainerTypes, groceryListScopes, mobileWidth, newListFormHelperText } from "../../../utils/enum";
+import InputText from "../../InputText/InputText";
 
 function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer, theme }) {
   // States
@@ -158,29 +144,6 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer,
     }
   };
 
-
-  const CssTextField = styled(TextField)({
-    "& label.Mui-focused": {
-      color: colors[theme]?.generalColors.helperTextFontColor,
-    },
-    "& label": {
-      fontFamily: "Urbanist",
-      color: colors[theme]?.generalColors.helperTextFontColor,
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: handleThemeColor(),
-    },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        border: `1px solid ${handleThemeColor()}`,
-        borderRadius: 0,
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: handleThemeColor(),
-      },
-    },
-  });
-
   return (
     <>
       <Modal
@@ -219,9 +182,9 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer,
               in={alertMessage && true}
               sx={{
                 top: "-25vh",
-                left: '-8px', // offset the padding
+                left: "-8px", // offset the padding
                 position: "fixed",
-                minWidth:'95%',
+                minWidth: "95%",
                 maxWidth: `calc(${mobileWidth} - 10px`,
               }}
             >
@@ -251,19 +214,8 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer,
               </Typography>
 
               <FormControl>
-                <CssTextField
-                  fullWidth
-                  required
-                  // error={errorMessage && true}
-                  inputRef={listNameRef}
-                  id="custom-css-outlined-input"
-                  label="Give your List a name"
-                  helperText={errorMessage ? errorMessage : handleHelperText()}
-                  InputProps={{ style: { fontFamily: "Urbanist", color: colors[theme]?.generalColors.fontColor } }}
-                  inputProps={{
-                    maxLength: 30,
-                  }}
-                />
+
+                <InputText _ref={listNameRef} theme={theme} maxLength={30} placeholder={"Give your List a name"} />
 
                 <RadioGroup
                   row
@@ -298,7 +250,7 @@ function NewListForm({ open, setOpen, user, setActiveContainer, activeContainer,
                 loading={loading}
                 loadingPosition="end"
                 endIcon={<AddIcon />}
-                onClick={() => handleCreateList(listNameRef.current.value)}
+                onClick={() => handleCreateList(listNameRef.current?.value)}
                 variant="contained"
                 sx={{
                   fontFamily: "Urbanist",

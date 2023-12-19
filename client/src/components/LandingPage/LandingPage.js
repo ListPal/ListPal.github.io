@@ -49,7 +49,7 @@ const LandingPage = ({ todo, shop, activeList, setActiveList, user, setUser, act
 
   const handleRefactorLists = async () => {
     if (wasRefactored > 0) {
-      console.log("Updating lists order");
+      console.debug("Updating lists order");
       // Set the new order
       const collapsedLists = activeContainer?.collapsedLists.map((e, i) => {
         return { ...e, order: i };
@@ -78,7 +78,7 @@ const LandingPage = ({ todo, shop, activeList, setActiveList, user, setUser, act
     // Reset states and logout
     const res = await logout();
     if (res.status === 200) {
-      setUser({ name: null, username: generateRandomUserName(), anonymous: true });
+      setUser(null);
       setActiveContainer({ collapsedLists: [] });
       setActiveList({ groceryListItems: [] });
       navigate("/login");
@@ -177,7 +177,7 @@ const LandingPage = ({ todo, shop, activeList, setActiveList, user, setUser, act
     setWasRefactored((wasRefactored) => wasRefactored + 1);
   };
 
-  const handleCheckItemsInterval = async () => {
+  const handleReorderLists = async () => {
     if (updateTimer !== null) {
       // Haven't sent items yet, so clear the timeout and start a new attempt
       console.log("Resetting the timer...");
@@ -192,13 +192,13 @@ const LandingPage = ({ todo, shop, activeList, setActiveList, user, setUser, act
   };
 
   useEffect(() => {
-    handleCheckItemsInterval();
+    handleReorderLists();
   }, [wasRefactored]);
 
   // Pull lists
   useEffect(() => {
     // Fetch only if lists are not cached
-    if (!location?.state?.containerId || activeContainer?.id !== location?.state?.containerId || user?.name === "Anonymous") pullLists();
+    if (!location?.state?.containerId || activeContainer?.id !== location?.state?.containerId || user?.anonymous) pullLists();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

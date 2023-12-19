@@ -25,8 +25,8 @@ const unscubscribeFromTopic = (topic) => {
   }
 };
 
-// const engine = "https://katespracticespace.com/websocket-shared-list"
-const engine = "http://joses-macbook-pro-4.local:8080/websocket-shared-list"
+const engine = "https://katespracticespace.com/websocket-shared-list"
+// const engine = "http://joses-macbook-pro-4.local:8080/websocket-shared-list"
 
 // Stom client definitions
 export const socket = new SockJS(engine);

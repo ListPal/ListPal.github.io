@@ -213,7 +213,7 @@ const dialogueObject = {
       {
         defaultValue: true,
         hidden: false,
-        text: "Rename item",
+        text: null,
         helperText: "Enter a different name for your item",
       },
     ],
@@ -252,7 +252,7 @@ const dialogueObject = {
       {
         defaultValue: true,
         hidden: false,
-        text: "Verify the name of the list",
+        text: null,
         helperText: "You agree to delete the list",
       },
     ],
@@ -358,7 +358,7 @@ const dialogueObject = {
       {
         defaultValue: true,
         hidden: false,
-        text: "Verify the name of the list",
+        text: null,
         helperText: "Erase items permanently, preserving the list",
       },
     ],
@@ -380,8 +380,8 @@ const dialogueObject = {
 };
 
 // Engines
-// const engine = "https://katespracticespace.com";
-const engine = "http://joses-macbook-pro-4.local:8080";
+const engine = "https://katespracticespace.com";
+// const engine = "http://joses-macbook-pro-4.local:8080";
 
 const URLS = {
   // Authentication endpoins

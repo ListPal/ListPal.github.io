@@ -23,6 +23,7 @@ import {
   publicAddItemWs,
   publicEditItemWs,
 } from "../../../utils/WebSocket";
+import InputText from "../../InputText/InputText";
 
 function Dialogue({ user, containerId, item, openDialogue, setOpenDialogue, activeList, setActiveList, theme }) {
   // States
@@ -35,30 +36,6 @@ function Dialogue({ user, containerId, item, openDialogue, setOpenDialogue, acti
   const navigate = useNavigate();
   const location = useLocation();
   const textFieldRef = useRef(null);
-  const CssTextField = styled(TextField)({
-    "& label.Mui-focused": {
-      color: colors[theme]?.generalColors.helperTextFontColor,
-    },
-    "& label": {
-      fontFamily: "Urbanist",
-      color: colors[theme]?.generalColors.helperTextFontColor,
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: colors[theme]?.generalColors.fontColor,
-    },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        border: `1px solid ${colors[theme]?.generalColors.fontColor}`,
-        borderRadius: 0,
-      },
-      "&:hover fieldset": {
-        borderColor: colors[theme]?.generalColors.fontColor,
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: colors[theme]?.generalColors.fontColor,
-      },
-    },
-  });
 
   // Handlers
   const handleInputValidation = async (input) => {
@@ -72,13 +49,6 @@ function Dialogue({ user, containerId, item, openDialogue, setOpenDialogue, acti
     if (header === "appleIcon") return <AppleIcon />;
     if (header === "removeDoneIcon") return <RemoveDoneIcon />;
     return <></>;
-  };
-
-  const deriveDefaultText = () => {
-    if (openDialogue === dialogues.addItem) return "";
-    if (openDialogue === dialogues.sendMoney) return "";
-    if (openDialogue === dialogues.resetList) return location.state?.listName;
-    return item?.name;
   };
 
   const showAlert = (severity, msg) => {
@@ -437,28 +407,12 @@ function Dialogue({ user, containerId, item, openDialogue, setOpenDialogue, acti
                 {dialogueObject[openDialogue]?.textFields.map(
                   (textField, i) =>
                     !textField.hidden && (
-                      <CssTextField
-                        multiline={textField?.multiline}
-                        maxRows={4}
-                        sx={{ mt: i, mb: -1 * (i - 1) }}
-                        fullWidth
-                        required={textField?.required}
-                        id="custom-css-outlined-input"
-                        key={`${textField.text}${i}`}
-                        // error={errorMessage && true}
-                        inputRef={textFieldRef}
-                        label={textField.text}
-                        helperText={errorMessage ? errorMessage : textField.helperText}
-                        defaultValue={deriveDefaultText()}
-                        InputProps={{
-                          style: {
-                            fontFamily: "Urbanist",
-                            color: colors[theme]?.generalColors.fontColor,
-                          },
-                        }}
-                        inputProps={{
-                          maxLength: textField?.maxLength || 100,
-                        }}
+                      <InputText
+                        key={i}
+                        _ref={textFieldRef}
+                        placeholder={textField?.text || item?.name || activeList?.listName}
+                        theme={theme}
+                        maxLength={textField?.maxLength || 100}
                       />
                     )
                 )}

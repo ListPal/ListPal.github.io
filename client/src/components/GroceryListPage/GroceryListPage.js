@@ -62,7 +62,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
   const [alertMessage, setAlertMessage] = useState(null);
   const [groupedByIdentifier, setGroupedByIdentifier] = useState([]);
   const [openDialogue, setOpenDialogue] = useState(dialogues.closed);
-  const [showDone, setShowDone] = useState(true);
+  const [showDone, setShowDone] = useState(false);
   const [modifiedIds, setModifiedIds] = useState(new Set());
   const [slide, setSlide] = useState(0);
   const [isRefarctored, setIsRefarctored] = useState(false);
@@ -82,12 +82,11 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
   const lookupRef = useRef(null);
 
   // Handlers
-  const handleAtomicSubscription = (controlGate = false) => {
+  const handleAtomicSubscription = (controlGate, user) => {
     setAlertMessage({ ...alertMessage, severity: "warning", snackBarMessage: "Connecting...", autoHideDuration: 10000 });
-
     if (!stompClient.connected || controlGate) {
       atomicConnectSubscribe(() => {
-        const { onSuccess, onError } = makeWebsocketHandlers();
+        const { onSuccess, onError } = makeWebsocketHandlers(user);
         if (scope === groceryListScopes.restricted) subscribeToRestrictedList(listId, onSuccess, onError);
         if (scope === groceryListScopes.public) subscribeToPublicList(listId, onSuccess, onError);
       });
@@ -98,7 +97,7 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
     }
   };
 
-  const makeWebsocketHandlers = () => {
+  const makeWebsocketHandlers = (user) => {
     setAlertMessage({ ...alertMessage, severity: "success", snackBarMessage: "Connected", autoHideDuration: 1000 });
     // Define websocket success handler
     const onSuccess = (message) => {
@@ -433,56 +432,36 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
     }
   };
 
-  const handleFetchPublicUserAndPull = async () => {
+  const fetchPublicUserPullAndSubscribe = async () => {
     const res = await checkSession();
     if (res?.status === 200) {
+      // Success
       setUser(res?.user);
+      handleAtomicSubscription(false, res?.user);
+    } else if (res?.status === 401 || res?.status === 403) {
+      // Not a registered user
+      const publicUser = { username: generateRandomUserName(), anonymous: true };
+      setUser(publicUser);
+      handleAtomicSubscription(false, publicUser);
+    } else {
+      // Handle server errors
+      // setAlertMessage({severity: 'error', message: messages.lostConnection})
+      return;
     }
     handlePullList(true, true)
   };
 
-  const handleFetchContainer = async (data) => {
-    // Handling preconditions
-    if (!data) {
-      console.error("No data was fed to derive handleFetchContainer");
-      return handleDeriveThemeColor().bold;
-    }
-
-    console.debug("fetching container with container id: " + data.containerId);
-    const containerInfoResponse = await getAllLists(data);
-    if (containerInfoResponse?.status === 200) {
-      setActiveContainer(containerInfoResponse?.body);
-      return containerInfoResponse;
-    } else if (containerInfoResponse?.status === 403) {
-      console.log(containerInfoResponse);
-      navigate("/");
-    } else if (containerInfoResponse?.status === 401) {
-      console.log(containerInfoResponse);
-      navigate(-1);
-    } else {
-      console.log(containerInfoResponse);
-      navigate(-1);
-    }
+  const fetchRestrictedUserPullAndSubscribe = async () => {
+    const user = await handleFetchUserInfo();
+    setUser(user?.user);
+    handleAtomicSubscription(false, user?.user);
+    handlePullList(true, true);
   };
 
-  const handleAtomicUserAndContainerFetch = async () => {
+  const fetchPrivateUserAndPull = async () => {
     const user = await handleFetchUserInfo();
-    const container = await handleFetchContainer({
-      userId: user?.user?.id,
-      containerId: activeContainer?.id || containerId,
-      scope: scope,
-    });
-
-    return user, container;
-  };
-
-  const atomicFetchUserAndPull = async () => {
-    const user = await handleFetchUserInfo();
-    if (user?.user?.id) {
-      await handlePullList(true, true);
-    }
-
-    return user;
+    setUser(user?.user);
+    handlePullList(true, true);
   };
 
   const handlePullList = async (cache = true, loadingControl = true) => {
@@ -583,70 +562,72 @@ function GroceryListPage({ activeList, setActiveList, activeContainer, setActive
     if (showDone) setSlide(0);
   }, [showDone]);
 
-  useEffect(() => {
-    if (scope !== groceryListScopes.private) {
-      // If not (connected or trying to connect...)
-      if (!stompClient.active) {
-        // Connect
-        handleAtomicSubscription();
-        return;
-      }
-    }
-  }, [stompClient.connected]);
-
   // Main useEffect
   useEffect(() => {
-    // Show checked items if public list
-    setShowDone(scope === groceryListScopes.public);
-
     // Check for cached list items
+    let cached = false;
     if (activeList?.id === listId && activeList?.listName === listName && activeList?.scope === scope && user) {
       console.debug("No need to fetch items.");
       setFilteredItems(activeList?.groceryListItems);
       setLoading(false);
-      // Websocket Cleanup
-      if (scope !== groceryListScopes.private) {
-        return () => {
-          if (scope === groceryListScopes.restricted) unscubscribeFromRestrictedList(listId);
-          else if (scope === groceryListScopes.public) unscubscribeFromPublicList(listId);
-          disconnectWebSocket();
-        };
+      cached = true;
+    }
+
+    if (!cached) {
+      // Reset groceryListItems to avoid displaying the wrong data when server is down
+      setActiveList({ groceryListItems: [] });
+      // Fetch user and pull list if not a public list
+      switch (scope) {
+        case groceryListScopes.private:
+          if (!user) fetchPrivateUserAndPull();
+          else handlePullList(true, true);
+          break;
+        case groceryListScopes.restricted:
+          if (!user) fetchRestrictedUserPullAndSubscribe();
+          else handlePullList(true, true);
+          break;
+        case groceryListScopes.public:
+          if (!user) fetchPublicUserPullAndSubscribe();
+          else handlePullList(true, true);
+          break;
+        default:
+          // Handle undefined scope
+          break;
       }
     }
 
-    // Reset groceryListItems to avoid displaying the wrong data when server is down
-    setActiveList({ groceryListItems: [] });
-
-    // Fetch user and pull list if not a public list
-    if (scope !== groceryListScopes.public && (!user || user?.anonymous)) {
-      // Set user and pull or deny access as needed
-      atomicFetchUserAndPull();
-    } else if (scope === groceryListScopes.public && (!user || user?.anonymous)) {
-      // Set anonymous user and pull list items
-      handleFetchPublicUserAndPull();
-    } else {
-      // We have an authorized user, so pull list items
-      handlePullList(true, true);
-    }
-
-    // Cleanup Using WebSockets
-    if (scope !== groceryListScopes.private) {
-      return () => {
-        if (scope === groceryListScopes.restricted) unscubscribeFromRestrictedList(listId);
-        else if (scope === groceryListScopes.public) unscubscribeFromPublicList(listId);
+    // Cleanup
+    return () => {
+      if (user?.anonymous) setUser(null);
+      if (scope === groceryListScopes.restricted) {
+        unscubscribeFromRestrictedList(listId);
         disconnectWebSocket();
-      };
-    }
-
+      } else if (scope === groceryListScopes.public) {
+        unscubscribeFromPublicList(listId);
+        disconnectWebSocket();
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // WebSockets useEffect
+  useEffect(() => {
+    if (scope !== groceryListScopes.private) {
+      // If not (connected or trying to connect...)
+      if (!stompClient.active && user) {
+        // Connect
+        handleAtomicSubscription(false, user);
+        return;
+      }
+    }
+  }, [stompClient.connected]);
 
   // Setting up event handlers
   useEffect(() => {
     const visibilityEventHandler = () => {
       if (document.visibilityState === "visible") {
         handlePullList(true, true);
-        handleAtomicSubscription();
+        connectWebSocket();
       }
       if (document.visibilityState === "hidden") {
         disconnectWebSocket();
